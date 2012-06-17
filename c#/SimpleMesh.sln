@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smesh-lib", "smesh-lib\smesh-lib.csproj", "{014B2023-8B2D-4E79-858D-1A4DE71C3174}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smesh-console", "smesh-console\smesh-console.csproj", "{91398585-33F9-47D0-BE3A-59008C2DB38C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{014B2023-8B2D-4E79-858D-1A4DE71C3174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{014B2023-8B2D-4E79-858D-1A4DE71C3174}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{014B2023-8B2D-4E79-858D-1A4DE71C3174}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{014B2023-8B2D-4E79-858D-1A4DE71C3174}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91398585-33F9-47D0-BE3A-59008C2DB38C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91398585-33F9-47D0-BE3A-59008C2DB38C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91398585-33F9-47D0-BE3A-59008C2DB38C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91398585-33F9-47D0-BE3A-59008C2DB38C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
