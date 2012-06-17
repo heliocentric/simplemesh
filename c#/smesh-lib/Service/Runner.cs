@@ -43,8 +43,8 @@ namespace SimpleMesh.Service
         public void Start()
         {
             this.Main = new Trackfile();
-            string FilePath = @"C:\Users\Helio\Desktop\Code Projects\smesh\trunk\docs\example.tkf";
-            string FilePath2 = @"C:\Users\Helio\Desktop\Code Projects\smesh\trunk\docs\example2.tkf";
+            string FilePath = @"C:\Users\Helio\Desktop\Code Projects\smesh\docs\example.tkf";
+            string FilePath2 = @"C:\Users\Helio\Desktop\Code Projects\smesh\docs\example2.tkf";
             this.Main.Read(FilePath);
             this.Main.WriteOnce(FilePath2);
             /*
