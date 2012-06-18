@@ -38,6 +38,7 @@ namespace MeshBroker
         {
             SimpleMesh.Service.Runner Main = new SimpleMesh.Service.Runner();
             Main.Start();
+            Console.ReadLine();
         }
     }
 }

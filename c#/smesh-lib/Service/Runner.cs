@@ -34,24 +34,46 @@ namespace SimpleMesh.Service
     public class Runner
     {
         string _DatabasePath;
-        Trackfile Main;
+        string _StorePath;
+        Trackfile Network;
         public string DatabasePath
         {
             get { return _DatabasePath; }
             set { _DatabasePath = value; }
         }
+        public string StorePath
+        {
+            get { return _StorePath; }
+            set { _StorePath = value; }
+        }
+        private string _privatekeyfile;
+        private string _publickeyfile;
         public void Start()
         {
-            this.Main = new Trackfile();
-            string FilePath = @"C:\Users\Helio\Desktop\Code Projects\smesh\docs\example.tkf";
-            string FilePath2 = @"C:\Users\Helio\Desktop\Code Projects\smesh\docs\example2.tkf";
-            this.Main.Read(FilePath);
-            this.Main.WriteOnce(FilePath2);
+
+            this.StorePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + @"\NiftyEngineering";
+            this._privatekeyfile = this.StorePath + @"\private.pem";
+            this._publickeyfile = this.StorePath + @"\public.pem";
+            Utility.DebugMessage(10, this.StorePath);
+            if (System.IO.Directory.Exists(this.StorePath) == false)
+            {
+                System.IO.Directory.CreateDirectory(this.StorePath);
+            }
+            this.Network = new Trackfile();
+            string TrackfilePath = this.StorePath + @"\default.tkf";
+            if (System.IO.File.Exists(TrackfilePath) == true)
+            {
+                this.Network.Read(TrackfilePath);
+            }
+            else
+            {
+
+            }
+            this.Network.Write(TrackfilePath);
+
             /*
-            this.DatabasePath = System.Environment.SpecialFolder.CommonApplicationData + "\\NiftyEngineering\\DB\\";
             SimpleMesh.Service.Net.TCP scratch = new SimpleMesh.Service.Net.TCP();
             scratch.Listen();
-            Console.ReadLine();
              */
         }
     }
