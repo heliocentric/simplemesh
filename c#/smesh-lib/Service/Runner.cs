@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Org.BouncyCastle.Crypto;
 
 namespace SimpleMesh.Service
 {
@@ -54,7 +55,13 @@ namespace SimpleMesh.Service
             this.StorePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + @"\NiftyEngineering";
             this._privatekeyfile = this.StorePath + @"\private.pem";
             this._publickeyfile = this.StorePath + @"\public.pem";
-            Utility.DebugMessage(10, this.StorePath);
+            if (System.IO.File.Exists(this._privatekeyfile))
+            {
+            }
+            else
+            {
+                Utility.DebugMessage(10, "");
+            }
             if (System.IO.Directory.Exists(this.StorePath) == false)
             {
                 System.IO.Directory.CreateDirectory(this.StorePath);
