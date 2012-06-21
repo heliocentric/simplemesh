@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="Mono.Zeroconf">
+</Property><Property Name="Solution File" Value="C:\Users\Helio\Desktop\Code Projects\smesh\c#\contrib\mono-zeroconf\Mono.Zeroconf.sln">
+</Property><Property Name="Date" Value="Thursday, June 21, 2012">
+</Property><Property Name="Time" Value="15:24 PM">
+</Property></Properties><Event ErrorLevel="0" Project="MZClient" Source="src\MZClient\MZClient.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="MZClient" Source="src\MZClient\MZClient.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Mono.Zeroconf" Source="src\Mono.Zeroconf\Mono.Zeroconf.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Mono.Zeroconf" Source="src\Mono.Zeroconf\Mono.Zeroconf.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Mono.Zeroconf.Providers.Bonjour" Source="src\Mono.Zeroconf.Providers.Bonjour\Mono.Zeroconf.Providers.Bonjour.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Mono.Zeroconf.Providers.Bonjour" Source="src\Mono.Zeroconf.Providers.Bonjour\Mono.Zeroconf.Providers.Bonjour.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Mono.Zeroconf.Providers.AvahiDBus" Source="src\Mono.Zeroconf.Providers.AvahiDBus\Mono.Zeroconf.Providers.AvahiDBus.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Mono.Zeroconf.Providers.AvahiDBus" Source="src\Mono.Zeroconf.Providers.AvahiDBus\Mono.Zeroconf.Providers.AvahiDBus.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="Mono.Zeroconf.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="Mono.Zeroconf.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="MZClient" Source="src\MZClient\MZClient.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Mono.Zeroconf" Source="src\Mono.Zeroconf\Mono.Zeroconf.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Mono.Zeroconf.Providers.Bonjour" Source="src\Mono.Zeroconf.Providers.Bonjour\Mono.Zeroconf.Providers.Bonjour.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Mono.Zeroconf.Providers.AvahiDBus" Source="src\Mono.Zeroconf.Providers.AvahiDBus\Mono.Zeroconf.Providers.AvahiDBus.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>
