@@ -174,7 +174,7 @@ namespace SimpleMesh.Service
                 message += "\n\t" + enrolled.Value.Type;
                 message += "\n\t\t" + enrolled.Value.Token;
             }
-            MessageBox.Show(message);
+            Utility.DebugMessage(10, message);
             foreach(KeyValuePair<string, Node> line in this.NodeList) {
                 Node scratch = line.Value;
                 message = "Name=\t" + scratch.Name;
@@ -190,7 +190,7 @@ namespace SimpleMesh.Service
                 {
                     message += "\n\t" + connector.Value.ToString();
                 }
-                MessageBox.Show(message);
+                Utility.DebugMessage(10, message);
             }
             return 0;
         }
