@@ -147,12 +147,9 @@ namespace SimpleMesh.Service
                                 case "C":
                                     UUID = chunks[1];
                                     scratch = this.NodeInit(UUID);
-                                    Connector scratchconnector = new Connector();
-                                    scratchconnector.AppProtocol = chunks[2];
-                                    scratchconnector.Protocol = chunks[3];
-                                    scratchconnector.Port = chunks[4];
-                                    scratchconnector.Host = chunks[5];
-                                    scratch.ConnectionList.Add(scratchconnector.Key(), scratchconnector);
+                                    Connector scratchconnector = new Connector(line.Replace("C!" + chunks[1] + "!", ""));
+//                                    scratch.ConnectionList.Add(scratchconnector.Key(), scratchconnector);
+                                    MessageBox.Show(scratchconnector.ToString());
                                     break;
                                 case "A":
                                     UUID = chunks[1];
@@ -304,23 +301,29 @@ namespace SimpleMesh.Service
     }
     class Connector
     {
+        public int Priority;
         public string Protocol;
         public string AppProtocol;
+        public string HostType;
         public string Host;
-        public string Port;
+        public int Port;
         public Connector()
         {
             this.Protocol = "";
             this.AppProtocol = "";
             this.Host = "";
-            this.Port = "";
+            this.Port = 17555;
+            this.HostType = "";
+            this.Priority = 50;
         }
         public Connector(string connspec)
         {
             this.Protocol = "";
             this.AppProtocol = "";
             this.Host = "";
-            this.Port = "";
+            this.Port = 17555;
+            this.HostType = "";
+            this.Priority = 50;
         }
         public override string ToString()
         {
@@ -328,7 +331,7 @@ namespace SimpleMesh.Service
         }
         public string Key()
         {
-            return this.Protocol + "!" + this.Port + "!" + this.Host;
+            return this.Protocol + "!" + this.Port + "!" + this.HostType + "!" + this.Host;
         }
 
     }
