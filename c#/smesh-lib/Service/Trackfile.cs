@@ -320,7 +320,6 @@ namespace SimpleMesh.Service
         }
         public Connector(string connspec)
         {
-            Utility.DebugMessage(10, connspec);
             string[] chunks = connspec.Split('!');
 
             this.Priority = 50;
