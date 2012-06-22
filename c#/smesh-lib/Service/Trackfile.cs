@@ -343,8 +343,6 @@ namespace SimpleMesh.Service
             this.TransportProtocol = chunks[4];
             this.HostType = chunks[5];
             this.Host = chunks[6];
-
-            Utility.DebugMessage(10, this.ToString());
         }
         public override string ToString()
         {
