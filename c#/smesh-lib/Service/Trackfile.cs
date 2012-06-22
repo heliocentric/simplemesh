@@ -147,9 +147,9 @@ namespace SimpleMesh.Service
                                 case "C":
                                     UUID = chunks[1];
                                     scratch = this.NodeInit(UUID);
-                                    Connector scratchconnector = new Connector(line.Replace("C!" + chunks[1] + "!", ""));
+                                    string connectorstring = line.Replace("C!" + chunks[1] + "!", "");
+                                    Connector scratchconnector = new Connector(connectorstring);
 //                                    scratch.ConnectionList.Add(scratchconnector.Key(), scratchconnector);
-                                    MessageBox.Show(scratchconnector.ToString());
                                     break;
                                 case "A":
                                     UUID = chunks[1];
@@ -306,24 +306,32 @@ namespace SimpleMesh.Service
         public string AppProtocol;
         public string HostType;
         public string Host;
+        public string TransportProtocol;
         public int Port;
         public Connector()
         {
+            this.Priority = 50;
             this.Protocol = "";
             this.AppProtocol = "";
             this.Host = "";
             this.Port = 17555;
             this.HostType = "";
-            this.Priority = 50;
+            this.TransportProtocol = "IP";
         }
         public Connector(string connspec)
         {
-            this.Protocol = "";
-            this.AppProtocol = "";
-            this.Host = "";
-            this.Port = 17555;
-            this.HostType = "";
+            Utility.DebugMessage(10, connspec);
+            string[] chunks = connspec.Split('!');
+
             this.Priority = 50;
+            this.AppProtocol = chunks[1];
+            this.Protocol = chunks[2];
+            this.Port = 17555;
+            this.TransportProtocol = "IP";
+            this.HostType = "";
+            this.Host = chunks[3];
+
+            Utility.DebugMessage(10, this.ToString());
         }
         public override string ToString()
         {
