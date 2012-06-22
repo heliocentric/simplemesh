@@ -210,47 +210,29 @@ namespace SimpleMesh.Service
             FileContents = new List<string>();
             FileContents.Add("I!1.0!" + this._createddate + "!" + Utility.ToUnixTimestamp(System.DateTime.Now));
             FileContents.Add("# SimpleMesh Trackfile version 1.0");
-            FileContents.Add("");
-            FileContents.Add("");
-            FileContents.Add("# E!UUID!AuthType!AuthToken!Active (1/0)!Primary (1/0)!");
-            FileContents.Add("");
             foreach (KeyValuePair<string, Auth> item in this.Enrollment)
             {
                 FileContents.Add("E!" + item.Key + "!" + item.Value.Type + "!" + item.Value.Token + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary));
             }
-            FileContents.Add("");
-            FileContents.Add("");
-            FileContents.Add("# N!UUID!Name");
-            FileContents.Add("");
             foreach (KeyValuePair<string, Node> item in this.NodeList)
             {
                 FileContents.Add("N!" + item.Key + "!" + item.Value.Name);
             }
-
-            FileContents.Add("");
-            FileContents.Add("");
-            FileContents.Add("# A!UUID!AuthType!AuthToken!Active (1/0)!Primary (1/0)!");
-            FileContents.Add("");
             foreach (KeyValuePair<string, Node> item in this.NodeList)
             {
                 foreach (KeyValuePair<string, Auth> auth in item.Value.AuthKeyList)
                 {
                     FileContents.Add("A!" + item.Key + "!" + auth.Key + "!" + auth.Value.Token + "!" + this.BoolPack(auth.Value.Active) + "!" + this.BoolPack(auth.Value.Primary));
                 }
-                FileContents.Add("");
             }
-            FileContents.Add("");
-            FileContents.Add("");
-            FileContents.Add("# C!UUID!AppProtocol!Protocol!Port!Host");
-            FileContents.Add("");
             foreach (KeyValuePair<string, Node> item in this.NodeList)
             {
                 foreach (KeyValuePair<string, Connector> connector in item.Value.ConnectionList)
                 {
                     FileContents.Add("C!" + item.Key + "!" + connector.Value.ToString());
                 }
-                FileContents.Add("");
             }
+            FileContents.Add("SIG!None!");
             System.IO.File.WriteAllLines(filename, FileContents.ToArray());
             return 0;
         }
