@@ -76,7 +76,7 @@ namespace SimpleMesh.Service
             {
 
             }
-            // this.Network.Write(TrackfilePath);
+           this.Network.Write(TrackfilePath);
 
             /*
             SimpleMesh.Service.Net.TCP scratch = new SimpleMesh.Service.Net.TCP();

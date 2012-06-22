@@ -149,7 +149,7 @@ namespace SimpleMesh.Service
                                     scratch = this.NodeInit(UUID);
                                     string connectorstring = line.Replace("C!" + chunks[1] + "!", "");
                                     Connector scratchconnector = new Connector(connectorstring);
-//                                    scratch.ConnectionList.Add(scratchconnector.Key(), scratchconnector);
+                                    scratch.ConnectionList.Add(scratchconnector.Key(), scratchconnector);
                                     break;
                                 case "A":
                                     UUID = chunks[1];
@@ -322,10 +322,24 @@ namespace SimpleMesh.Service
         {
             string[] chunks = connspec.Split('!');
 
-            this.Priority = Convert.ToInt32(chunks[0]);
+            try
+            {
+                this.Priority = Convert.ToInt32(chunks[0]);
+            }
+            catch
+            {
+                this.Priority = 50;
+            }
             this.AppProtocol = chunks[1];
             this.Protocol = chunks[2];
-            this.Port = Convert.ToInt32(chunks[3]);
+            try
+            {
+                this.Port = Convert.ToInt32(chunks[3]);
+            }
+            catch
+            {
+                this.Port = 17555;
+            }
             this.TransportProtocol = chunks[4];
             this.HostType = chunks[5];
             this.Host = chunks[6];
@@ -334,11 +348,11 @@ namespace SimpleMesh.Service
         }
         public override string ToString()
         {
-            return this.AppProtocol + "!" + this.Key();
+            return this.Priority + "!" + this.Key();
         }
         public string Key()
         {
-            return this.Protocol + "!" + this.Port + "!" + this.HostType + "!" + this.Host;
+            return this.AppProtocol + "!" + this.Protocol + "!" + this.Port + "!" + this.TransportProtocol + "!" + this.HostType + "!" + this.Host;
         }
 
     }
