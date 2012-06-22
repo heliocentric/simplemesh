@@ -322,13 +322,13 @@ namespace SimpleMesh.Service
         {
             string[] chunks = connspec.Split('!');
 
-            this.Priority = 50;
+            this.Priority = Convert.ToInt32(chunks[0]);
             this.AppProtocol = chunks[1];
             this.Protocol = chunks[2];
-            this.Port = 17555;
-            this.TransportProtocol = "IP";
-            this.HostType = "";
-            this.Host = chunks[3];
+            this.Port = Convert.ToInt32(chunks[3]);
+            this.TransportProtocol = chunks[4];
+            this.HostType = chunks[5];
+            this.Host = chunks[6];
 
             Utility.DebugMessage(10, this.ToString());
         }
