@@ -206,34 +206,39 @@ namespace SimpleMesh.Service
         }
         private int WriteFile(string filename)
         {
-            List<String> FileContents;
-            FileContents = new List<string>();
-            FileContents.Add("I!1.0!" + this._createddate + "!" + Utility.ToUnixTimestamp(System.DateTime.Now));
-            FileContents.Add("# SimpleMesh Trackfile version 1.0");
-            foreach (KeyValuePair<string, Auth> item in this.Enrollment)
+            switch (this._versiontype)
             {
-                FileContents.Add("E!" + item.Key + "!" + item.Value.Type + "!" + item.Value.Token + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary));
+                case "1.0":
+                    List<String> FileContents;
+                    FileContents = new List<string>();
+                    FileContents.Add("I!1.0!" + this._createddate + "!" + Utility.ToUnixTimestamp(System.DateTime.Now));
+                    FileContents.Add("# SimpleMesh Trackfile version 1.0");
+                    foreach (KeyValuePair<string, Auth> item in this.Enrollment)
+                    {
+                        FileContents.Add("E!" + item.Key + "!" + item.Value.Type + "!" + item.Value.Token + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary));
+                    }
+                    foreach (KeyValuePair<string, Node> item in this.NodeList)
+                    {
+                        FileContents.Add("N!" + item.Key + "!" + item.Value.Name);
+                    }
+                    foreach (KeyValuePair<string, Node> item in this.NodeList)
+                    {
+                        foreach (KeyValuePair<string, Auth> auth in item.Value.AuthKeyList)
+                        {
+                            FileContents.Add("A!" + item.Key + "!" + auth.Key + "!" + auth.Value.Token + "!" + this.BoolPack(auth.Value.Active) + "!" + this.BoolPack(auth.Value.Primary));
+                        }
+                    }
+                    foreach (KeyValuePair<string, Node> item in this.NodeList)
+                    {
+                        foreach (KeyValuePair<string, Connector> connector in item.Value.ConnectionList)
+                        {
+                            FileContents.Add("C!" + item.Key + "!" + connector.Value.ToString(this._versiontype));
+                        }
+                    }
+                    FileContents.Add("SIG!None!");
+                    System.IO.File.WriteAllLines(filename, FileContents.ToArray());
+                    break;
             }
-            foreach (KeyValuePair<string, Node> item in this.NodeList)
-            {
-                FileContents.Add("N!" + item.Key + "!" + item.Value.Name);
-            }
-            foreach (KeyValuePair<string, Node> item in this.NodeList)
-            {
-                foreach (KeyValuePair<string, Auth> auth in item.Value.AuthKeyList)
-                {
-                    FileContents.Add("A!" + item.Key + "!" + auth.Key + "!" + auth.Value.Token + "!" + this.BoolPack(auth.Value.Active) + "!" + this.BoolPack(auth.Value.Primary));
-                }
-            }
-            foreach (KeyValuePair<string, Node> item in this.NodeList)
-            {
-                foreach (KeyValuePair<string, Connector> connector in item.Value.ConnectionList)
-                {
-                    FileContents.Add("C!" + item.Key + "!" + connector.Value.ToString());
-                }
-            }
-            FileContents.Add("SIG!None!");
-            System.IO.File.WriteAllLines(filename, FileContents.ToArray());
             return 0;
         }
     }
@@ -328,7 +333,16 @@ namespace SimpleMesh.Service
         }
         public override string ToString()
         {
-            return this.Priority + "!" + this.Key();
+            return this.ToString("1.0");
+        }
+        public string ToString(string version)
+        {
+            switch (version)
+            {
+                case "1.0":
+                default:
+                    return this.Priority + "!" + this.Key();
+            }
         }
         public string Key()
         {
