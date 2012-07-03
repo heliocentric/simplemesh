@@ -171,7 +171,7 @@ namespace SimpleMesh.Service
                 message += "\n\t" + enrolled.Value.Type;
                 message += "\n\t\t" + enrolled.Value.Token;
             }
-            Utility.DebugMessage(10, message);
+            Utility.DebugMessage("Debug.Info.Trackfile", message);
             foreach(KeyValuePair<string, Node> line in this.NodeList) {
                 Node scratch = line.Value;
                 message = "Name=\t" + scratch.Name;
@@ -187,7 +187,7 @@ namespace SimpleMesh.Service
                 {
                     message += "\n\t" + connector.Value.ToString();
                 }
-                Utility.DebugMessage(10, message);
+                Utility.DebugMessage("Debug.Info.Trackfile", message);
             }
             return 0;
         }

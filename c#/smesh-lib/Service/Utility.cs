@@ -54,7 +54,7 @@ namespace SimpleMesh.Service
             System.Buffer.BlockCopy(message.Payload, 0, rv, header.Length, message.Payload.Length);
             return rv;
         }
-        public static void DebugMessage(int number, string message)
+        public static void DebugMessage(string type, string message)
         {
             Console.Write(message + "\n\r");
         }

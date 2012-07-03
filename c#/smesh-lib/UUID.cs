@@ -33,5 +33,22 @@ namespace SimpleMesh
 {
     public class UUID
     {
+        private string _uuid;
+        public UUID()
+        {
+            this.Set(System.Guid.NewGuid().ToString());
+        }
+        public UUID(string uuid)
+        {
+            this.Set(uuid);
+        }
+        public void Set(string uuid)
+        {
+            this._uuid = uuid;
+        }
+        public override string ToString()
+        {
+            return this._uuid;
+        }
     }
 }
