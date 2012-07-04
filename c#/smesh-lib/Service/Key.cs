@@ -73,13 +73,24 @@ namespace SimpleMesh.Service
         public void Decode(string key) {
             string [] chunks = key.Split('!');
             this.Type = chunks[0];
-            if (chunks[1] != "")
+            switch (this.Type)
             {
-                this.Length = Convert.ToInt32(chunks[1]);
+                case "RSA":
+                    if (chunks[1] != "")
+                    {
+                        this.Length = Convert.ToInt32(chunks[1]);
+                    }
+                    string derPublicKey = chunks[2];
+                    string derPrivateKey = chunks[3];
+                    byte[] publicKeyBytes = Convert.FromBase64String(derPublicKey);
+                    Encoding enc = new UTF8Encoding();
+                    Utility.DebugMessage("Debug.Info.ConfigFile", enc.GetString(publicKeyBytes));
+                    AsymmetricKeyParameter asymmetricPublicKeyParameter = PublicKeyFactory.CreateKey(publicKeyBytes);
+                    byte[] privateKeyBytes = Convert.FromBase64String(derPrivateKey);
+                    AsymmetricKeyParameter asymmetricPrivateKeyParameter = PublicKeyFactory.CreateKey(privateKeyBytes);
+                    this.BouncyPair = new AsymmetricCipherKeyPair(asymmetricPublicKeyParameter, asymmetricPrivateKeyParameter);
+                    break;
             }
-            string derPublicKey = chunks[2];
-            string derPrivateKey = chunks[3];
-
         }
         public override string ToString()
         {
