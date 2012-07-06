@@ -46,6 +46,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
+using System.Net;
 
 namespace SimpleMesh.Service
 {
@@ -132,6 +133,16 @@ namespace SimpleMesh.Service
             this.StorePath = path;
             this.ConfigFile = configfile;
             this.Read();
+            IPHostEntry host;
+            string localIP = "?";
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork || ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+                {
+                    Utility.DebugMessage("Debug.Info.ConfigFile",ip.ToString());
+                }
+            }
             /*
             Utility.DebugMessage("Debug.Info.ConfigFile", this.StorePath);
             Utility.DebugMessage("Debug.Info.ConfigFile", this.ConfigFile);

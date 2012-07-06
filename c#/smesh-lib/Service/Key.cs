@@ -39,35 +39,29 @@ namespace SimpleMesh.Service
             string derPublicKey;
             string derPrivateKey;
             string retval;
+
+            derPrivateKey = "";
+            derPublicKey = "";
             switch (this.Type)
             {
                 case "RSA":
-                    if (BouncyPair.Public != null)
-                    {
+                /*
                         PrivateKeyInfo infoPrivate = PrivateKeyInfoFactory.CreatePrivateKeyInfo(this.BouncyPair.Private);
                         byte[] serializedPrivateKey = infoPrivate.PrivateKey.ToAsn1Object().GetDerEncoded();
                         derPrivateKey = Convert.ToBase64String(serializedPrivateKey);
-                    }
-                    else
-                    {
-                        derPrivateKey = "";
-                    }
-                    if (BouncyPair.Public != null)
-                    {
                         SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(this.BouncyPair.Public);
                         byte[] serializedPublicKey = publicKeyInfo.PublicKeyData.ToAsn1Object().GetDerEncoded();
                         derPublicKey = Convert.ToBase64String(serializedPublicKey);
-                    }
-                    else
+                    */
+                    if (this.BouncyPair == null)
                     {
-                        derPublicKey = "";
                     }
                     retval = "RSA!" + this.Length.ToString() + "!" + derPublicKey + "!" + derPrivateKey;
                     break;
                 default:
                     retval = "NONE!!!";
                     break;
-            }
+        }
             return retval;
         }
         public void Decode(string key) {
@@ -80,6 +74,7 @@ namespace SimpleMesh.Service
                     {
                         this.Length = Convert.ToInt32(chunks[1]);
                     }
+                    /*
                     string derPublicKey = chunks[2];
                     string derPrivateKey = chunks[3];
                     byte[] publicKeyBytes = Convert.FromBase64String(derPublicKey);
@@ -89,6 +84,7 @@ namespace SimpleMesh.Service
                     byte[] privateKeyBytes = Convert.FromBase64String(derPrivateKey);
                     AsymmetricKeyParameter asymmetricPrivateKeyParameter = PublicKeyFactory.CreateKey(privateKeyBytes);
                     this.BouncyPair = new AsymmetricCipherKeyPair(asymmetricPublicKeyParameter, asymmetricPrivateKeyParameter);
+                     */
                     break;
             }
         }
