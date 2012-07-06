@@ -36,8 +36,13 @@ namespace MeshBroker
     {
         static void Main(string[] args)
         {
+            SimpleMesh.Service.Runner.DebugMessageCallback = Program.ConsoleDebugMessage;
             SimpleMesh.Service.Runner.Start();
             Console.ReadLine();
+        }
+        public static void ConsoleDebugMessage(string type, string message)
+        {
+            Console.Write(message + "\n\r");
         }
     }
 }

@@ -87,7 +87,7 @@ namespace SimpleMesh.Service
                     byte[] publicKeyBytes = Convert.FromBase64String(derPublicKey);
                     byte[] privateKeyBytes = Convert.FromBase64String(derPrivateKey);
                     Encoding enc = new UTF8Encoding();
-                    Utility.DebugMessage("Debug.Info.ConfigFile", enc.GetString(publicKeyBytes));
+                    SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", enc.GetString(publicKeyBytes));
 
                     AsymmetricKeyParameter publickeyparameter = PublicKeyFactory.CreateKey(publicKeyBytes);
                     AsymmetricKeyParameter privatekeyparameter = PrivateKeyFactory.CreateKey(privateKeyBytes);

@@ -122,7 +122,7 @@ namespace SimpleMesh.Service.Net
         private void SendMessage(Socket socket, Message message)
         {
             byte[] packed = Utility.MessagePack(message, this.Types);
-            Utility.DebugMessage("Debug.Info.Message", "T:" + " Length=" + packed.Length + " Type=" + message.Type + " Payload=" + Encoding.UTF8.GetString(message.Payload));
+            SimpleMesh.Service.Runner.DebugMessage("Debug.Info.Message", "T:" + " Length=" + packed.Length + " Type=" + message.Type + " Payload=" + Encoding.UTF8.GetString(message.Payload));
             socket.Send(packed);
         }
         private Message ReceiveMessage(Socket socket)

@@ -54,10 +54,6 @@ namespace SimpleMesh.Service
             System.Buffer.BlockCopy(message.Payload, 0, rv, header.Length, message.Payload.Length);
             return rv;
         }
-        public static void DebugMessage(string type, string message)
-        {
-            Console.Write(message + "\n\r");
-        }
         public static long ToUnixTimestamp(System.DateTime dt)
         {
             DateTime unixRef = new DateTime(1970, 1, 1, 0, 0, 0);

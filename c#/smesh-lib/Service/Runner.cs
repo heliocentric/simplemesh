@@ -52,9 +52,14 @@ namespace SimpleMesh.Service
 {
     public static class Runner
     {
+        public delegate void DebugMessageType(string type, string value);
+        public static DebugMessageType DebugMessageCallback;
         static string  _DatabasePath;
         static string _StorePath;
         static Trackfile Network;
+        public static void DebugMessage(string type, string main) {
+            DebugMessageCallback(type, main);
+        }
         public static string DatabasePath
         {
             get { return _DatabasePath; }
@@ -72,7 +77,7 @@ namespace SimpleMesh.Service
             if (System.IO.File.Exists(SimpleMesh.Service.Runner.ConfigFile) == true)
             {
                 string[] lines = System.IO.File.ReadAllLines(SimpleMesh.Service.Runner.ConfigFile);
-                Utility.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile + " Contents:");
+                SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile + " Contents:");
                 foreach (string line in lines)
                 {
                     string[] chunks = line.Split('!');
@@ -80,12 +85,12 @@ namespace SimpleMesh.Service
                     {
                         case "HOSTUUID":
                             SimpleMesh.Service.Runner.Node = new UUID(chunks[1]);
-                            Utility.DebugMessage("Debug.Info.ConfigFile", "\tUUID:\t\t" + SimpleMesh.Service.Runner.Node.ToString());
+                            SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", "\tUUID:\t\t" + SimpleMesh.Service.Runner.Node.ToString());
                             break;
                         case "HOSTKEY":
                             SimpleMesh.Service.Runner.HostKey = new Key();
                             SimpleMesh.Service.Runner.HostKey.Decode(line.Replace("HOSTKEY!",""));
-                            Utility.DebugMessage("Debug.Info.ConfigFile", "\tHost Key:\t\t" + SimpleMesh.Service.Runner.HostKey.ToString());
+                            SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", "\tHost Key:\t\t" + SimpleMesh.Service.Runner.HostKey.ToString());
                             break;
                     }
                 }
@@ -98,7 +103,7 @@ namespace SimpleMesh.Service
                 SimpleMesh.Service.Runner.HostKey = new Key();
                 SimpleMesh.Service.Runner.HostKey.Type = "RSA";
                 SimpleMesh.Service.Runner.HostKey.Length = 1024;
-                Utility.DebugMessage("Debug.Info.ConfigFile", "Generating " + SimpleMesh.Service.Runner.HostKey.Length.ToString() + " bit RSA key pair starting on: " + DateTime.Now.ToString());
+                SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", "Generating " + SimpleMesh.Service.Runner.HostKey.Length.ToString() + " bit RSA key pair starting on: " + DateTime.Now.ToString());
                 RsaKeyPairGenerator r = new RsaKeyPairGenerator();
                 r.Init(new KeyGenerationParameters(new SecureRandom(), SimpleMesh.Service.Runner.HostKey.Length));
                 SimpleMesh.Service.Runner.HostKey.BouncyPair = r.GenerateKeyPair();
@@ -108,10 +113,10 @@ namespace SimpleMesh.Service
                 file.Add("HOSTUUID!" + SimpleMesh.Service.Runner.Node.ToString());
                 file.Add("HOSTKEY!" + SimpleMesh.Service.Runner.HostKey.Encode());
 
-                Utility.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile + " Contents:");
+                SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile + " Contents:");
                 foreach (string line in file)
                 {
-                    Utility.DebugMessage("Debug.Info.ConfigFile", "\t" + line);
+                    SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", "\t" + line);
                 }
                 System.IO.File.WriteAllLines(SimpleMesh.Service.Runner.ConfigFile, file.ToArray());
             }
@@ -140,13 +145,13 @@ namespace SimpleMesh.Service
             {
                 if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork || ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
                 {
-                    Utility.DebugMessage("Debug.Info.ConfigFile",ip.ToString());
+                    SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile",ip.ToString());
                 }
             }
             /*
-            Utility.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.StorePath);
-            Utility.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile);
-            Utility.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.Node.ToString());
+            SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.StorePath);
+            SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile);
+            SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.Node.ToString());
             SimpleMesh.Service.Runner.Network = new Trackfile();
             string TrackfilePath = SimpleMesh.Service.Runner.StorePath + @"\default.tkf";
             if (System.IO.File.Exists(TrackfilePath) == true)
