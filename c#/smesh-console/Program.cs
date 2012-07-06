@@ -36,8 +36,7 @@ namespace MeshBroker
     {
         static void Main(string[] args)
         {
-            SimpleMesh.Service.Runner Main = new SimpleMesh.Service.Runner();
-            Main.Start();
+            SimpleMesh.Service.Runner.Start();
             Console.ReadLine();
         }
     }
