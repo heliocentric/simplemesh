@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SimpleMesh;
+using SimpleMesh.Service;
 
 namespace MeshBroker
 {
@@ -37,8 +38,30 @@ namespace MeshBroker
         static void Main(string[] args)
         {
             SimpleMesh.Service.Runner.DebugMessageCallback = Program.ConsoleDebugMessage;
+            SimpleMesh.Service.Runner.HostInfoCallback = Program.HostInfoQuery;
             SimpleMesh.Service.Runner.Start();
             Console.ReadLine();
+        }
+        public static HostInfo HostInfoQuery()
+        {
+            HostInfo scratch = new HostInfo();
+            scratch.Key = new Key();
+            scratch.UUID = new UUID();
+
+            
+            Console.Write("\n\rHost Description: ");
+            scratch.Description = Console.ReadLine();
+            Console.Write("Key Length: ");
+            string temp = Console.ReadLine();
+            try
+            {
+                scratch.Key.Length = Convert.ToInt32(temp);
+            }
+            catch
+            {
+                scratch.Key.Length = 4096;
+            }
+            return scratch;
         }
         public static void ConsoleDebugMessage(string type, string message)
         {

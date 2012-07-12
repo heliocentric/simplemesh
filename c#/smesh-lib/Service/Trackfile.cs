@@ -132,6 +132,7 @@ namespace SimpleMesh.Service
                         case "1.0":
                             string[] chunks = line.Split('!');
                             string UUID;
+                            string keystring;
                             Node scratch;
                             switch (chunks[0])
                             {
@@ -154,11 +155,14 @@ namespace SimpleMesh.Service
                                 case "A":
                                     UUID = chunks[1];
                                     scratch = this.NodeInit(UUID);
-                                    scratch.AuthKeyList.Add(chunks[2], new Auth(chunks[2], chunks[3], BoolUnpack(chunks[4]), BoolUnpack(chunks[5])));
+                                    keystring = line.Replace("A!" + chunks[1] + "!" + chunks[2] + "!" + chunks[3] + "!", "");
+                                    MessageBox.Show(keystring);
+                                    scratch.AuthKeyList.Add(keystring, new Auth(keystring, BoolUnpack(chunks[3]), BoolUnpack(chunks[4])));
                                     break;
                                 case "E":
                                     UUID = chunks[1];
-                                    this.Enrollment.Add(UUID, new Auth(chunks[2], chunks[3], BoolUnpack(chunks[4]), BoolUnpack(chunks[5])));
+                                    keystring = line.Replace("E!" + chunks[1] + "!" + chunks[2] + "!" + chunks[3] + "!", "");
+                                    this.Enrollment.Add(UUID, new Auth(keystring, BoolUnpack(chunks[2]), BoolUnpack(chunks[3])));
                                     break;
                             }
                             break;
@@ -168,8 +172,8 @@ namespace SimpleMesh.Service
             string message = "Enrollment Keys";
             foreach(KeyValuePair<string, Auth> enrolled in this.Enrollment)
             {
-                message += "\n\t" + enrolled.Value.Type;
-                message += "\n\t\t" + enrolled.Value.Token;
+                message += "\n\t" + enrolled.Value.Key.Type;
+                message += "\n\t\t" + enrolled.Value.Key.PublicKey;
             }
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.Trackfile", message);
             foreach(KeyValuePair<string, Node> line in this.NodeList) {
@@ -179,8 +183,8 @@ namespace SimpleMesh.Service
                 message += "\nAuthentication:";
                 foreach (KeyValuePair<string, Auth> auth in scratch.AuthKeyList)
                 {
-                    message += "\n\t" + auth.Value.Type.ToString() + "=";
-                    message += "\n\t\t" + auth.Value.Token.ToString();
+                    message += "\n\t" + auth.Value.Key.Type.ToString() + "=";
+                    message += "\n\t\t" + auth.Value.Key.PublicKey.ToString();
                 }
                 message += "\nConnectors:";
                 foreach (KeyValuePair<string, Connector> connector in scratch.ConnectionList)
@@ -215,7 +219,7 @@ namespace SimpleMesh.Service
                     FileContents.Add("# SimpleMesh Trackfile version 1.0");
                     foreach (KeyValuePair<string, Auth> item in this.Enrollment)
                     {
-                        FileContents.Add("E!" + item.Key + "!" + item.Value.Type + "!" + item.Value.Token + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary));
+                        FileContents.Add("E!" + item.Key + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary) + "!" + item.Value.Key.Encode());
                     }
                     foreach (KeyValuePair<string, Node> item in this.NodeList)
                     {
@@ -225,7 +229,7 @@ namespace SimpleMesh.Service
                     {
                         foreach (KeyValuePair<string, Auth> auth in item.Value.AuthKeyList)
                         {
-                            FileContents.Add("A!" + item.Key + "!" + auth.Key + "!" + auth.Value.Token + "!" + this.BoolPack(auth.Value.Active) + "!" + this.BoolPack(auth.Value.Primary));
+                            FileContents.Add("A!" + item.Key + "!" + this.BoolPack(auth.Value.Active) + "!" + this.BoolPack(auth.Value.Primary) + "!" + auth.Value.Key.Encode());
                         }
                     }
                     foreach (KeyValuePair<string, Node> item in this.NodeList)
@@ -260,30 +264,28 @@ namespace SimpleMesh.Service
     }
     class Auth
     {
-        public string Type;
-        public string Token;
+        public Key Key;
         public Boolean Active;
         public Boolean Primary;
         public Auth()
         {
         }
-        public Auth(string type, string token)
+        public Auth(string keystring)
         {
-            this.Type = type;
-            this.Token = token;
+
+            this.Key = new Key(keystring);
             this.Active = true;
             this.Primary = false;
         }
-        public Auth(string type, string token, Boolean active, Boolean primary)
+        public Auth(string keystring, Boolean active, Boolean primary)
         {
-            this.Type = type;
-            this.Token = token;
+            this.Key = new Key(keystring);
             this.Active = active;
             this.Primary = primary;
         }
         public override string ToString()
         {
-            return this.Type + "=" + this.Token;
+            return this.Key.ToString();
         }
     }
     class Connector

@@ -27,13 +27,6 @@ namespace SimpleMesh.Service
     {
         public int Length;
         public string Type;
-        private AsymmetricCipherKeyPair _BouncyPair;
-
-        public AsymmetricCipherKeyPair BouncyPair
-        {
-            get { return _BouncyPair; }
-            set { _BouncyPair = value; }
-        }
         public AsymmetricKeyParameter PublicKey;
         public AsymmetricKeyParameter PrivateKey;
         public string Salt;
@@ -55,11 +48,14 @@ namespace SimpleMesh.Service
             switch (this.Type)
             {
                 case "RSA":
-                    if (this.BouncyPair != null)
+                    if (this.PrivateKey != null)
                     {
-                        PrivateKeyInfo infoPrivate = PrivateKeyInfoFactory.CreatePrivateKeyInfo(this.BouncyPair.Private);
+                        PrivateKeyInfo infoPrivate = PrivateKeyInfoFactory.CreatePrivateKeyInfo(this.PrivateKey);
                         derPrivateKey = Convert.ToBase64String(infoPrivate.GetEncoded());
-                        SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(this.BouncyPair.Public);
+                    }
+                    if (this.PublicKey != null)
+                    {
+                        SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(this.PublicKey);
                         derPublicKey = Convert.ToBase64String(publicKeyInfo.GetEncoded());
                     }
                     retval = "RSA!" + this.Length.ToString() + "!" + derPublicKey + "!" + derPrivateKey;
@@ -87,9 +83,8 @@ namespace SimpleMesh.Service
                     byte[] publicKeyBytes = Convert.FromBase64String(derPublicKey);
                     byte[] privateKeyBytes = Convert.FromBase64String(derPrivateKey);
 
-                    AsymmetricKeyParameter publickeyparameter = PublicKeyFactory.CreateKey(publicKeyBytes);
-                    AsymmetricKeyParameter privatekeyparameter = PrivateKeyFactory.CreateKey(privateKeyBytes);
-                    this.BouncyPair = new AsymmetricCipherKeyPair(publickeyparameter, privatekeyparameter);
+                    this.PublicKey = PublicKeyFactory.CreateKey(publicKeyBytes);
+                    this.PrivateKey = PrivateKeyFactory.CreateKey(privateKeyBytes);
                     break;
             }
         }
