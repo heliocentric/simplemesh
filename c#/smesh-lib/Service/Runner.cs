@@ -93,6 +93,10 @@ namespace SimpleMesh.Service
                     {
                         case "HOSTUUID":
                             SimpleMesh.Service.Runner.Info.UUID = new UUID(chunks[1]);
+                            if (chunks.Length > 2)
+                            {
+                                SimpleMesh.Service.Runner.Info.Description = chunks[2];
+                            }
                             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", "\tUUID:\t\t" + SimpleMesh.Service.Runner.Info.UUID.ToString());
                             break;
                         case "HOSTKEY":
@@ -100,12 +104,18 @@ namespace SimpleMesh.Service
                             SimpleMesh.Service.Runner.Info.Key.Decode(line.Replace("HOSTKEY!",""));
                             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", "\tHost Key:\t\t" + SimpleMesh.Service.Runner.Info.Key.ToString());
                             break;
+                        case "PORT":
+                            SimpleMesh.Service.Runner.Info.Ports.Add(chunks[1]);
+                            break;
+                        case "PROTOCOL":
+                            SimpleMesh.Service.Runner.Info.Protocols.Add(chunks[1]);
+                            break;
                     }
                 }
             }
             else
             {
-                // Generate Template configuration file.
+                // Get info from the actual client.
                 HostInfo scratch = HostInfoCallback();
                 DateTime Start = DateTime.Now;
                 SimpleMesh.Service.Runner.Info = scratch;
@@ -119,8 +129,15 @@ namespace SimpleMesh.Service
 
                 List<string> file = new List<string>();
                 file.Add("I!1.0!!!");
-                file.Add("HOSTUUID!" + SimpleMesh.Service.Runner.Info.UUID.ToString());
-                file.Add("HOSTKEY!" + SimpleMesh.Service.Runner.Info.Key.Encode());
+                file.Add("HOSTUUID!" + Info.UUID.ToString() + "!" + SimpleMesh.Service.Runner.Info.Description);
+                file.Add("HOSTKEY!" + Info.Key.Encode());
+                foreach(string port in Info.Ports) {
+                    file.Add("PORT!" + port);
+                }
+                foreach (string protocol in Info.Protocols)
+                {
+                    file.Add("PROTOCOL!" + protocol);
+                }
 
                 SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile + " Contents:");
                 foreach (string line in file)
@@ -148,10 +165,16 @@ namespace SimpleMesh.Service
             SimpleMesh.Service.Runner.ConfigFile = configfile;
             SimpleMesh.Service.Runner.Read();
 
-            
+            IPHostEntry host;
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                Info.Addresses.Add(ip);
+            }
+            Info.Compile();
+            SimpleMesh.Service.Runner.Write();            
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.StorePath);
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile);
-            SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.Info.UUID.ToString());
             SimpleMesh.Service.Runner.Network = new Trackfile();
             string TrackfilePath = SimpleMesh.Service.Runner.StorePath + @"\default.tkf";
             if (System.IO.File.Exists(TrackfilePath) == true)
@@ -160,16 +183,6 @@ namespace SimpleMesh.Service
             }
             else
             {
-            }
-            IPHostEntry host;
-            string localIP = "?";
-            host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ip in host.AddressList)
-            {
-                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork || ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-                {
-                    SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", ip.ToString());
-                }
             }
            SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
 

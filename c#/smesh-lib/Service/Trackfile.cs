@@ -33,7 +33,7 @@ using SimpleMesh.Service;
 
 namespace SimpleMesh.Service
 {
-    class Trackfile
+    public class Trackfile
     {
         Dictionary<string, Node> NodeList;
         Dictionary<string, Auth> Enrollment;
@@ -246,7 +246,7 @@ namespace SimpleMesh.Service
             return 0;
         }
     }
-    class Node
+    public class Node
     {
         public Dictionary<string, Connector> ConnectionList;
         public string UUID;
@@ -262,7 +262,7 @@ namespace SimpleMesh.Service
             this.AuthKeyList = new Dictionary<string, Auth>();
         }
     }
-    class Auth
+    public class Auth
     {
         public Key Key;
         public Boolean Active;
@@ -288,68 +288,5 @@ namespace SimpleMesh.Service
             return this.Key.ToString();
         }
     }
-    class Connector
-    {
-        public int Priority;
-        public string Protocol;
-        public string AppProtocol;
-        public string HostType;
-        public string Host;
-        public string TransportProtocol;
-        public int Port;
-        public Connector()
-        {
-            this.Priority = 50;
-            this.Protocol = "";
-            this.AppProtocol = "";
-            this.Host = "";
-            this.Port = 17555;
-            this.HostType = "";
-            this.TransportProtocol = "IP";
-        }
-        public Connector(string connspec)
-        {
-            string[] chunks = connspec.Split('!');
-
-            try
-            {
-                this.Priority = Convert.ToInt32(chunks[0]);
-            }
-            catch
-            {
-                this.Priority = 50;
-            }
-            this.AppProtocol = chunks[1];
-            this.Protocol = chunks[2];
-            try
-            {
-                this.Port = Convert.ToInt32(chunks[3]);
-            }
-            catch
-            {
-                this.Port = 17555;
-            }
-            this.TransportProtocol = chunks[4];
-            this.HostType = chunks[5];
-            this.Host = chunks[6];
-        }
-        public override string ToString()
-        {
-            return this.ToString("1.0");
-        }
-        public string ToString(string version)
-        {
-            switch (version)
-            {
-                case "1.0":
-                default:
-                    return this.Priority + "!" + this.Key();
-            }
-        }
-        public string Key()
-        {
-            return this.AppProtocol + "!" + this.Protocol + "!" + this.Port + "!" + this.TransportProtocol + "!" + this.HostType + "!" + this.Host;
-        }
-
-    }
+    
 }

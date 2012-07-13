@@ -28,10 +28,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Sockets;
 
 namespace SimpleMesh.Service.Net
 {
-    class UDP
+    class UDP : IConnector
     {
+        private Socket _ListenSocket;
+        public Socket ListenSocket
+        {
+            get
+            {
+                return this._ListenSocket;
+            }
+            set
+            {
+                this._ListenSocket = value;
+            }
+        }
     }
 }
