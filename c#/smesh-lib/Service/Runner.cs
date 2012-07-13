@@ -172,6 +172,7 @@ namespace SimpleMesh.Service
                 Info.Addresses.Add(ip);
             }
             Info.Compile();
+            Info.Listen();
             SimpleMesh.Service.Runner.Write();            
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.StorePath);
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile);

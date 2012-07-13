@@ -108,6 +108,7 @@ namespace SimpleMesh.Service
         {
             AddressFamily af;
             IPAddress ip;
+            IPEndPoint ep;
             switch (this.TransportProtocol)
             {
                 case "IPV6":
@@ -122,12 +123,17 @@ namespace SimpleMesh.Service
             }
             switch (this.Protocol) {
                 case "udp":
-                            this.ListenSocket = new Socket(af, SocketType.Dgram, ProtocolType.Udp);
-                            IPAddress.TryParse(this.Host, out ip);
-                            IPEndPoint ep = new IPEndPoint(ip, this.Port);
-                            this.ListenSocket.Bind(ep);
+                    this.ListenSocket = new Socket(af, SocketType.Dgram, ProtocolType.Udp);
+                    IPAddress.TryParse(this.Host, out ip);
+                    ep = new IPEndPoint(ip, this.Port);
+                    this.ListenSocket.Bind(ep);
                     break;
-                case "":
+                case "tcp":
+                    this.ListenSocket = new Socket(af, SocketType.Stream, ProtocolType.Tcp);
+                    IPAddress.TryParse(this.Host, out ip);
+                    ep = new IPEndPoint(ip, this.Port);
+                    this.ListenSocket.Bind(ep);
+                    this.ListenSocket.Listen(20);
                     break;
             }
         }

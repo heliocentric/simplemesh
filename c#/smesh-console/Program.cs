@@ -65,6 +65,7 @@ namespace MeshBroker
             scratch.Ports.Add("17556");
             scratch.Ports.Add("17557");
             scratch.Protocols.Add("udp");
+            scratch.Protocols.Add("tcp");
             return scratch;
         }
         public static void ConsoleDebugMessage(string type, string message)

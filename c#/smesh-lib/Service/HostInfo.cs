@@ -56,6 +56,7 @@ namespace SimpleMesh.Service
         {
             foreach (KeyValuePair<string, Connector> conn in this.Connectors)
             {
+                conn.Value.Listen();
             }
         }
     }
