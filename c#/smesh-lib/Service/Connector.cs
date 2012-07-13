@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using System.Net;
 
 namespace SimpleMesh.Service
 {
@@ -48,7 +49,6 @@ namespace SimpleMesh.Service
         public string Host;
         public string TransportProtocol;
         public int Port;
-        public IConnector Listen;
         public Connector()
         {
             this.Priority = 50;
@@ -102,6 +102,36 @@ namespace SimpleMesh.Service
         {
             return this.AppProtocol + "!" + this.Protocol + "!" + this.Port + "!" + this.TransportProtocol + "!" + this.HostType + "!" + this.Host;
         }
+        public Socket ListenSocket;
+       
+        public void Listen()
+        {
+            AddressFamily af;
+            IPAddress ip;
+            switch (this.TransportProtocol)
+            {
+                case "IPV6":
+                    af = AddressFamily.InterNetworkV6;
+                    break;
+                case "IPV4":
+                    af = AddressFamily.InterNetwork;
+                    break;
+                default:
+                    af = AddressFamily.InterNetwork;
+                    break;
+            }
+            switch (this.Protocol) {
+                case "udp":
+                            this.ListenSocket = new Socket(af, SocketType.Dgram, ProtocolType.Udp);
+                            IPAddress.TryParse(this.Host, out ip);
+                            IPEndPoint ep = new IPEndPoint(ip, this.Port);
+                            this.ListenSocket.Bind(ep);
+                    break;
+                case "":
+                    break;
+            }
+        }
 
     }
+
 }
