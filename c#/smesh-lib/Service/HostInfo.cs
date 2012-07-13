@@ -18,11 +18,11 @@ namespace SimpleMesh.Service
         public List<string> Ports;
         public List<string> Protocols;
         public Dictionary<string, Connector>  Connectors;
-        public ObservableCollection<IPAddress> Addresses;
+        public List<IPAddress> Addresses;
         public HostInfo() {
             this.Ports = new List<string>();
             this.Protocols = new List<string>();
-            this.Addresses = new ObservableCollection<IPAddress>();
+            this.Addresses = new List<IPAddress>();
             this.Connectors = new Dictionary<string, Connector>();
         }
         public void Compile() {
