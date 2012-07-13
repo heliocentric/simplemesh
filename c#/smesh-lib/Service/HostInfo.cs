@@ -26,9 +26,9 @@ namespace SimpleMesh.Service
             this.Connectors = new Dictionary<string, Connector>();
         }
         public void Compile() {
-            foreach (string protocol in this.Protocols) {
-                foreach(string port in this.Ports) {
-                    foreach(IPAddress ip in this.Addresses) {
+            foreach (IPAddress ip in this.Addresses) {
+                foreach(string protocol in this.Protocols) {
+                    foreach(string port in this.Ports) {
                         Connector scratch = new Connector();
                         scratch.AppProtocol = "native1";
                         scratch.Port = Convert.ToInt32(port);
