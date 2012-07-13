@@ -47,5 +47,12 @@ namespace SimpleMesh
         {
             return ToNetworkOrder(source);
         }
+        public static string Version
+        {
+            get
+            {
+                return Properties.Resources.LibraryVersion;
+            }
+        }
     }
 }

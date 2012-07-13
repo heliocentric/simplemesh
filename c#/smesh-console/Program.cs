@@ -37,6 +37,8 @@ namespace MeshBroker
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Service Version: " + SimpleMesh.Service.Utility.Version);
+            Console.WriteLine("Library Version: " + SimpleMesh.Utility.Version);
             SimpleMesh.Service.Runner.DebugMessageCallback = Program.ConsoleDebugMessage;
             SimpleMesh.Service.Runner.HostInfoCallback = Program.HostInfoQuery;
             SimpleMesh.Service.Runner.Start();

@@ -52,12 +52,9 @@ namespace SimpleMesh.Service
 {
     public static class Runner
     {
-
         static string  _DatabasePath;
         static string _StorePath;
         static Trackfile Network;
-
-
         public delegate void DebugMessageType(string type, string value);
         public static DebugMessageType DebugMessageCallback;
         public static void DebugMessage(string type, string main) {

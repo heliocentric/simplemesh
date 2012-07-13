@@ -64,6 +64,13 @@ namespace SimpleMesh.Service
             DateTime unixRef = new DateTime(1970, 1, 1, 0, 0, 0);
             return unixRef.AddSeconds(timestamp);
         }
+        public static string Version
+        {
+            get
+            {
+                return Properties.Resources.ServiceVersion;
+            }
+        }
 
     }
 }
