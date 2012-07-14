@@ -178,6 +178,7 @@ namespace SimpleMesh.Service
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.StorePath);
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile);
             SimpleMesh.Service.Runner.Network = new Trackfile();
+            Network.Node = Info;
             string TrackfilePath = SimpleMesh.Service.Runner.StorePath + @"\default.tkf";
             if (System.IO.File.Exists(TrackfilePath) == true)
             {

@@ -212,22 +212,31 @@ namespace SimpleMesh.Service
                                     break;
                                 case "N":
                                     UUID = chunks[1];
-                                    scratch = this.NodeInit(UUID);
-                                    scratch.Name = chunks[2];
+                                    if (UUID != Node.UUID.ToString())
+                                    {
+                                        scratch = this.NodeInit(UUID);
+                                        scratch.Name = chunks[2];
+                                    }
                                     break;
                                 case "C":
                                     UUID = chunks[1];
-                                    scratch = this.NodeInit(UUID);
-                                    string connectorstring = line.Replace("C!" + chunks[1] + "!", "");
-                                    Connector scratchconnector = new Connector(connectorstring);
-                                    scratch.ConnectionList.Add(scratchconnector.Key(), scratchconnector);
+                                    if (UUID != Node.UUID.ToString())
+                                    {
+                                        scratch = this.NodeInit(UUID);
+                                        string connectorstring = line.Replace("C!" + chunks[1] + "!", "");
+                                        Connector scratchconnector = new Connector(connectorstring);
+                                        scratch.ConnectionList.Add(scratchconnector.Key(), scratchconnector);
+                                    }
                                     break;
                                 case "A":
                                     UUID = chunks[1];
-                                    scratch = this.NodeInit(UUID);
-                                    keystring = line.Replace("A!" + chunks[1] + "!" + chunks[2] + "!" + chunks[3] + "!", "");
-                                    MessageBox.Show(keystring);
-                                    scratch.AuthKeyList.Add(keystring, new Auth(keystring, BoolUnpack(chunks[3]), BoolUnpack(chunks[4])));
+                                    if (UUID != Node.UUID.ToString())
+                                    {
+                                        scratch = this.NodeInit(UUID);
+                                        keystring = line.Replace("A!" + chunks[1] + "!" + chunks[2] + "!" + chunks[3] + "!", "");
+                                        MessageBox.Show(keystring);
+                                        scratch.AuthKeyList.Add(keystring, new Auth(keystring, BoolUnpack(chunks[3]), BoolUnpack(chunks[4])));
+                                    }
                                     break;
                                 case "E":
                                     UUID = chunks[1];
