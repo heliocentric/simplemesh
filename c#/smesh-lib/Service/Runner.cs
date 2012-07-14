@@ -186,7 +186,17 @@ namespace SimpleMesh.Service
             else
             {
                 Dictionary<string,string> Hints = SimpleMesh.Service.Runner.NetworkSpecCallback();
-
+                string type;
+                if (Hints.TryGetValue("type", out type) == true)
+                {
+                    switch (type)
+                    {
+                        case "create":
+                            break;
+                        case "enroll":
+                            break;
+                    }
+                }
             }
            SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
 

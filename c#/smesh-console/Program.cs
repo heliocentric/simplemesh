@@ -49,6 +49,48 @@ namespace MeshBroker
         {
             Dictionary<string, string> Hints;
             Hints = new Dictionary<string, string>();
+            string answer;
+            while (1 != 2)
+            {
+                Console.WriteLine("No Trackfile found!");
+                Console.WriteLine("");
+                Console.WriteLine("1) Create new network");
+                Console.WriteLine("2) Enroll in existing network");
+                Console.WriteLine("");
+                Console.Write("> ");
+                answer = Console.ReadLine();
+                switch (answer)
+                {
+                    case "1":
+                        Hints.Add("type", "create");
+                        break;
+                    case "2":
+                        Hints.Add("type", "enroll");
+                        break;
+                }
+                string throwaway;
+                if (Hints.TryGetValue("type", out throwaway) == true)
+                {
+                    break;
+                }
+            }
+            switch (Hints["type"])
+            {
+                case "create":
+                    Console.WriteLine("");
+                    Console.Write("Network Name or Description: ");
+                    Hints.Add("name", Console.ReadLine());
+                    Console.Write("Enrollment Key Length: ");
+                    Hints.Add("enrollkeylength", Console.ReadLine());
+                    Console.Write("Trackfile Filename: ");
+                    Hints.Add("trackfilelocation", Console.ReadLine());
+                    break;
+                case "enroll":
+                    Console.WriteLine("");
+                    Console.Write("Trackfile Filename: ");
+                    Hints.Add("trackfilelocation", Console.ReadLine());
+                    break;
+            }
             return Hints;
         }
         public static HostInfo HostInfoQuery()
@@ -58,7 +100,7 @@ namespace MeshBroker
             scratch.UUID = new UUID();
 
             
-            Console.Write("\n\rHost Description: ");
+            Console.Write("Host Description: ");
             scratch.Description = Console.ReadLine();
             Console.Write("Key Length: ");
             string temp = Console.ReadLine();
@@ -79,7 +121,7 @@ namespace MeshBroker
         }
         public static void ConsoleDebugMessage(string type, string message)
         {
-            Console.Write(message + "\n\r");
+            Console.WriteLine(message + "");
         }
     }
 }
