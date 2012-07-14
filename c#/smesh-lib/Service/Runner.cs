@@ -54,7 +54,13 @@ namespace SimpleMesh.Service
     {
         static string  _DatabasePath;
         static string _StorePath;
-        static Trackfile Network;
+        private static Trackfile _Network;
+
+        public static Trackfile Network
+        {
+            get { return Runner._Network; }
+            set { Runner._Network = value; }
+        }
         public delegate void DebugMessageType(string type, string value);
         public static DebugMessageType DebugMessageCallback;
         public static void DebugMessage(string type, string main) {
@@ -77,7 +83,16 @@ namespace SimpleMesh.Service
             get { return _StorePath; }
             set { _StorePath = value; }
         }
-        public static HostInfo Info;
+        public static HostInfo Info {
+            get
+            {
+                return Network.Node;
+            }
+            set
+            {
+                Network.Node = value;
+            }
+        }
         public static int Read()
         {
             Info = new HostInfo();
@@ -98,6 +113,7 @@ namespace SimpleMesh.Service
                                 SimpleMesh.Service.Runner.Info.Description = chunks[2];
                             }
                             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", "\tUUID:\t\t" + SimpleMesh.Service.Runner.Info.UUID.ToString());
+                            SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", "\tDescription:\t\t" + SimpleMesh.Service.Runner.Info.Description);
                             break;
                         case "HOSTKEY":
                             SimpleMesh.Service.Runner.Info.Key = new Key();
@@ -163,6 +179,8 @@ namespace SimpleMesh.Service
         {
             SimpleMesh.Service.Runner.StorePath = path;
             SimpleMesh.Service.Runner.ConfigFile = configfile;
+
+            SimpleMesh.Service.Runner.Network = new Trackfile();
             SimpleMesh.Service.Runner.Read();
 
             IPHostEntry host;
@@ -177,8 +195,6 @@ namespace SimpleMesh.Service
             SimpleMesh.Service.Runner.Write();            
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.StorePath);
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile);
-            SimpleMesh.Service.Runner.Network = new Trackfile();
-            Network.Node = Info;
             string TrackfilePath = SimpleMesh.Service.Runner.StorePath + @"\default.tkf";
             if (System.IO.File.Exists(TrackfilePath) == true)
             {
@@ -186,29 +202,43 @@ namespace SimpleMesh.Service
             }
             else
             {
-                Dictionary<string,string> Hints = SimpleMesh.Service.Runner.NetworkSpecCallback();
+                Dictionary<string, string> Hints = SimpleMesh.Service.Runner.NetworkSpecCallback();
                 string type;
                 if (Hints.TryGetValue("type", out type) == true)
                 {
-
-                    Network = new Trackfile();
                     switch (type)
                     {
                         case "create":
                             string name;
                             if (Hints.TryGetValue("name", out name) == true)
                             {
-                                Network.Name = name;
+                                SimpleMesh.Service.Runner.Network.Name = name;
                             }
                             else
                             {
-                                Network.Name = "Undefined";
+                                SimpleMesh.Service.Runner.Network.Name = "Undefined";
                             }
+                            string keylength;
+                            Key scratch = new Key();
+                            if (Hints.TryGetValue("enrollkeylength", out keylength) == true)
+                            {
+                                scratch.Generate("RSA", keylength);
+                            }
+                            else
+                            {
+                                scratch.Generate("RSA");
+                            }
+                            Auth temp = new Auth();
+                            temp.UUID = new UUID();
+                            temp.Key = scratch;
+                            SimpleMesh.Service.Runner.Network.Enrollment.Add(temp.UUID.ToString(), temp);
                             break;
+
                         case "enroll":
                             break;
                     }
                 }
+
             }
            SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
 

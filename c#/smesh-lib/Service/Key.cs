@@ -31,14 +31,22 @@ namespace SimpleMesh.Service
         public AsymmetricKeyParameter PrivateKey;
         public string Salt;
         public string Hash;
+
         public Key() {
         }
         public Key(string key)
         {
             this.Decode(key);
         }
-
-        public string Encode() {
+        public string Encode()
+        {
+            return this.Encode(true, true);
+        }
+        public string Encode(bool Private)
+        {
+            return this.Encode(Private, true);
+        }
+        public string Encode(bool Private, bool Public) {
             string derPublicKey;
             string derPrivateKey;
             string retval;
@@ -48,12 +56,12 @@ namespace SimpleMesh.Service
             switch (this.Type)
             {
                 case "RSA":
-                    if (this.PrivateKey != null)
+                    if (this.PrivateKey != null && Private == true)
                     {
                         PrivateKeyInfo infoPrivate = PrivateKeyInfoFactory.CreatePrivateKeyInfo(this.PrivateKey);
                         derPrivateKey = Convert.ToBase64String(infoPrivate.GetEncoded());
                     }
-                    if (this.PublicKey != null)
+                    if (this.PublicKey != null && Public == true)
                     {
                         SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(this.PublicKey);
                         derPublicKey = Convert.ToBase64String(publicKeyInfo.GetEncoded());
@@ -91,6 +99,87 @@ namespace SimpleMesh.Service
         public override string ToString()
         {
             return this.Encode();
+        }
+        public int Generate()
+        {
+            return this.Generate("RSA", 4096);
+        }
+        public int Generate(string Type)
+        {
+            int retval;
+            retval = 2;
+            switch (Type)
+            {
+                case "RSA":
+                    retval = this.Generate(Type, 4096);
+                    break;
+                case "HASH":
+                    retval =  1;
+                    break;
+            }
+            return retval;
+        }
+        /* Option is the password string if it is a hash, and the key length if it is RSA */
+        public int Generate(string Type, string Option)
+        {
+            int retval;
+            retval = 2;
+            switch (Type)
+            {
+                case "RSA":
+                    try
+                    {
+                        int value = Convert.ToInt32(Option);
+                        retval = this.Generate(Type, value);
+                    }
+                    catch
+                    {
+                        retval = this.Generate(Type, 4096);
+                    }
+                    break;
+                case "HASH":
+                    retval = this.Generate(Type, "SHA256", Option);
+                    break;
+            }
+            return retval;
+        }
+        /* Only use for Asymmetric Keys */
+        public int Generate(string Type, int Keylength)
+        {
+            int retval;
+            retval = 2;
+            switch (Type)
+            {
+                case "RSA":
+                    this.Type = "RSA";
+                    this.Length = Keylength;
+                    SimpleMesh.Service.Runner.DebugMessage("Debug.Info.KeyGen", "Generating " + this.Length.ToString() + " bit RSA key pair starting on: " + DateTime.Now.ToString());
+                    RsaKeyPairGenerator r = new RsaKeyPairGenerator();
+                    r.Init(new KeyGenerationParameters(new SecureRandom(), this.Length));
+                    AsymmetricCipherKeyPair test = r.GenerateKeyPair();
+                    this.PrivateKey = test.Private;
+                    this.PublicKey = test.Public;
+                    break;
+                case "HASH":
+                    retval = 1;
+                    break;
+            }
+            return retval;
+        }
+        /* Only use for HASH */
+        public int Generate(string Type, string HashAlgorithm, string key)
+        
+        {
+            int retval = 2;
+            switch (Type)
+            {
+                case "RSA":
+                    retval = 1;
+                    break;
+                case "HASH":
+                    break;
+            }
+            return retval;
         }
     }
 }

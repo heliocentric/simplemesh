@@ -53,9 +53,27 @@ namespace SimpleMesh.Service
 {
     public class Trackfile
     {
-        public HostInfo Node;
-        Dictionary<string, Node> NodeList;
-        Dictionary<string, Auth> Enrollment;
+        private HostInfo _Node;
+
+        public HostInfo Node
+        {
+            get { return _Node; }
+            set { _Node = value; }
+        }
+        private Dictionary<string, Node> _NodeList;
+
+        public Dictionary<string, Node> NodeList
+        {
+            get { return _NodeList; }
+            set { _NodeList = value; }
+        }
+        private Dictionary<string, Auth> _Enrollment;
+
+        public Dictionary<string, Auth> Enrollment
+        {
+            get { return _Enrollment; }
+            set { _Enrollment = value; }
+        }
         private string filename;
         private string _versiontype;
         private string _createddate;
@@ -286,9 +304,13 @@ namespace SimpleMesh.Service
         }
         public int WriteOnce(string filename)
         {
-            return this.WriteFile(filename);
+            return this.WriteFile(filename, true);
         }
         private int WriteFile(string filename)
+        {
+            return this.WriteFile(filename, false);
+        }
+        private int WriteFile(string filename, bool EnrollmentKey)
         {
             switch (this._versiontype)
             {
@@ -299,12 +321,15 @@ namespace SimpleMesh.Service
                     FileContents.Add("# SimpleMesh Trackfile version 1.0");
                     foreach (KeyValuePair<string, Auth> item in this.Enrollment)
                     {
-                        FileContents.Add("E!" + item.Key + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary) + "!" + item.Value.Key.Encode());
+                        FileContents.Add("E!" + item.Key + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary) + "!" + item.Value.Key.Encode(false));
                     }
                     foreach (KeyValuePair<string, Node> item in this.NodeList)
                     {
                         FileContents.Add("N!" + item.Key + "!" + item.Value.Name);
                     }
+                    HostInfo test = this.Node;
+                    string value = "N!" + test.UUID.ToString() + "!" + test.Description;
+                    FileContents.Add(value);
                     foreach (KeyValuePair<string, Node> item in this.NodeList)
                     {
                         foreach (KeyValuePair<string, Auth> auth in item.Value.AuthKeyList)
@@ -312,12 +337,17 @@ namespace SimpleMesh.Service
                             FileContents.Add("A!" + item.Key + "!" + this.BoolPack(auth.Value.Active) + "!" + this.BoolPack(auth.Value.Primary) + "!" + auth.Value.Key.Encode());
                         }
                     }
+                    FileContents.Add("A!" + Node.UUID.ToString() + "!" + "1" + "!" + "1" + "!" + Node.Key.Encode(false));
                     foreach (KeyValuePair<string, Node> item in this.NodeList)
                     {
                         foreach (KeyValuePair<string, Connector> connector in item.Value.ConnectionList)
                         {
                             FileContents.Add("C!" + item.Key + "!" + connector.Value.ToString(this._versiontype));
                         }
+                    }
+                    foreach (KeyValuePair<string, Connector> connector in Node.Connectors)
+                    {
+                        FileContents.Add("C!" + this.Node.UUID.ToString() + "!" + connector.Value.ToString(this._versiontype));
                     }
                     FileContents.Add("SIG!None!");
                     System.IO.File.WriteAllLines(filename, FileContents.ToArray());
@@ -345,6 +375,7 @@ namespace SimpleMesh.Service
     public class Auth
     {
         public Key Key;
+        public UUID UUID;
         public Boolean Active;
         public Boolean Primary;
         public Auth()
