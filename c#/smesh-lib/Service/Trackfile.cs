@@ -62,6 +62,7 @@ namespace SimpleMesh.Service
         private string _lastmodifieddate;
         private string _name;
         private string _nethash;
+        private bool _new;
         public string Name
         {
             get
@@ -71,16 +72,19 @@ namespace SimpleMesh.Service
             set
             {
                 this._name = value;
-                SecureRandom test = new SecureRandom();
-                test.GenerateSeed(29);
-                bool end = false;
-                int maxrounds = test.Next(2,8);
-                string seed = "";
-                for (int rounds = 1; rounds <= maxrounds; rounds++)
+                if (this._new == true)
                 {
-                    seed += test.Next().ToString();
+                    SecureRandom test = new SecureRandom();
+                    test.GenerateSeed(29);
+                    bool end = false;
+                    int maxrounds = test.Next(2, 8);
+                    string seed = "";
+                    for (int rounds = 1; rounds <= maxrounds; rounds++)
+                    {
+                        seed += test.Next().ToString();
+                    }
+                    this._nethash = Utility.MD5(seed + value);
                 }
-                this._nethash = Utility.MD5(seed + value);
             }
         }
         public string Hash
@@ -108,6 +112,7 @@ namespace SimpleMesh.Service
             this._createddate = Utility.ToUnixTimestamp(System.DateTime.Now).ToString();
             this._lastmodifieddate = Utility.ToUnixTimestamp(System.DateTime.Now).ToString();
             this._versiontype = "1.0";
+            this._new = true;
         }
         private Node NodeInit(string UUID)
         {
@@ -258,6 +263,7 @@ namespace SimpleMesh.Service
                 }
                 SimpleMesh.Service.Runner.DebugMessage("Debug.Info.Trackfile", message);
             }
+            this._new = false;
             return 0;
         }
         public int Write()
