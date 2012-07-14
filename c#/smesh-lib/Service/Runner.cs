@@ -192,6 +192,7 @@ namespace SimpleMesh.Service
                     switch (type)
                     {
                         case "create":
+                            DebugMessage("Debug.Service.Create", "Creating new trackfile");
                             break;
                         case "enroll":
                             break;
