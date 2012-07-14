@@ -37,12 +37,22 @@ namespace SimpleMesh.Service
     {
         public static String MD5(String toHashMD5)
         {
-            byte[] keyArray;
+            MD5Digest digest = new MD5Digest();
+            byte[] scratch = new byte[digest.GetDigestSize()];
+            digest.BlockUpdate(UTF8Encoding.UTF8.GetBytes(toHashMD5), 0, UTF8Encoding.UTF8.GetByteCount(toHashMD5));
+            digest.DoFinal(scratch, 0);
 
-            MD5CryptoServiceProvider hashmd5 = new MD5CryptoServiceProvider();
-            keyArray = hashmd5.ComputeHash(UTF8Encoding.UTF8.GetBytes(toHashMD5));
-            hashmd5.Clear();
-            string hex = BitConverter.ToString(keyArray).ToLower();
+            string hex = BitConverter.ToString(scratch).ToLower();
+            return hex.Replace("-", "");
+        }
+        public static String SHA256(string tosha256)
+        {
+            Sha256Digest digest = new Sha256Digest();
+            byte[] scratch = new byte[digest.GetDigestSize()];
+            digest.BlockUpdate(UTF8Encoding.UTF8.GetBytes(tosha256), 0, UTF8Encoding.UTF8.GetByteCount(tosha256));
+            digest.DoFinal(scratch, 0);
+
+            string hex = BitConverter.ToString(scratch).ToLower();
             return hex.Replace("-", "");
         }
         public static byte[] MessagePack(Message message, TypeList lookuptable)

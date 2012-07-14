@@ -83,7 +83,7 @@ namespace SimpleMesh.Service
                     {
                         seed += test.Next().ToString();
                     }
-                    this._nethash = Utility.MD5(seed + value);
+                    this._nethash = Utility.SHA256(seed + value);
                 }
             }
         }
