@@ -42,10 +42,23 @@ namespace SimpleMesh.Service
         private string _versiontype;
         private string _createddate;
         private string _lastmodifieddate;
+        public string Filename
+        {
+            get
+            {
+                return this.filename;
+            }
+            set
+            {
+                this.filename = value;
+            }
+        }
         public Trackfile()
         {
             this.NodeList = new Dictionary<string, Node>();
             this.Enrollment = new Dictionary<string, Auth>();
+            this._createddate = Utility.ToUnixTimestamp(System.DateTime.Now).ToString();
+            this._lastmodifieddate = Utility.ToUnixTimestamp(System.DateTime.Now).ToString();
         }
         private Node NodeInit(string UUID)
         {

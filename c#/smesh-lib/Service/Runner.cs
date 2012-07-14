@@ -189,10 +189,13 @@ namespace SimpleMesh.Service
                 string type;
                 if (Hints.TryGetValue("type", out type) == true)
                 {
+
+                    Network = new Trackfile();
+                    Network.Filename = TrackfilePath;
                     switch (type)
                     {
                         case "create":
-                            DebugMessage("Debug.Service.Create", "Creating new trackfile");
+                            
                             break;
                         case "enroll":
                             break;
