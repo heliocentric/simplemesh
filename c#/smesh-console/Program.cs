@@ -41,8 +41,15 @@ namespace MeshBroker
             Console.WriteLine("Library Version: " + SimpleMesh.Utility.Version);
             SimpleMesh.Service.Runner.DebugMessageCallback = Program.ConsoleDebugMessage;
             SimpleMesh.Service.Runner.HostInfoCallback = Program.HostInfoQuery;
+            SimpleMesh.Service.Runner.NetworkSpecCallback = Program.NetworkSpecification;
             SimpleMesh.Service.Runner.Start();
             Console.ReadLine();
+        }
+        public static Dictionary<string, string> NetworkSpecification()
+        {
+            Dictionary<string, string> Hints;
+            Hints = new Dictionary<string, string>();
+            return Hints;
         }
         public static HostInfo HostInfoQuery()
         {

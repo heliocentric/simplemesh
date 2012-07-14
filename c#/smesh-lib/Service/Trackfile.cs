@@ -35,6 +35,7 @@ namespace SimpleMesh.Service
 {
     public class Trackfile
     {
+        public HostInfo Node;
         Dictionary<string, Node> NodeList;
         Dictionary<string, Auth> Enrollment;
         private string filename;

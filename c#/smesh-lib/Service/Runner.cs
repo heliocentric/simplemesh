@@ -64,6 +64,9 @@ namespace SimpleMesh.Service
         public delegate HostInfo HostInfoType();
         public static HostInfoType HostInfoCallback;
 
+        public delegate Dictionary<string, string> NetworkSpec();
+        public static NetworkSpec NetworkSpecCallback;
+
         public static string DatabasePath
         {
             get { return _DatabasePath; }
@@ -168,6 +171,7 @@ namespace SimpleMesh.Service
             {
                 Info.Addresses.Add(ip);
             }
+            
             Info.Compile();
             Info.Listen();
             SimpleMesh.Service.Runner.Write();            
@@ -181,6 +185,8 @@ namespace SimpleMesh.Service
             }
             else
             {
+                Dictionary<string,string> Hints = SimpleMesh.Service.Runner.NetworkSpecCallback();
+
             }
            SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
 
