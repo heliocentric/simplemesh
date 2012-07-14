@@ -191,11 +191,18 @@ namespace SimpleMesh.Service
                 {
 
                     Network = new Trackfile();
-                    Network.Filename = TrackfilePath;
                     switch (type)
                     {
                         case "create":
-                            
+                            string name;
+                            if (Hints.TryGetValue("name", out name) == true)
+                            {
+                                Network.Name = name;
+                            }
+                            else
+                            {
+                                Network.Name = "Undefined";
+                            }
                             break;
                         case "enroll":
                             break;

@@ -30,6 +30,24 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SimpleMesh.Service;
+using System.Security.Cryptography;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities.IO.Pem;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.CryptoPro;
+using Org.BouncyCastle.Asn1.Oiw;
+using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.Sec;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Asn1.X9;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.X509;
 
 namespace SimpleMesh.Service
 {
@@ -42,6 +60,36 @@ namespace SimpleMesh.Service
         private string _versiontype;
         private string _createddate;
         private string _lastmodifieddate;
+        private string _name;
+        private string _nethash;
+        public string Name
+        {
+            get
+            {
+                return this._name;
+            }
+            set
+            {
+                this._name = value;
+                SecureRandom test = new SecureRandom();
+                test.GenerateSeed(29);
+                bool end = false;
+                int maxrounds = test.Next(2,8);
+                string seed = "";
+                for (int rounds = 1; rounds <= maxrounds; rounds++)
+                {
+                    seed += test.Next().ToString();
+                }
+                this._nethash = Utility.MD5(seed + value);
+            }
+        }
+        public string Hash
+        {
+            get
+            {
+                return this._nethash;
+            }
+        }
         public string Filename
         {
             get
@@ -59,6 +107,7 @@ namespace SimpleMesh.Service
             this.Enrollment = new Dictionary<string, Auth>();
             this._createddate = Utility.ToUnixTimestamp(System.DateTime.Now).ToString();
             this._lastmodifieddate = Utility.ToUnixTimestamp(System.DateTime.Now).ToString();
+            this._versiontype = "1.0";
         }
         private Node NodeInit(string UUID)
         {
@@ -137,6 +186,8 @@ namespace SimpleMesh.Service
                         this._versiontype = chunks[1];
                         this._createddate = chunks[2];
                         this._lastmodifieddate = chunks[3];
+                        this._name = chunks[4];
+                        this._nethash = chunks[5];
                     }
                 }
                 else
@@ -229,7 +280,7 @@ namespace SimpleMesh.Service
                 case "1.0":
                     List<String> FileContents;
                     FileContents = new List<string>();
-                    FileContents.Add("I!1.0!" + this._createddate + "!" + Utility.ToUnixTimestamp(System.DateTime.Now));
+                    FileContents.Add("I!1.0!" + this._createddate + "!" + Utility.ToUnixTimestamp(System.DateTime.Now) + "!" + this.Name + "!" + this.Hash);
                     FileContents.Add("# SimpleMesh Trackfile version 1.0");
                     foreach (KeyValuePair<string, Auth> item in this.Enrollment)
                     {

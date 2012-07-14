@@ -28,11 +28,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Org.BouncyCastle.Crypto.Digests;
+using System.Security.Cryptography;
 
 namespace SimpleMesh.Service
 {
     static public class Utility
     {
+        public static String MD5(String toHashMD5)
+        {
+            byte[] keyArray;
+
+            MD5CryptoServiceProvider hashmd5 = new MD5CryptoServiceProvider();
+            keyArray = hashmd5.ComputeHash(UTF8Encoding.UTF8.GetBytes(toHashMD5));
+            hashmd5.Clear();
+            string hex = BitConverter.ToString(keyArray).ToLower();
+            return hex.Replace("-", "");
+        }
         public static byte[] MessagePack(Message message, TypeList lookuptable)
         {
             byte[] header = new byte[8];
