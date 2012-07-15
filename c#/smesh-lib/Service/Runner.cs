@@ -265,8 +265,12 @@ namespace SimpleMesh.Service
 
             }
            SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
-
+           Network.Start();
            
+        }
+        public static void Stop()
+        {
+            Network.Stop();
         }
     }
 }

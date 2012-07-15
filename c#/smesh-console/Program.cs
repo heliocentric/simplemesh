@@ -44,6 +44,7 @@ namespace MeshBroker
             SimpleMesh.Service.Runner.NetworkSpecCallback = Program.NetworkSpecification;
             SimpleMesh.Service.Runner.Start();
             Console.ReadLine();
+            SimpleMesh.Service.Runner.Stop();
         }
         public static Dictionary<string, string> NetworkSpecification()
         {

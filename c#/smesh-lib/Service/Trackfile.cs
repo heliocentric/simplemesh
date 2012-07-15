@@ -373,6 +373,7 @@ namespace SimpleMesh.Service
         public void Listen()
         {
             this.ListenThread = new Thread(new ThreadStart(this.Listener));
+            this.ListenThread.Start();
         }
         private void Listener()
         {
@@ -392,12 +393,22 @@ namespace SimpleMesh.Service
                 {
                     
                     scratch = sock.Accept();
+                    ThreadPool.QueueUserWorkItem(this.AcceptSocket, scratch);
                 }
             }
         }
-        private void AcceptSocket(Socket sock)
+        private void AcceptSocket(Object socket)
         {
-
+            Socket container = (Socket) socket;
+            Runner.DebugMessage("Debug.Net.Listener", "Connection recieved");
+        }
+        public void Start()
+        {
+            this.Listen();
+        }
+        public void Stop()
+        {
+            this.ListenThread.Abort();
         }
     }
     public class Node
