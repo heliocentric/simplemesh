@@ -195,7 +195,6 @@ namespace SimpleMesh.Service
             }
             
             Info.Compile();
-            Info.Listen();
             SimpleMesh.Service.Runner.Write();            
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.StorePath);
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile);
@@ -267,10 +266,6 @@ namespace SimpleMesh.Service
             }
            SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
 
-            /*
-            SimpleMesh.Service.Net.TCP scratch = new SimpleMesh.Service.Net.TCP();
-            scratch.Listen();
-             */
            
         }
     }

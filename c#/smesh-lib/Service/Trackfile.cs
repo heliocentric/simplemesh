@@ -29,7 +29,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Net.Sockets;
 using SimpleMesh.Service;
+using System.Threading;
 using System.Security.Cryptography;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle;
@@ -256,7 +258,6 @@ namespace SimpleMesh.Service
                                     {
                                         scratch = this.NodeInit(UUID);
                                         keystring = line.Replace("A!" + chunks[1] + "!" + chunks[2] + "!" + chunks[3] + "!", "");
-                                        MessageBox.Show(keystring);
                                         scratch.AuthKeyList.Add(keystring, new Auth(keystring, BoolUnpack(chunks[3]), BoolUnpack(chunks[4])));
                                     }
                                     break;
@@ -356,6 +357,47 @@ namespace SimpleMesh.Service
                     break;
             }
             return 0;
+        }
+        private Thread _ListenThread;
+        public Thread ListenThread
+        {
+            get
+            {
+                return this._ListenThread;
+            }
+            set
+            {
+                this._ListenThread = value;
+            }
+        }
+        public void Listen()
+        {
+            this.ListenThread = new Thread(new ThreadStart(this.Listener));
+        }
+        private void Listener()
+        {
+            this.Node.Listen();
+            List<Socket> listenlist;
+            bool end = false;
+            while (end != true)
+            {
+                listenlist = new List<Socket>();
+                foreach (KeyValuePair<string, Connector> keypair in this.Node.Connectors)
+                {
+                    listenlist.Add(keypair.Value.ListenSocket);
+                }
+                Socket.Select(listenlist, null, null, 1000);
+                Socket scratch;
+                foreach (Socket sock in listenlist)
+                {
+                    
+                    scratch = sock.Accept();
+                }
+            }
+        }
+        private void AcceptSocket(Socket sock)
+        {
+
         }
     }
     public class Node
