@@ -29,11 +29,16 @@ namespace SimpleMesh.Service
         public string Type;
         public AsymmetricKeyParameter PublicKey;
         public AsymmetricKeyParameter PrivateKey;
+        private bool _containsprivatekey;
+        private bool _containspublickey;
         public string Salt;
         public string Hash;
 
         public Key() {
+            this._containsprivatekey = false;
+            this._containspublickey = false;
         }
+        
         public Key(string key)
         {
             this.Decode(key);
@@ -56,12 +61,12 @@ namespace SimpleMesh.Service
             switch (this.Type)
             {
                 case "RSA":
-                    if (this.PrivateKey != null && Private == true)
+                    if (this._containsprivatekey == true && Private == true)
                     {
                         PrivateKeyInfo infoPrivate = PrivateKeyInfoFactory.CreatePrivateKeyInfo(this.PrivateKey);
                         derPrivateKey = Convert.ToBase64String(infoPrivate.GetEncoded());
                     }
-                    if (this.PublicKey != null && Public == true)
+                    if (this._containspublickey = true && Public == true)
                     {
                         SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(this.PublicKey);
                         derPublicKey = Convert.ToBase64String(publicKeyInfo.GetEncoded());
@@ -88,11 +93,33 @@ namespace SimpleMesh.Service
                     string derPublicKey = chunks[2];
                     string derPrivateKey = chunks[3];
 
-                    byte[] publicKeyBytes = Convert.FromBase64String(derPublicKey);
-                    byte[] privateKeyBytes = Convert.FromBase64String(derPrivateKey);
 
-                    this.PublicKey = PublicKeyFactory.CreateKey(publicKeyBytes);
-                    this.PrivateKey = PrivateKeyFactory.CreateKey(privateKeyBytes);
+                    if (derPublicKey != "")
+                    {
+                        try
+                        {
+                            byte[] publicKeyBytes = Convert.FromBase64String(derPublicKey);
+                            this.PublicKey = PublicKeyFactory.CreateKey(publicKeyBytes);
+                            this._containspublickey = true;
+                        }
+                        catch
+                        {
+                            this._containspublickey = false;
+                        }
+                    }
+                    if (derPrivateKey != "")
+                    {
+                        try
+                        {
+                            byte[] privateKeyBytes = Convert.FromBase64String(derPrivateKey);
+                            this.PrivateKey = PrivateKeyFactory.CreateKey(privateKeyBytes);
+                            this._containsprivatekey = true;
+                        }
+                        catch
+                        {
+                            this._containsprivatekey = false;
+                        }
+                    }
                     break;
             }
         }
@@ -159,6 +186,8 @@ namespace SimpleMesh.Service
                     AsymmetricCipherKeyPair test = r.GenerateKeyPair();
                     this.PrivateKey = test.Private;
                     this.PublicKey = test.Public;
+                    this._containsprivatekey = true;
+                    this._containspublickey = true;
                     break;
                 case "HASH":
                     retval = 1;

@@ -204,6 +204,11 @@ namespace SimpleMesh.Service
             {
                 Dictionary<string, string> Hints = SimpleMesh.Service.Runner.NetworkSpecCallback();
                 string type;
+                string trackfilelocation;
+                if (Hints.TryGetValue("trackfilelocation", out trackfilelocation) == false)
+                {
+                    return;
+                }
                 if (Hints.TryGetValue("type", out type) == true)
                 {
                     switch (type)
@@ -235,7 +240,23 @@ namespace SimpleMesh.Service
                             break;
 
                         case "enroll":
+                            Network.ReadOnce(trackfilelocation);
                             break;
+                    }
+                    if (System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(trackfilelocation)) == true)
+                    {
+                        try
+                        {
+                            Network.WriteOnce(trackfilelocation);
+                        }
+                        catch
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        return;
                     }
                 }
 

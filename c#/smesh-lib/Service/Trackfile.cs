@@ -185,6 +185,10 @@ namespace SimpleMesh.Service
         {
             return this.ReadFile(this.filename);
         }
+        public int ReadOnce(string filename)
+        {
+            return this.ReadFile(filename);
+        }
         private int ReadFile(string filename)
         {
             string[] configfile = System.IO.File.ReadAllLines(filename);
@@ -269,8 +273,7 @@ namespace SimpleMesh.Service
             string message = "Enrollment Keys";
             foreach(KeyValuePair<string, Auth> enrolled in this.Enrollment)
             {
-                message += "\n\t" + enrolled.Value.Key.Type;
-                message += "\n\t\t" + enrolled.Value.Key.PublicKey;
+                message += "\n\t" + enrolled.Value.Key.ToString();
             }
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.Trackfile", message);
             foreach(KeyValuePair<string, Node> line in this.NodeList) {
@@ -280,8 +283,7 @@ namespace SimpleMesh.Service
                 message += "\nAuthentication:";
                 foreach (KeyValuePair<string, Auth> auth in scratch.AuthKeyList)
                 {
-                    message += "\n\t" + auth.Value.Key.Type.ToString() + "=";
-                    message += "\n\t\t" + auth.Value.Key.PublicKey.ToString();
+                    message += "\n\t" + auth.Value.Key.ToString();
                 }
                 message += "\nConnectors:";
                 foreach (KeyValuePair<string, Connector> connector in scratch.ConnectionList)
@@ -321,7 +323,7 @@ namespace SimpleMesh.Service
                     FileContents.Add("# SimpleMesh Trackfile version 1.0");
                     foreach (KeyValuePair<string, Auth> item in this.Enrollment)
                     {
-                        FileContents.Add("E!" + item.Key + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary) + "!" + item.Value.Key.Encode(false));
+                        FileContents.Add("E!" + item.Key + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary) + "!" + item.Value.Key.Encode(EnrollmentKey));
                     }
                     foreach (KeyValuePair<string, Node> item in this.NodeList)
                     {
