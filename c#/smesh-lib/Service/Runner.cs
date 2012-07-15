@@ -160,6 +160,10 @@ namespace SimpleMesh.Service
                 {
                     SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", "\t" + line);
                 }
+                if (System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(SimpleMesh.Service.Runner.ConfigFile)) == false)
+                {
+                    System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(SimpleMesh.Service.Runner.ConfigFile));
+                }
                 System.IO.File.WriteAllLines(SimpleMesh.Service.Runner.ConfigFile, file.ToArray());
             }
             return 0;
