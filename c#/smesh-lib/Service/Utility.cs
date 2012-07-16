@@ -122,12 +122,13 @@ namespace SimpleMesh.Service
             count = args.Socket.Receive(header);
             if (count == 8)
             {
-
+                retval.Type = "Debug.Info.Unknown";
             }
             else
             {
                 retval.Type = "Error.Message.Corrupted";
             }
+            return retval;
 
         }
     }

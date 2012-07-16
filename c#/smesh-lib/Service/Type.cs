@@ -35,6 +35,11 @@ namespace SimpleMesh.Service
     {
         public UInt16 TypeID;
         public string Name;
+        public bool Static;
+        public Type()
+        {
+            this.Static = false;
+        }
     }
     public class TypeList
     {
