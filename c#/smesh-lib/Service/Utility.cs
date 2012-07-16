@@ -93,6 +93,10 @@ namespace SimpleMesh.Service
                 return Properties.Resources.ServiceVersion;
             }
         }
-
+        public static int SendMessage(MessageBrokerArgs args, Message msg)
+        {
+            int retval = 1;
+            return retval;
+        }
     }
 }

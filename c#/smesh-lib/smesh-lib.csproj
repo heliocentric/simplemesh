@@ -76,6 +76,7 @@
     <Compile Include="Service\Connector.cs" />
     <Compile Include="Service\HostInfo.cs" />
     <Compile Include="Service\Key.cs" />
+    <Compile Include="Service\MessageBrokerArgs.cs" />
     <Compile Include="Service\Type.cs" />
     <Compile Include="Service\Utility.cs" />
     <Compile Include="Service\Net\UDP.cs" />

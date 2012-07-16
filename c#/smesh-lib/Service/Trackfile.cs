@@ -392,31 +392,42 @@ namespace SimpleMesh.Service
             bool end = false;
             while (end != true)
             {
+                listenlist = new List<Socket>();
+
                 lock (this.Node.Connectors)
                 {
-                    listenlist = new List<Socket>();
                     foreach (KeyValuePair<string, Connector> keypair in this.Node.Connectors)
                     {
                         listenlist.Add(keypair.Value.ListenSocket);
                     }
                 }
                 Socket.Select(listenlist, null, null, 1000);
-                Socket scratch;
                 foreach (Socket sock in listenlist)
                 {
-
-                    scratch = sock.Accept();
-                    ThreadPool.QueueUserWorkItem(this.AcceptSocket, scratch);
+                    MessageBrokerArgs acceptargs = new MessageBrokerArgs();
+                    lock (this.Node.Connectors)
+                    {
+                        foreach (KeyValuePair<string, Connector> keypair in this.Node.Connectors)
+                        {
+                            if (sock == keypair.Value.ListenSocket)
+                            {
+                                acceptargs.Connector = keypair.Value;
+                            }
+                        }
+                    }
+                    
+                    acceptargs.Socket = sock.Accept();
+                    ThreadPool.QueueUserWorkItem(this.AcceptSocket, acceptargs);
                 }
-
             }
         }
-        private void AcceptSocket(Object socket)
+        private void AcceptSocket(Object acceptargs)
         {
-            Socket container = (Socket) socket;
-            string host = container.RemoteEndPoint.ToString();
+            MessageBrokerArgs container = (MessageBrokerArgs) acceptargs;
+            string host = container.Socket.RemoteEndPoint.ToString();
             Runner.DebugMessage("Debug.Net.Listener", "Connection recieved from " + host);
-            
+            TextMessage scratch = new TextMessage("Control.Auth.UUID");
+            scratch.Data = this.Node.UUID.ToString();
         }
         public void Start()
         {
