@@ -392,19 +392,23 @@ namespace SimpleMesh.Service
             bool end = false;
             while (end != true)
             {
-                listenlist = new List<Socket>();
-                foreach (KeyValuePair<string, Connector> keypair in this.Node.Connectors)
+                lock (this.Node.Connectors)
                 {
-                    listenlist.Add(keypair.Value.ListenSocket);
+                    listenlist = new List<Socket>();
+                    foreach (KeyValuePair<string, Connector> keypair in this.Node.Connectors)
+                    {
+                        listenlist.Add(keypair.Value.ListenSocket);
+                    }
                 }
                 Socket.Select(listenlist, null, null, 1000);
                 Socket scratch;
                 foreach (Socket sock in listenlist)
                 {
-                    
+
                     scratch = sock.Accept();
                     ThreadPool.QueueUserWorkItem(this.AcceptSocket, scratch);
                 }
+
             }
         }
         private void AcceptSocket(Object socket)
@@ -412,6 +416,7 @@ namespace SimpleMesh.Service
             Socket container = (Socket) socket;
             string host = container.RemoteEndPoint.ToString();
             Runner.DebugMessage("Debug.Net.Listener", "Connection recieved from " + host);
+            
         }
         public void Start()
         {
