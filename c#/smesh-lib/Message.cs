@@ -71,6 +71,10 @@ namespace SimpleMesh
         public virtual void Unpack()
         {
         }
+        public override string ToString()
+        {
+            return "Length=" + this.Payload.Length + " Type=" + this.Type + " Payload=" + Encoding.UTF8.GetString(this.Payload);
+        }
     }
     public class BinaryMessage : Message
     {

@@ -71,6 +71,16 @@ namespace SimpleMesh.Service
             scratch.Name = "Control.Auth.Failed";
             scratch.TypeID = 6504;
             this.Add(scratch);
+            scratch = new Type();
+            scratch.Name = "Control.Auth.Types";
+            scratch.TypeID = 6505;
+            this.Add(scratch);
+            /*
+            scratch = new Type();
+            scratch.Name = "Control.Auth.Types";
+            scratch.TypeID = 6505;
+            this.Add(scratch);
+            */
         }
         private Dictionary<UInt16, Type> _ByID;
         private Dictionary<String, Type> _ByName;

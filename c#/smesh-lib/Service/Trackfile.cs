@@ -96,7 +96,6 @@ namespace SimpleMesh.Service
                 {
                     SecureRandom test = new SecureRandom();
                     test.GenerateSeed(29);
-                    bool end = false;
                     int maxrounds = test.Next(2, 8);
                     string seed = "";
                     for (int rounds = 1; rounds <= maxrounds; rounds++)
@@ -426,8 +425,20 @@ namespace SimpleMesh.Service
             MessageBrokerArgs container = (MessageBrokerArgs) acceptargs;
             string host = container.Socket.RemoteEndPoint.ToString();
             Runner.DebugMessage("Debug.Net.Listener", "Connection recieved from " + host);
-            TextMessage scratch = new TextMessage("Control.Auth.UUID");
+            TextMessage scratch;
+            scratch = new TextMessage("Control.Auth.UUID");
             scratch.Data = this.Node.UUID.ToString();
+            Utility.SendMessage(container, scratch);
+            scratch = new TextMessage("Control.Auth.Types");
+            scratch.Data = "RSA HASH-SHA256 HASH-MD5";
+            Utility.SendMessage(container, scratch);
+            bool end;
+            end = false;
+            Message Recieved;
+            while (end == false)
+            {
+                Recieved = Utility.RecieveMessage(container);
+            }
         }
         public void Start()
         {

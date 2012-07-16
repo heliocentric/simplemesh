@@ -55,27 +55,7 @@ namespace SimpleMesh.Service
             string hex = BitConverter.ToString(scratch).ToLower();
             return hex.Replace("-", "");
         }
-        public static byte[] MessagePack(Message message, TypeList lookuptable)
-        {
-            byte[] header = new byte[8];
-            byte[] bytescratch;
-            bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.DataLength);
-            header[0] = bytescratch[0];
-            header[1] = bytescratch[1];
-            bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.Conversation);
-            header[2] = bytescratch[0];
-            header[3] = bytescratch[1];
-            bytescratch = SimpleMesh.Utility.ToNetworkOrder(lookuptable.ByName(message.Type).TypeID);
-            header[4] = bytescratch[0];
-            header[5] = bytescratch[1];
-            bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.Sequence);
-            header[6] = bytescratch[0];
-            header[7] = bytescratch[1];
-            byte[] rv = new byte[header.Length + message.Payload.Length];
-            System.Buffer.BlockCopy(header, 0, rv, 0, header.Length);
-            System.Buffer.BlockCopy(message.Payload, 0, rv, header.Length, message.Payload.Length);
-            return rv;
-        }
+
         public static long ToUnixTimestamp(System.DateTime dt)
         {
             DateTime unixRef = new DateTime(1970, 1, 1, 0, 0, 0);
@@ -93,10 +73,62 @@ namespace SimpleMesh.Service
                 return Properties.Resources.ServiceVersion;
             }
         }
+        public static byte[] MessagePack(Message message, MessageBrokerArgs args)
+        {
+            byte[] rv = new byte[1];
+            rv[0] = 0xFF;
+            switch (args.Connector.AppProtocol)
+            {
+                case "native1":
+                    byte[] header = new byte[8];
+                    byte[] bytescratch;
+                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.DataLength);
+                    header[0] = bytescratch[0];
+                    header[1] = bytescratch[1];
+                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.Conversation);
+                    header[2] = bytescratch[0];
+                    header[3] = bytescratch[1];
+                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(args.Types.ByName(message.Type).TypeID);
+                    header[4] = bytescratch[0];
+                    header[5] = bytescratch[1];
+                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.Sequence);
+                    header[6] = bytescratch[0];
+                    header[7] = bytescratch[1];
+                    rv = new byte[header.Length + message.Payload.Length];
+                    System.Buffer.BlockCopy(header, 0, rv, 0, header.Length);
+                    System.Buffer.BlockCopy(message.Payload, 0, rv, header.Length, message.Payload.Length);
+                    break;
+            }
+            return rv;
+        }
         public static int SendMessage(MessageBrokerArgs args, Message msg)
         {
             int retval = 1;
+            byte[] packed;
+            packed = Utility.MessagePack(msg, args);
+            switch(args.Connector.Protocol) {
+                case "tcp":
+                    Runner.DebugMessage("Debug.Info.Message", "T: " + msg.ToString());
+                    args.Socket.Send(packed);
+                    break;
+            }
             return retval;
+        }
+        public static Message RecieveMessage(MessageBrokerArgs args)
+        {
+            Message retval = new Message();
+            byte [] header = new byte[8];
+            int count;
+            count = args.Socket.Receive(header);
+            if (count == 8)
+            {
+
+            }
+            else
+            {
+                retval.Type = "Error.Message.Corrupted";
+            }
+
         }
     }
 }
