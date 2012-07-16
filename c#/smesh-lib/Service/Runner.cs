@@ -193,6 +193,11 @@ namespace SimpleMesh.Service
             {
                 Info.Addresses.Add(ip);
             }
+            host = Dns.GetHostEntry("localhost");
+            foreach (IPAddress ip in host.AddressList)
+            {
+                Info.Addresses.Add(ip);
+            }
             
             Info.Compile();
             SimpleMesh.Service.Runner.Write();            

@@ -345,12 +345,22 @@ namespace SimpleMesh.Service
                     {
                         foreach (KeyValuePair<string, Connector> connector in item.Value.ConnectionList)
                         {
-                            FileContents.Add("C!" + item.Key + "!" + connector.Value.ToString(this._versiontype));
+
+                                FileContents.Add("C!" + item.Key + "!" + connector.Value.ToString(this._versiontype));
                         }
                     }
                     foreach (KeyValuePair<string, Connector> connector in Node.Connectors)
                     {
-                        FileContents.Add("C!" + this.Node.UUID.ToString() + "!" + connector.Value.ToString(this._versiontype));
+
+                        switch (connector.Value.Host) {
+                            case "127.0.0.1":
+                                break;
+                            case "::1":
+                                break;
+                            default:
+                                FileContents.Add("C!" + this.Node.UUID.ToString() + "!" + connector.Value.ToString(this._versiontype));
+                            break;
+                        }
                     }
                     FileContents.Add("SIG!None!");
                     System.IO.File.WriteAllLines(filename, FileContents.ToArray());
@@ -400,7 +410,8 @@ namespace SimpleMesh.Service
         private void AcceptSocket(Object socket)
         {
             Socket container = (Socket) socket;
-            Runner.DebugMessage("Debug.Net.Listener", "Connection recieved");
+            string host = container.RemoteEndPoint.ToString();
+            Runner.DebugMessage("Debug.Net.Listener", "Connection recieved from " + host);
         }
         public void Start()
         {
