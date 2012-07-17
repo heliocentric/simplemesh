@@ -24,6 +24,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Net.NetworkInformation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -190,20 +191,35 @@ namespace SimpleMesh.Service
             IPHostEntry host;
             try
             {
-                host = Dns.GetHostEntry(Dns.GetHostName());
-                foreach (IPAddress ip in host.AddressList)
-                {
-                    Info.Addresses.Add(ip);
-                }
+                    NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
+                    foreach (NetworkInterface adapter in adapters)
+                    {
+                        if (adapter.Supports(NetworkInterfaceComponent.IPv4) == false)
+                        {
+                            continue;
+                        }
+                        IPInterfaceProperties adapterProperties = adapter.GetIPProperties();
+                        foreach (IPAddressInformation unicast in adapterProperties.UnicastAddresses)
+                        {
+                            if (unicast.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                            {
+                                string[] chunks = unicast.Address.ToString().Split('.');
+                                if (chunks[0] != "169")
+                                {
+                                    Info.Addresses.Add(unicast.Address);
+                                }
+                            }
+                            else
+                            {
+                                Info.Addresses.Add(unicast.Address);
+                            }
+                        }
+
+                    }
             }
             catch
             {
                 Info.Addresses.Add(IPAddress.Any);
-            }
-            host = Dns.GetHostEntry("localhost");
-            foreach (IPAddress ip in host.AddressList)
-            {
-                Info.Addresses.Add(ip);
             }
             
             Info.Compile();

@@ -35,15 +35,18 @@ namespace MeshBroker
 {
     class Program
     {
-        static void Main(string[] args)
-        {
+        static public void Version() {
             Console.WriteLine("Service Version: " + SimpleMesh.Service.Utility.Version);
             Console.WriteLine("Library Version: " + SimpleMesh.Utility.Version);
+        }
+        static void Main(string[] args)
+        {
+            Program.Version();
             SimpleMesh.Service.Runner.DebugMessageCallback = Program.ConsoleDebugMessage;
             SimpleMesh.Service.Runner.HostInfoCallback = Program.HostInfoQuery;
             SimpleMesh.Service.Runner.NetworkSpecCallback = Program.NetworkSpecification;
-            SimpleMesh.Service.Runner.Start();
             bool end = false;
+            bool started = false;
             while (end == false)
             {
                 Console.Write("ROOT:> ");
@@ -51,16 +54,54 @@ namespace MeshBroker
                 string[] words = line.Split(' ');
                 switch (words[0].ToLower())
                 {
+                    case "start":
+                        if (started == false)
+                        {
+                            SimpleMesh.Service.Runner.Start();
+                            started = true;
+                        }
+                        break;
+                    case "stop":
+                        if (started == true)
+                        {
+                            SimpleMesh.Service.Runner.Stop();
+                            started = false;
+                        }
+                        break;
+                    case "restart":
+                        if (started == true)
+                        {
+                            SimpleMesh.Service.Runner.Stop();
+                            started = false;
+                        }
+                        if (started == false)
+                        {
+                            SimpleMesh.Service.Runner.Start();
+                            started = true;
+                        }
+                        break;
                     case "quit":
+                        if (started == true)
+                        {
+                            SimpleMesh.Service.Runner.Stop();
+                            started = false;
+                        }
                         end = true;
+                        break;
+                    case "ver":
+                    case "version":
+                        Program.Version();
                         break;
                     case "?":
                     case "help":
+                        Console.WriteLine("start\t\t\tStart SimpleMesh engine.");
+                        Console.WriteLine("stop\t\t\tStop SimpleMesh engine.");
+                        Console.WriteLine("restart\t\t\tRestart SimpleMesh engine.");
+                        Console.WriteLine("version\t\t\tSimpleMesh library and service version.");
                         Console.WriteLine("quit\t\t\tGracefully shut down SimpleMesh.");
                         break;
                 }
             }
-            SimpleMesh.Service.Runner.Stop();
         }
         public static Dictionary<string, string> NetworkSpecification()
         {
