@@ -505,6 +505,7 @@ namespace SimpleMesh.Service
         public string Name;
         public string Description;
         public Dictionary<string, Auth> AuthKeyList;
+        public List<MessageBrokerArgs> LiveConnectionList;
         public Node()
         {
             this.UUID = "";
