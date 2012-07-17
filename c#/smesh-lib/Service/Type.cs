@@ -51,10 +51,12 @@ namespace SimpleMesh.Service
             scratch = new Type();
             scratch.Name = "Control.GetTypeID";
             scratch.TypeID = 57005;
+            scratch.Static = true;
             this.Add(scratch);
             scratch = new Type();
             scratch.Name = "Control.TypeID";
             scratch.TypeID = 48879;
+            scratch.Static = true;
             this.Add(scratch);
             scratch = new Type();
             scratch.Name = "Control.Auth.UUID";

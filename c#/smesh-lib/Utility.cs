@@ -43,9 +43,12 @@ namespace SimpleMesh
             mesh2[1] = mesh1[0];
             return mesh2;
         }
-        public static byte [] ToHostOrder(UInt16 source)
+        public static ushort ToHostOrder(byte [] barray)
         {
-            return ToNetworkOrder(source);
+            byte[] ret = new byte[2];
+            ret[0] = barray[1];
+            ret[1] = barray[0];
+            return BitConverter.ToUInt16(ret, 0);
         }
         public static string Version
         {
