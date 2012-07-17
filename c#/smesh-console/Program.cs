@@ -43,7 +43,23 @@ namespace MeshBroker
             SimpleMesh.Service.Runner.HostInfoCallback = Program.HostInfoQuery;
             SimpleMesh.Service.Runner.NetworkSpecCallback = Program.NetworkSpecification;
             SimpleMesh.Service.Runner.Start();
-            Console.ReadLine();
+            bool end = false;
+            while (end == false)
+            {
+                Console.Write("ROOT:> ");
+                string line = Console.ReadLine();
+                string[] words = line.Split(' ');
+                switch (words[0].ToLower())
+                {
+                    case "quit":
+                        end = true;
+                        break;
+                    case "?":
+                    case "help":
+                        Console.WriteLine("quit\t\t\tGracefully shut down SimpleMesh.");
+                        break;
+                }
+            }
             SimpleMesh.Service.Runner.Stop();
         }
         public static Dictionary<string, string> NetworkSpecification()

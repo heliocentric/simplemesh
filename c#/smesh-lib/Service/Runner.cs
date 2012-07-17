@@ -188,10 +188,17 @@ namespace SimpleMesh.Service
             SimpleMesh.Service.Runner.Read();
 
             IPHostEntry host;
-            host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ip in host.AddressList)
+            try
             {
-                Info.Addresses.Add(ip);
+                host = Dns.GetHostEntry(Dns.GetHostName());
+                foreach (IPAddress ip in host.AddressList)
+                {
+                    Info.Addresses.Add(ip);
+                }
+            }
+            catch
+            {
+                Info.Addresses.Add(IPAddress.Any);
             }
             host = Dns.GetHostEntry("localhost");
             foreach (IPAddress ip in host.AddressList)
