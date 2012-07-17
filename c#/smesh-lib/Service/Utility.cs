@@ -114,7 +114,7 @@ namespace SimpleMesh.Service
             }
             return retval;
         }
-        public static Message RecieveMessage(MessageBrokerArgs args)
+        public static Message ReceiveMessage(MessageBrokerArgs args)
         {
             Message retval = new Message();
             byte [] header = new byte[8];

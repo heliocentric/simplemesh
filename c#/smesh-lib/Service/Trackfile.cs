@@ -461,7 +461,7 @@ namespace SimpleMesh.Service
             typelist = new List<string>();
             while (end == false)
             {
-                Recieved = Utility.RecieveMessage(container);
+                Recieved = Utility.ReceiveMessage(container);
                 switch (Recieved.Type)
                 {
                     case "Control.Auth.UUID":
@@ -481,6 +481,10 @@ namespace SimpleMesh.Service
                         }
                         authreceived = true;
                         break;
+                }
+                if (authreceived == true && uuid == true)
+                {
+                    end = true;
                 }
             }
 
