@@ -81,6 +81,7 @@ namespace SimpleMesh.Service
         public static void DebugMessage(string type, string main) {
             switch (Runner.DebugMode)
             {
+                case "0":
                 case "1":
                     if (type.Length > 11)
                     {
@@ -93,7 +94,7 @@ namespace SimpleMesh.Service
                         }
                     }
                     break;
-                case "99":
+                default:
                     DebugMessageCallback(type, main);
                     break;
             }
