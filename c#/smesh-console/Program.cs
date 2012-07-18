@@ -45,8 +45,12 @@ namespace MeshBroker
             SimpleMesh.Service.Runner.DebugMessageCallback = Program.ConsoleDebugMessage;
             SimpleMesh.Service.Runner.HostInfoCallback = Program.HostInfoQuery;
             SimpleMesh.Service.Runner.NetworkSpecCallback = Program.NetworkSpecification;
+
             bool end = false;
             bool started = false;
+
+            SimpleMesh.Service.Runner.Start();
+            started = true;
             while (end == false)
             {
                 Console.Write("ROOT:> ");
@@ -98,14 +102,141 @@ namespace MeshBroker
                             Runner.DebugMode = words[1];
                         }
                         break;
+                    case "connect":
+                        if (words[1] != null)
+                        {
+                            string uuid = words[1];
+                            if (words[2] != null)
+                            {
+                                string host = words[2];
+                                string port;
+                                if (words[3] != null)
+                                {
+                                    port = words[3];
+                                }
+                                else
+                                {
+                                    port = "17555";
+                                }
+                                Runner.Network.Connect(uuid, host, port);
+                            }
+                        }
+                        break;
+                    case "show":
+                        if (words.Length > 1)
+                        {
+                            switch (words[1])
+                            {
+                                case "node":
+                                    if (words.Length > 2)
+                                    {
+                                        if (words[2] == Runner.Network.Node.UUID.ToString())
+                                        {
+                                            Program.DisplayNodeInfo(Runner.Network.Node);
+                                        }
+                                        else
+                                        {
+                                            Node scratch;
+                                            if (Runner.Network.NodeList.TryGetValue(words[2], out scratch) == true)
+                                            {
+                                                Program.DisplayNodeInfo(Runner.Network.NodeList[words[2]]);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                        Console.WriteLine(Runner.Network.Node.UUID.ToString() + " = " + Runner.Network.Node.Description);
+                                        foreach (KeyValuePair<string, Node> node in Runner.Network.NodeList)
+                                        {
+                                            Console.WriteLine(node.Value.UUID.ToString() + " = " + node.Value.Name);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        break;
                     case "?":
                     case "help":
-                        Console.WriteLine("start\t\t\tStart SimpleMesh engine.");
-                        Console.WriteLine("stop\t\t\tStop SimpleMesh engine.");
-                        Console.WriteLine("restart\t\t\tRestart SimpleMesh engine.");
-                        Console.WriteLine("version\t\t\tSimpleMesh library and service version.");
-                        Console.WriteLine("quit\t\t\tGracefully shut down SimpleMesh.");
+                        if (words.Length > 1)
+                        {
+
+                            Console.WriteLine("show\tnode\t\tShow node information");
+                        }
+                        else
+                        {
+                            Console.WriteLine("start\t\t\tStart SimpleMesh engine.");
+                            Console.WriteLine("stop\t\t\tStop SimpleMesh engine.");
+                            Console.WriteLine("restart\t\t\tRestart SimpleMesh engine.");
+                            Console.WriteLine("show\t\t\tShow information.");
+                            Console.WriteLine("debug\t\t\tChange the amount of debug info to show.");
+                            Console.WriteLine("version\t\t\tSimpleMesh library and service version.");
+                            Console.WriteLine("quit\t\t\tGracefully shut down SimpleMesh.");
+                        }
                         break;
+                }
+            }
+        }
+        public static void DisplayNodeInfo(HostInfo host)
+        {
+            lock (host)
+            {
+                lock (host.UUID)
+                {
+                    Console.WriteLine("UUID = " + host.UUID.ToString());
+                }
+                lock (host.Name)
+                {
+                    Console.WriteLine("Name = " + host.Name);
+                }
+                lock (host.Key)
+                {
+                    Console.WriteLine("Auth Key = " + host.Key.ToString());
+                }
+                Console.WriteLine("Connectors:");
+                lock (host.Connectors)
+                {
+                    foreach (KeyValuePair<string, Connector> conn in host.Connectors)
+                    {
+                        lock (conn.Value)
+                        {
+                            Console.WriteLine("\t" + conn.Value.ToString());
+                        }
+                    }
+                }
+            }
+        }
+        public static void DisplayNodeInfo(Node node)
+        {
+            lock (node)
+            {
+                lock (node.UUID)
+                {
+                    Console.WriteLine("UUID = " + node.UUID.ToString());
+                }
+                lock (node.Name)
+                {
+                    Console.WriteLine("Name = " + node.Name);
+                }
+
+                Console.WriteLine("Keys:");
+                lock (node.AuthKeyList)
+                {
+                    foreach (KeyValuePair<string, Auth> key in node.AuthKeyList)
+                    {
+                        Console.WriteLine("\t" + key.Value.ToString());
+                    }
+                }
+                Console.WriteLine("Connectors:");
+                lock (node.ConnectionList)
+                {
+                    foreach (KeyValuePair<string, Connector> conn in node.ConnectionList)
+                    {
+                        lock (conn.Value)
+                        {
+                            Console.WriteLine("\t" + conn.Value.ToString());
+                        }
+                    }
                 }
             }
         }

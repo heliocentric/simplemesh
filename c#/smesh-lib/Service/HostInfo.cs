@@ -37,6 +37,7 @@ namespace SimpleMesh.Service
     }
     public class HostInfo
     {
+        public string Name;
         public string Description;
         public Key Key;
         public UUID UUID;
@@ -48,6 +49,7 @@ namespace SimpleMesh.Service
             this.Ports = new List<string>();
             this.Protocols = new List<string>();
             this.Addresses = new List<IPAddress>();
+            this.Name = "undefined";
             this.Connectors = new Dictionary<string, Connector>();
         }
         public void Compile() {

@@ -87,10 +87,7 @@ namespace SimpleMesh.Service
                     {
                         if (type.Substring(0, 11) == "Debug.Info.")
                         {
-                        }
-                        else
-                        {
-                            DebugMessageCallback(type, main);
+                            return;
                         }
                     }
                     break;

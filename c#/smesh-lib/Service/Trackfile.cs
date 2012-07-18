@@ -420,6 +420,9 @@ namespace SimpleMesh.Service
                 }
             }
         }
+        public void Connect(string uuid, string host, string port)
+        {
+        }
         private void AcceptSocket(Object acceptargs)
         {
             MessageBrokerArgs container = (MessageBrokerArgs) acceptargs;
