@@ -68,7 +68,6 @@ namespace SimpleMesh.Service
         {
             get
             {
-                Console.WriteLine(Runner._DebugMode);
                 if (Runner._DebugMode == null)
                 {
                     Runner._DebugMode = "1";
