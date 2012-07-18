@@ -31,12 +31,12 @@ using System.Text;
 
 namespace SimpleMesh.Service
 {
-    public class Type
+    public class MType
     {
         public UInt16 TypeID;
         public string Name;
         public bool Static;
-        public Type()
+        public MType()
         {
             this.Static = false;
         }
@@ -45,40 +45,40 @@ namespace SimpleMesh.Service
     {
         public TypeList()
         {
-            this._ByID = new Dictionary<ushort, Type>();
-            this._ByName = new Dictionary<string, Type>();
-            Type scratch;
-            scratch = new Type();
+            this._ByID = new Dictionary<ushort, MType>();
+            this._ByName = new Dictionary<string, MType>();
+            MType scratch;
+            scratch = new MType();
             scratch.Name = "Control.GetTypeID";
             scratch.TypeID = 57005;
             scratch.Static = true;
             this.Add(scratch);
-            scratch = new Type();
+            scratch = new MType();
             scratch.Name = "Control.TypeID";
             scratch.TypeID = 48879;
             scratch.Static = true;
             this.Add(scratch);
-            scratch = new Type();
+            scratch = new MType();
             scratch.Name = "Control.Auth.UUID";
             scratch.TypeID = 6500;
             this.Add(scratch);
-            scratch = new Type();
+            scratch = new MType();
             scratch.Name = "Control.Auth.Challenge";
             scratch.TypeID = 6501;
             this.Add(scratch);
-            scratch = new Type();
+            scratch = new MType();
             scratch.Name = "Control.Auth.Response";
             scratch.TypeID = 6502;
             this.Add(scratch);
-            scratch = new Type();
+            scratch = new MType();
             scratch.Name = "Control.Auth.OK";
             scratch.TypeID = 6503;
             this.Add(scratch);
-            scratch = new Type();
+            scratch = new MType();
             scratch.Name = "Control.Auth.Failed";
             scratch.TypeID = 6504;
             this.Add(scratch);
-            scratch = new Type();
+            scratch = new MType();
             scratch.Name = "Control.Auth.Types";
             scratch.TypeID = 6505;
             this.Add(scratch);
@@ -89,22 +89,22 @@ namespace SimpleMesh.Service
             this.Add(scratch);
             */
         }
-        private Dictionary<UInt16, Type> _ByID;
-        private Dictionary<String, Type> _ByName;
-        public Message Add(Type name) {
+        private Dictionary<UInt16, MType> _ByID;
+        private Dictionary<String, MType> _ByName;
+        public Message Add(MType name) {
             _ByID.Add(name.TypeID, name);
             _ByName.Add(name.Name, name);
             return new Message();
         }
-        public Message Remove(Type name)
+        public Message Remove(MType name)
         {
             return new Message();
         }
-        public Type ByName(string name)
+        public MType ByName(string name)
         {
             return _ByName[name];
         }
-        public Type ByID(UInt16 id)
+        public MType ByID(UInt16 id)
         {
             return _ByID[id];
         }

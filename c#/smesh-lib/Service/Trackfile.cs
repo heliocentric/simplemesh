@@ -392,7 +392,6 @@ namespace SimpleMesh.Service
             while (end != true)
             {
                 listenlist = new List<Socket>();
-
                 lock (this.Node.Connectors)
                 {
                     foreach (KeyValuePair<string, Connector> keypair in this.Node.Connectors)
@@ -400,6 +399,7 @@ namespace SimpleMesh.Service
                         listenlist.Add(keypair.Value.ListenSocket);
                     }
                 }
+
                 Socket.Select(listenlist, null, null, 1000);
                 foreach (Socket sock in listenlist)
                 {

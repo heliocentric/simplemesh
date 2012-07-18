@@ -176,21 +176,47 @@ namespace SimpleMesh.Service
         public static string ConfigFile;
         public static void Start()
         {
-            string basepath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + @"\NiftyEngineering";
-            string configfile = basepath + @"\config.tkf";
+            string basepath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + System.IO.Path.DirectorySeparatorChar + @"NiftyEngineering";
+            string configfile = basepath + System.IO.Path.DirectorySeparatorChar + @"config.tkf";
             SimpleMesh.Service.Runner.Start(basepath, configfile);
         }
+        public static bool Mono;
         public static void Start(string path, string configfile)
         {
+            Type t = Type.GetType("Mono.Runtime");
+            if (t != null)
+            {
+                Runner.Mono = true;
+            }
+            else
+            {
+                Runner.Mono = false;
+            }
             SimpleMesh.Service.Runner.StorePath = path;
             SimpleMesh.Service.Runner.ConfigFile = configfile;
 
             SimpleMesh.Service.Runner.Network = new Trackfile();
             SimpleMesh.Service.Runner.Read();
 
-            IPHostEntry host;
             try
             {
+
+                System.Net.IPHostEntry myiphost = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+                foreach (System.Net.IPAddress myipadd in myiphost.AddressList)
+                {
+                    Info.Addresses.Add(myipadd);
+                }
+
+            }
+            catch
+            {
+                if (Runner.Mono == true)
+                {
+                    Info.Addresses.Add(IPAddress.Any);
+                    Info.Addresses.Add(IPAddress.IPv6Any);
+                }
+                else
+                {
                     NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
                     foreach (NetworkInterface adapter in adapters)
                     {
@@ -216,17 +242,14 @@ namespace SimpleMesh.Service
                         }
 
                     }
+                }
             }
-            catch
-            {
-                Info.Addresses.Add(IPAddress.Any);
-            }
-            
+
             Info.Compile();
-            SimpleMesh.Service.Runner.Write();            
+            SimpleMesh.Service.Runner.Write();
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.StorePath);
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile);
-            string TrackfilePath = SimpleMesh.Service.Runner.StorePath + @"\default.tkf";
+            string TrackfilePath = SimpleMesh.Service.Runner.StorePath + System.IO.Path.DirectorySeparatorChar + @"default.tkf";
             if (System.IO.File.Exists(TrackfilePath) == true)
             {
                 SimpleMesh.Service.Runner.Network.Read(TrackfilePath);
@@ -292,9 +315,9 @@ namespace SimpleMesh.Service
                 }
 
             }
-           SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
-           Network.Start();
-           
+            SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
+            Network.Start();
+
         }
         public static void Stop()
         {

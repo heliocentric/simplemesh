@@ -16,7 +16,7 @@
     <ManifestCertificateThumbprint>988F651F987E48FD51B7E4C1447C9689B7C17455</ManifestCertificateThumbprint>
     <ManifestKeyFile>smesh-console_TemporaryKey.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
