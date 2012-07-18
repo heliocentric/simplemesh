@@ -62,10 +62,42 @@ namespace SimpleMesh.Service
             get { return Runner._Network; }
             set { Runner._Network = value; }
         }
+        private static string _DebugMode;
+
+        public static string DebugMode
+        {
+            get
+            {
+                Console.WriteLine(Runner._DebugMode);
+                if (Runner._DebugMode == null)
+                {
+                    Runner._DebugMode = "1";
+                }
+                return Runner._DebugMode;
+            }
+            set { Runner._DebugMode = value; }
+        }
         public delegate void DebugMessageType(string type, string value);
         public static DebugMessageType DebugMessageCallback;
         public static void DebugMessage(string type, string main) {
-            DebugMessageCallback(type, main);
+            switch (Runner.DebugMode)
+            {
+                case "1":
+                    if (type.Length > 11)
+                    {
+                        if (type.Substring(0, 11) == "Debug.Info.")
+                        {
+                        }
+                        else
+                        {
+                            DebugMessageCallback(type, main);
+                        }
+                    }
+                    break;
+                case "99":
+                    DebugMessageCallback(type, main);
+                    break;
+            }
         }
 
         public delegate HostInfo HostInfoType();
@@ -169,6 +201,7 @@ namespace SimpleMesh.Service
             }
             return 0;
         }
+
         public static int Write()
         {
             return 0;

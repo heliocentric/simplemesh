@@ -74,7 +74,7 @@ namespace SimpleMesh.Service
             }
             foreach (KeyValuePair<string, Connector> conn in this.Connectors)
             {
-                SimpleMesh.Service.Runner.DebugMessage("Debug.Listener", conn.Value.ToString());
+                SimpleMesh.Service.Runner.DebugMessage("Debug.Info.Listener", conn.Value.ToString());
             }
         }
         public void Listen()

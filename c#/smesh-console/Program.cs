@@ -92,6 +92,12 @@ namespace MeshBroker
                     case "version":
                         Program.Version();
                         break;
+                    case "debug":
+                        if (words[1] != null)
+                        {
+                            Runner.DebugMode = words[1];
+                        }
+                        break;
                     case "?":
                     case "help":
                         Console.WriteLine("start\t\t\tStart SimpleMesh engine.");
