@@ -498,7 +498,10 @@ namespace SimpleMesh.Service
         }
         public void Stop()
         {
-            this.ListenThread.Abort();
+            if (this.ListenThread != null)
+        {
+                this.ListenThread.Abort();
+            }
         }
     }
     public class Node
