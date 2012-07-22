@@ -227,51 +227,53 @@ namespace SimpleMesh.Service
 
             SimpleMesh.Service.Runner.Network = new Trackfile();
             SimpleMesh.Service.Runner.Read();
-
             try
             {
-
-                System.Net.IPHostEntry myiphost = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
-                foreach (System.Net.IPAddress myipadd in myiphost.AddressList)
+                NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
+                foreach (NetworkInterface adapter in adapters)
                 {
-                    Info.Addresses.Add(myipadd);
-                }
-
-            }
-            catch
-            {
-                if (Runner.Mono == true)
-                {
-                    Info.Addresses.Add(IPAddress.Any);
-                    Info.Addresses.Add(IPAddress.IPv6Any);
-                }
-                else
-                {
-                    NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
-                    foreach (NetworkInterface adapter in adapters)
+                    IPInterfaceProperties adapterProperties = adapter.GetIPProperties();
+                    foreach (IPAddressInformation unicast in adapterProperties.UnicastAddresses)
                     {
-                        if (adapter.Supports(NetworkInterfaceComponent.IPv4) == false)
+                        if (unicast.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
-                            continue;
-                        }
-                        IPInterfaceProperties adapterProperties = adapter.GetIPProperties();
-                        foreach (IPAddressInformation unicast in adapterProperties.UnicastAddresses)
-                        {
-                            if (unicast.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                            {
-                                string[] chunks = unicast.Address.ToString().Split('.');
-                                if (chunks[0] != "169")
-                                {
-                                    Info.Addresses.Add(unicast.Address);
-                                }
-                            }
-                            else
+                            string[] chunks = unicast.Address.ToString().Split('.');
+                            if (chunks[0] != "169")
                             {
                                 Info.Addresses.Add(unicast.Address);
                             }
                         }
-
+                        else
+                        {
+                            Info.Addresses.Add(unicast.Address);
+                        }
                     }
+
+                }
+            }
+            catch
+            {
+            }
+            if (Info.Addresses.Count == 0)
+            {
+                try
+                {
+
+                    System.Net.IPHostEntry myiphost = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+                    foreach (System.Net.IPAddress myipadd in myiphost.AddressList)
+                    {
+                        Info.Addresses.Add(myipadd);
+                    }
+
+                }
+                catch
+                {
+                    if (Runner.Mono == true)
+                    {
+                        Info.Addresses.Add(IPAddress.Any);
+                        Info.Addresses.Add(IPAddress.IPv6Any);
+                    }
+
                 }
             }
 
@@ -280,6 +282,7 @@ namespace SimpleMesh.Service
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.StorePath);
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.ConfigFile", SimpleMesh.Service.Runner.ConfigFile);
             string TrackfilePath = SimpleMesh.Service.Runner.StorePath + System.IO.Path.DirectorySeparatorChar + @"default.tkf";
+            Runner.DebugMessage("Debug.Info.Trackfile", "Trackfile Path: " + TrackfilePath);
             if (System.IO.File.Exists(TrackfilePath) == true)
             {
                 SimpleMesh.Service.Runner.Network.Read(TrackfilePath);
@@ -327,20 +330,12 @@ namespace SimpleMesh.Service
                             Network.ReadOnce(trackfilelocation);
                             break;
                     }
-                    if (System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(trackfilelocation)) == true)
+                    try
                     {
-                        try
-                        {
-                            Network.WriteOnce(trackfilelocation);
-                        }
-                        catch
-                        {
-                            return;
-                        }
+                        Network.WriteOnce(trackfilelocation);
                     }
-                    else
+                    catch
                     {
-                        return;
                     }
                 }
 

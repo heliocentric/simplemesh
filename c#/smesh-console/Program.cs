@@ -49,6 +49,8 @@ namespace MeshBroker
             bool end = false;
             bool started = false;
 
+
+            Runner.DebugMode = "99";
             SimpleMesh.Service.Runner.Start();
             started = true;
             while (end == false)

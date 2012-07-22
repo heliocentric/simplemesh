@@ -192,7 +192,16 @@ namespace SimpleMesh.Service
         }
         private int ReadFile(string filename)
         {
-            string[] configfile = System.IO.File.ReadAllLines(filename);
+            string[] configfile;
+            try
+            {
+                configfile = System.IO.File.ReadAllLines(filename);
+            }
+            catch
+            {
+                Runner.DebugMessage("Debug.Error.Trackfile", "File not found: " + filename.ToString());
+                return 1;
+            }
             Boolean firstline = true;
             foreach (string line in configfile)
             {
@@ -271,12 +280,13 @@ namespace SimpleMesh.Service
                 }
             }
             string message = "Enrollment Keys";
-            foreach(KeyValuePair<string, Auth> enrolled in this.Enrollment)
+            foreach (KeyValuePair<string, Auth> enrolled in this.Enrollment)
             {
                 message += "\n\t" + enrolled.Value.Key.ToString();
             }
             SimpleMesh.Service.Runner.DebugMessage("Debug.Info.Trackfile", message);
-            foreach(KeyValuePair<string, Node> line in this.NodeList) {
+            foreach (KeyValuePair<string, Node> line in this.NodeList)
+            {
                 Node scratch = line.Value;
                 message = "Name=\t" + scratch.Name;
                 message += "\nUUID=\t" + scratch.UUID;
@@ -399,7 +409,11 @@ namespace SimpleMesh.Service
                         listenlist.Add(keypair.Value.ListenSocket);
                     }
                 }
-
+                if (listenlist.Count == 0)
+                {
+                    end = true;
+                    continue;
+                }
                 Socket.Select(listenlist, null, null, 1000);
                 foreach (Socket sock in listenlist)
                 {
