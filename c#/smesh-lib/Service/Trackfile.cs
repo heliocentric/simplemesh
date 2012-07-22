@@ -434,9 +434,21 @@ namespace SimpleMesh.Service
                 }
             }
         }
-        public void Connect(string uuid, string host, string port)
+
+
+        public void Connect(UUID uuid)
         {
+            Node node;
+            if (this.NodeList.TryGetValue(uuid.ToString(), out node) == true)
+            {
+                this.Connect(node);
+            }
         }
+        public void Connect(Node node)
+        {
+
+        }
+
         private void AcceptSocket(Object acceptargs)
         {
             MessageBrokerArgs container = (MessageBrokerArgs) acceptargs;

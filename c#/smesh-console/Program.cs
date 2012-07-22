@@ -105,22 +105,21 @@ namespace MeshBroker
                         }
                         break;
                     case "connect":
-                        if (words[1] != null)
+                        if (words.Length > 1)
                         {
+                            string port = "17555";
                             string uuid = words[1];
-                            if (words[2] != null)
+                            if (words.Length > 2)
                             {
                                 string host = words[2];
-                                string port;
-                                if (words[3] != null)
+                                if (words.Length > 3)
                                 {
                                     port = words[3];
                                 }
                                 else
                                 {
-                                    port = "17555";
+                                    Runner.Network.Connect(new UUID(uuid));
                                 }
-                                Runner.Network.Connect(uuid, host, port);
                             }
                         }
                         break;
@@ -179,6 +178,7 @@ namespace MeshBroker
                 }
             }
         }
+        
         public static void DisplayNodeInfo(HostInfo host)
         {
             lock (host)
