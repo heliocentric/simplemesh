@@ -257,6 +257,7 @@ namespace SimpleMesh.Service
                                         scratch = this.NodeInit(UUID);
                                         string connectorstring = line.Replace("C!" + chunks[1] + "!", "");
                                         Connector scratchconnector = new Connector(connectorstring);
+                                        scratchconnector.Type = Connector.ConnectorTypes.Connect;
                                         scratch.ConnectionList.Add(scratchconnector.Key(), scratchconnector);
                                     }
                                     break;

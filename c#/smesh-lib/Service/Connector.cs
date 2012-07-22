@@ -42,6 +42,14 @@ namespace SimpleMesh.Service
     }
     public class Connector
     {
+        public TypeList Typelist;
+        public Node Node;
+        public enum ConnectorTypes
+        {
+            Listen,
+            Connect
+        }
+        public ConnectorTypes Type;
         public int Priority;
         public string Protocol;
         public string AppProtocol;
@@ -58,6 +66,7 @@ namespace SimpleMesh.Service
             this.Port = 17555;
             this.HostType = "";
             this.TransportProtocol = "IP";
+            this.Type = ConnectorTypes.Connect;
         }
         public Connector(string connspec)
         {

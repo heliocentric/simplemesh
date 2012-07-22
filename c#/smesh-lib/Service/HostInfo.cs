@@ -70,6 +70,7 @@ namespace SimpleMesh.Service
                                 scratch.TransportProtocol = "IPV6";
                                 break;
                         }
+                        scratch.Type = Connector.ConnectorTypes.Listen;
                         this.Connectors.Add(scratch.Key(), scratch);
                     }
                 }
