@@ -121,6 +121,10 @@ namespace MeshBroker
                                     Runner.Network.Connect(new UUID(uuid));
                                 }
                             }
+                            else
+                            {
+                                Runner.Network.Connect(new UUID(uuid));
+                            }
                         }
                         break;
                     case "show":

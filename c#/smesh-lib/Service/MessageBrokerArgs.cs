@@ -11,6 +11,7 @@ namespace SimpleMesh.Service
         public Connector Connector;
         public Socket Socket;
         public TypeList Types;
+        public Node Node;
         public MessageBrokerArgs()
         {
             this.Types = new TypeList();

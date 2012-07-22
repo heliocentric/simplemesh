@@ -337,7 +337,7 @@ namespace SimpleMesh.Service
                     }
                     foreach (KeyValuePair<string, Node> item in this.NodeList)
                     {
-                        FileContents.Add("N!" + item.Key + "!" + item.Value.Name);
+                        FileContents.Add("N!" + item.Value.ToString());
                     }
                     HostInfo test = this.Node;
                     string value = "N!" + test.UUID.ToString() + "!" + test.Description;
@@ -439,14 +439,25 @@ namespace SimpleMesh.Service
         public void Connect(UUID uuid)
         {
             Node node;
+            Runner.DebugMessage("Debug.Info.Connect", "UUID: " + uuid.ToString());
             if (this.NodeList.TryGetValue(uuid.ToString(), out node) == true)
             {
                 this.Connect(node);
             }
+            else
+            {
+            }
         }
         public void Connect(Node node)
         {
+            lock (node)
+            {
+                Runner.DebugMessage("Debug.Info.Connect", "Trying to connect to: " + node.ToString());
+                foreach (KeyValuePair<string, Connector> conn in node.ConnectionList)
+                {
 
+                }
+            }
         }
 
         private void AcceptSocket(Object acceptargs)
@@ -545,6 +556,18 @@ namespace SimpleMesh.Service
             this.Description = "";
             this.ConnectionList = new Dictionary<string,Connector>();
             this.AuthKeyList = new Dictionary<string, Auth>();
+        }
+        public override string ToString()
+        {
+            return this.UUID.ToString() + "!" + this.Name.ToString() + "!" + this.Description.ToString();
+        }
+        public string Encode()
+        {
+            return this.ToString();
+        }
+        public void Decode(string nodeline)
+        {
+
         }
     }
     public class Auth
