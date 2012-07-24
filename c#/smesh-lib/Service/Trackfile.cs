@@ -463,10 +463,7 @@ namespace SimpleMesh.Service
             lock (node)
             {
                 Runner.DebugMessage("Debug.Info.Connect", "Trying to connect to: " + node.ToString());
-                foreach (KeyValuePair<string, Connector> conn in node.ConnectionList)
-                {
-
-                }
+                node.Connect();
             }
         }
 

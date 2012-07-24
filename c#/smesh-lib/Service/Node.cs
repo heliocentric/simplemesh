@@ -33,12 +33,26 @@ namespace SimpleMesh.Service
         {
 
         }
-        public void Connect()
+        public int Connect()
         {
-
+            int retval;
+            retval = 1;
+            foreach (KeyValuePair<string, Connector> conn in this.ConnectionList) {
+                retval = this.Connect(conn.Value);
+                if (retval == 0)
+                {
+                    return retval;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            return retval;
         }
-        public void Connect(Connector conn)
+        public int Connect(Connector conn)
         {
+            return 1;
         }
     }
 }
