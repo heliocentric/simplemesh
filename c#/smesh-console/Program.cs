@@ -118,12 +118,18 @@ namespace MeshBroker
                                 }
                                 else
                                 {
-                                    Runner.Network.Connect(new UUID(uuid));
                                 }
                             }
                             else
                             {
-                                Runner.Network.Connect(new UUID(uuid));
+                                if (uuid.Length == 36)
+                                {
+                                    Runner.Network.Connect(new UUID(uuid));
+                                }
+                                else
+                                {
+                                    Runner.Network.Connect(uuid);
+                                }
                             }
                         }
                         break;

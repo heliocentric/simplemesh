@@ -436,7 +436,16 @@ namespace SimpleMesh.Service
             }
         }
 
-
+        public void Connect(string name)
+        {
+            foreach (KeyValuePair<string, Node> node in this.NodeList) {
+                if (node.Value.Name == name)
+                {
+                    this.Connect(node.Value);
+                    return;
+                }
+            }
+        }
         public void Connect(UUID uuid)
         {
             Node node;
