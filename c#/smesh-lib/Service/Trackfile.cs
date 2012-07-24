@@ -551,61 +551,7 @@ namespace SimpleMesh.Service
             }
         }
     }
-    public class Node
-    {
-        public Dictionary<string, Connector> ConnectionList;
-        public string UUID;
-        public string Name;
-        public string Description;
-        public Dictionary<string, Auth> AuthKeyList;
-        public List<MessageBrokerArgs> LiveConnectionList;
-        public Node()
-        {
-            this.UUID = "";
-            this.Name = "";
-            this.Description = "";
-            this.ConnectionList = new Dictionary<string,Connector>();
-            this.AuthKeyList = new Dictionary<string, Auth>();
-        }
-        public override string ToString()
-        {
-            return this.UUID.ToString() + "!" + this.Name.ToString() + "!" + this.Description.ToString();
-        }
-        public string Encode()
-        {
-            return this.ToString();
-        }
-        public void Decode(string nodeline)
-        {
+ 
 
-        }
-    }
-    public class Auth
-    {
-        public Key Key;
-        public UUID UUID;
-        public Boolean Active;
-        public Boolean Primary;
-        public Auth()
-        {
-        }
-        public Auth(string keystring)
-        {
-
-            this.Key = new Key(keystring);
-            this.Active = true;
-            this.Primary = false;
-        }
-        public Auth(string keystring, Boolean active, Boolean primary)
-        {
-            this.Key = new Key(keystring);
-            this.Active = active;
-            this.Primary = primary;
-        }
-        public override string ToString()
-        {
-            return this.Key.ToString();
-        }
-    }
     
 }
