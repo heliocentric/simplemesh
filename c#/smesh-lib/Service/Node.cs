@@ -52,9 +52,10 @@ namespace SimpleMesh.Service
         }
         public int Connect(Connector conn)
         {
-            MessageBrokerArgs msg= new MessageBrokerArgs();
+            MessageBrokerArgs msg = new MessageBrokerArgs();
             msg.Types = new TypeList();
             msg.Connector = conn;
+            conn.Typelist = msg.Types;
             conn.Connect();
             return 1;
         }

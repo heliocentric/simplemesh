@@ -115,7 +115,19 @@ namespace SimpleMesh.Service
         public Socket ConnectSocket;
         public int Connect()
         {
-
+            IPAddress ip;
+            IPEndPoint ep;
+            IPAddress.TryParse(this.Host, out ip);
+            ep = new IPEndPoint(ip, this.Port);
+            this.ConnectSocket = this.createsock();
+            try
+            {
+                this.ConnectSocket.Connect(ep);
+            }
+            catch
+            {
+                return 2;
+            }
             return 1;
         }
         private Socket createsock()
