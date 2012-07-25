@@ -112,12 +112,16 @@ namespace SimpleMesh.Service
             return this.AppProtocol + "!" + this.Protocol + "!" + this.Port + "!" + this.TransportProtocol + "!" + this.HostType + "!" + this.Host;
         }
         public Socket ListenSocket;
-       
-        public void Listen()
+        public Socket ConnectSocket;
+        public int Connect()
+        {
+
+            return 1;
+        }
+        private Socket createsock()
         {
             AddressFamily af;
-            IPAddress ip;
-            IPEndPoint ep;
+            Socket sock;
             switch (this.TransportProtocol)
             {
                 case "IPV6":
@@ -130,16 +134,34 @@ namespace SimpleMesh.Service
                     af = AddressFamily.InterNetwork;
                     break;
             }
+            switch (this.Protocol)
+            {
+                case "udp":
+                    sock = new Socket(af, SocketType.Dgram, ProtocolType.Udp);
+                    break;
+                case "tcp":
+                    sock = new Socket(af, SocketType.Stream, ProtocolType.Tcp);
+                    break;
+                default:
+                    sock = new Socket(af, SocketType.Stream, ProtocolType.Tcp);
+                    break;
+            }
+            return sock;
+        }
+        public void Listen()
+        {
+            IPAddress ip;
+            IPEndPoint ep;
             switch (this.Protocol) {
                 case "udp":
-                    this.ListenSocket = new Socket(af, SocketType.Dgram, ProtocolType.Udp);
+                    this.ListenSocket = this.createsock();
                     IPAddress.TryParse(this.Host, out ip);
                     ep = new IPEndPoint(ip, this.Port);
                     Runner.DebugMessage("Debug.Info.Connector", this.Host + ":" + this.Port);
                     this.ListenSocket.Bind(ep);
                     break;
                 case "tcp":
-                    this.ListenSocket = new Socket(af, SocketType.Stream, ProtocolType.Tcp);
+                    this.ListenSocket = this.createsock();
                     IPAddress.TryParse(this.Host, out ip);
                     ep = new IPEndPoint(ip, this.Port);
                     Runner.DebugMessage("Debug.Info.Connector", this.Host + ":" + this.Port);
