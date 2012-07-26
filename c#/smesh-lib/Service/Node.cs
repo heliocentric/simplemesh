@@ -56,7 +56,7 @@ namespace SimpleMesh.Service
             msg.Types = new TypeList();
             msg.Connector = conn;
             conn.Typelist = msg.Types;
-            conn.Connect();
+            conn.Connect(msg);
             return 1;
         }
     }

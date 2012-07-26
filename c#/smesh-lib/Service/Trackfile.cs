@@ -472,68 +472,7 @@ namespace SimpleMesh.Service
             MessageBrokerArgs container = (MessageBrokerArgs) acceptargs;
             string host = container.Socket.RemoteEndPoint.ToString();
             Runner.DebugMessage("Debug.Net.Listener", "Connection recieved from " + host);
-            TextMessage scratch;
-            scratch = new TextMessage("Control.Auth.UUID");
-            scratch.Data = this.Node.UUID.ToString();
-            Utility.SendMessage(container, scratch);
-
-            List<string> authtypes = new List<string>();
-            authtypes.Add("RSA");
-            authtypes.Add("HASH-SHA256");
-            authtypes.Add("HASH-MD5");
-
-            scratch = new TextMessage("Control.Auth.Types");
-            string authstring = "";
-            foreach (string entry in authtypes)
-            {
-                if (authstring == "")
-                {
-                    authstring = entry;
-                }
-                else
-                {
-                    authstring = authstring + " " + entry;
-                }
-            }
-            scratch.Data = authstring;
-            Utility.SendMessage(container, scratch);
-            bool end;
-            end = false;
-            Message Recieved;
-            bool uuid = false;
-            bool authreceived = false;
-            UUID remoteuuid;
-            TextMessage text;
-            List<string> typelist;
-            typelist = new List<string>();
-            while (end == false)
-            {
-                Recieved = Utility.ReceiveMessage(container);
-                switch (Recieved.Type)
-                {
-                    case "Control.Auth.UUID":
-                        text = (TextMessage)Recieved;
-                        remoteuuid = new UUID(text.Data);
-                        uuid = true;
-                        break;
-                    case "Control.Auth.Types":
-                        text = (TextMessage)Recieved;
-                        
-                        string [] types = text.Data.Split(' ');
-                        foreach (string type in types) {
-                            if (authtypes.Contains(type))
-                            {
-                                typelist.Add(type);
-                            }
-                        }
-                        authreceived = true;
-                        break;
-                }
-                if (authreceived == true && uuid == true)
-                {
-                    end = true;
-                }
-            }
+            container.Connector.Authtypes(container);
 
         }
         public void Start()

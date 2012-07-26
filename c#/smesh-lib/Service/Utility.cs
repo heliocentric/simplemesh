@@ -182,6 +182,8 @@ namespace SimpleMesh.Service
             {
                 retval.Type = "Error.Message.Corrupted";
             }
+
+            Runner.DebugMessage("Debug.Info.Message", "R: " + retval.ToString());
             return retval;
 
         }

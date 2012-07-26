@@ -113,16 +113,18 @@ namespace SimpleMesh.Service
         }
         public Socket ListenSocket;
         public Socket ConnectSocket;
-        public int Connect()
+        public int Connect(MessageBrokerArgs msg)
         {
             IPAddress ip;
             IPEndPoint ep;
             IPAddress.TryParse(this.Host, out ip);
             ep = new IPEndPoint(ip, this.Port);
             this.ConnectSocket = this.createsock();
+            msg.Socket = this.ConnectSocket;
             try
             {
                 this.ConnectSocket.Connect(ep);
+                this.Authtypes(msg);
             }
             catch
             {
@@ -159,6 +161,72 @@ namespace SimpleMesh.Service
                     break;
             }
             return sock;
+        }
+        public void Authtypes(MessageBrokerArgs container)
+        {
+            TextMessage scratch;
+            scratch = new TextMessage("Control.Auth.UUID");
+            scratch.Data = Runner.Network.Node.UUID.ToString();
+            Utility.SendMessage(container, scratch);
+
+            List<string> authtypes = new List<string>();
+            authtypes.Add("RSA");
+            authtypes.Add("HASH-SHA256");
+            authtypes.Add("HASH-MD5");
+
+            scratch = new TextMessage("Control.Auth.Types");
+            string authstring = "";
+            foreach (string entry in authtypes)
+            {
+                if (authstring == "")
+                {
+                    authstring = entry;
+                }
+                else
+                {
+                    authstring = authstring + " " + entry;
+                }
+            }
+            scratch.Data = authstring;
+            Utility.SendMessage(container, scratch);
+            bool end;
+            end = false;
+            Message Recieved;
+            bool uuid = false;
+            bool authreceived = false;
+            UUID remoteuuid;
+            TextMessage text;
+            List<string> typelist;
+            typelist = new List<string>();
+            while (end == false)
+            {
+                Recieved = Utility.ReceiveMessage(container);
+                switch (Recieved.Type)
+                {
+                    case "Control.Auth.UUID":
+                        text = (TextMessage)Recieved;
+                        remoteuuid = new UUID(text.Data);
+                        uuid = true;
+                        break;
+                    case "Control.Auth.Types":
+                        text = (TextMessage)Recieved;
+
+                        string[] types = text.Data.Split(' ');
+                        foreach (string type in types)
+                        {
+                            if (authtypes.Contains(type))
+                            {
+                                typelist.Add(type);
+                            }
+                        }
+                        authreceived = true;
+                        break;
+                }
+                if (authreceived == true && uuid == true)
+                {
+                    end = true;
+                }
+            }
         }
         public void Listen()
         {
