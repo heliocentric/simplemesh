@@ -33,12 +33,8 @@ using System.Net;
 
 namespace SimpleMesh.Service
 {
-    public interface IConnector
+    public interface IConnection
     {
-        Socket ListenSocket {
-            get;
-            set;
-        }
     }
     public class Connector
     {
@@ -162,17 +158,17 @@ namespace SimpleMesh.Service
             }
             return sock;
         }
-        public void Authtypes(MessageBrokerArgs container)
+        public int Authtypes(MessageBrokerArgs container)
         {
+            int retval;
             TextMessage scratch;
             scratch = new TextMessage("Control.Auth.UUID");
             scratch.Data = Runner.Network.Node.UUID.ToString();
             Utility.SendMessage(container, scratch);
 
             List<string> authtypes = new List<string>();
+            authtypes.Add("NONE");
             authtypes.Add("RSA");
-            authtypes.Add("HASH-SHA256");
-            authtypes.Add("HASH-MD5");
 
             scratch = new TextMessage("Control.Auth.Types");
             string authstring = "";
@@ -191,6 +187,7 @@ namespace SimpleMesh.Service
             Utility.SendMessage(container, scratch);
             bool end;
             end = false;
+            bool error = false;
             Message Recieved;
             bool uuid = false;
             bool authreceived = false;
@@ -198,35 +195,82 @@ namespace SimpleMesh.Service
             TextMessage text;
             List<string> typelist;
             typelist = new List<string>();
+
             while (end == false)
             {
                 Recieved = Utility.ReceiveMessage(container);
-                switch (Recieved.Type)
+                if (Recieved.Type.Substring(0, 6) != "Error.")
                 {
-                    case "Control.Auth.UUID":
-                        text = (TextMessage)Recieved;
-                        remoteuuid = new UUID(text.Data);
-                        uuid = true;
-                        break;
-                    case "Control.Auth.Types":
-                        text = (TextMessage)Recieved;
+                    switch (Recieved.Type)
+                    {
+                        case "Control.Auth.UUID":
+                            text = new TextMessage(Recieved);
+                            remoteuuid = new UUID(text.Data);
+                            uuid = true;
+                            break;
+                        case "Control.Auth.Types":
+                            text = new TextMessage(Recieved);
 
-                        string[] types = text.Data.Split(' ');
-                        foreach (string type in types)
-                        {
-                            if (authtypes.Contains(type))
+                            string[] types = text.Data.Split(' ');
+                            foreach (string type in types)
                             {
-                                typelist.Add(type);
+                                if (authtypes.Contains(type))
+                                {
+                                    typelist.Add(type);
+                                }
                             }
-                        }
-                        authreceived = true;
-                        break;
+                            authreceived = true;
+                            break;
+                    }
+                }
+                else
+                {
+                    end = true;
+                    error = true;
                 }
                 if (authreceived == true && uuid == true)
                 {
                     end = true;
                 }
             }
+            if (error == true)
+            {
+                retval = 1;
+                return retval;
+            }
+            string msg;
+            msg = "Auth Types available:";
+            bool first = true;
+            foreach (string type  in typelist) {
+                msg = msg + " " + type;
+            }
+            Runner.DebugMessage("Debug.Info.Connect", msg);
+            string authtotry = "";
+            if (typelist.Count != 0)
+            {
+                if (typelist.Contains("NONE"))
+                {
+                    authtotry = "NONE";
+                }
+                else
+                {
+                    authtotry = typelist[0];
+                }
+                Runner.DebugMessage("Debug.Info.Connect", "Using " + authtotry);
+            }
+            else
+            {
+                retval = 1;
+                return retval;
+            }
+            switch (authtotry)
+            {
+                case "NONE":
+
+                    break;
+            }
+            retval = 0;
+            return retval;
         }
         public void Listen()
         {

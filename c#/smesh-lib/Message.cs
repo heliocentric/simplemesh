@@ -76,34 +76,20 @@ namespace SimpleMesh
             return "Length=" + this.Payload.Length + " Type=" + this.Type + " Payload=" + Encoding.UTF8.GetString(this.Payload);
         }
     }
-    public class BinaryMessage : Message
-    {
-        public BinaryMessage(string type)
-            : base(type)
-        {
-        }
-        public byte[] Data;
-        public override ushort DataLength
-        {
-            get
-            {
-                return base.DataLength;
-            }
-        }
-        public override void Pack()
-        {
-            this.Payload = this.Data;
-        }
-        public override void Unpack()
-        {
-            this.Data = this.Payload;
-        }
-    }
+
     public class TextMessage : Message
     {
         public TextMessage(string type)
             : base(type)
         {
+        }
+        public TextMessage(Message message)
+        {
+            this.Type = message.Type;
+            this.Conversation = message.Conversation;
+            this.Remote = message.Remote;
+            this.Sequence = message.Sequence;
+            this.Payload = message.Payload;
         }
         public string Data {
         get {

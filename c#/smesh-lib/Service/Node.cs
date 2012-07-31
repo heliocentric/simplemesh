@@ -38,6 +38,7 @@ namespace SimpleMesh.Service
             int retval;
             retval = 1;
             foreach (KeyValuePair<string, Connector> conn in this.ConnectionList) {
+                Runner.DebugMessage("Debug.Info.Connect", "Attempting to connect to " + conn.Value.ToString());
                 retval = this.Connect(conn.Value);
                 if (retval == 0)
                 {
