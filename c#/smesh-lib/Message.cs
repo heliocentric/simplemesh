@@ -31,13 +31,60 @@ using System.Text;
 
 namespace SimpleMesh
 {
-    public class Message
+    public interface IMessage
     {
-        public UUID Remote;
-        
-        public UInt16 Conversation;
-        public string Type;
-        public UInt16 Sequence;
+        UUID Remote
+        {
+            get;
+            set;
+        }
+        UInt16 Conversation
+        {
+            get;
+            set;
+        }
+        string Type
+        {
+            get;
+            set;
+        }
+        UInt16 Sequence
+        {
+            get;
+            set;
+        }
+        byte[] Payload
+        {
+            get;
+            set;
+        }
+    }
+    public class Message : IMessage
+    {
+        private UUID _Remote;
+        public UUID Remote
+        {
+            get { return _Remote; }
+            set { _Remote = value; }
+        }
+        private UInt16 _Conversation;
+        public UInt16 Conversation
+        {
+            get { return _Conversation; }
+            set { _Conversation = value; }
+        }
+        private string _Type;
+        public string Type
+        {
+            get { return _Type; }
+            set { _Type = value; }
+        }
+        private UInt16 _Sequence;
+        public UInt16 Sequence
+        {
+            get { return _Sequence; }
+            set { _Sequence = value; }
+        }
 
         private byte[] _payload;
         public virtual byte[] Payload
