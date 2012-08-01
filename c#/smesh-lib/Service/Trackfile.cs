@@ -418,7 +418,7 @@ namespace SimpleMesh.Service
                 Socket.Select(listenlist, null, null, 1000);
                 foreach (Socket sock in listenlist)
                 {
-                    MessageBrokerArgs acceptargs = new MessageBrokerArgs();
+                    Connection acceptargs = new Connection();
                     lock (this.Node.Connectors)
                     {
                         foreach (KeyValuePair<string, Connector> keypair in this.Node.Connectors)
@@ -429,7 +429,6 @@ namespace SimpleMesh.Service
                             }
                         }
                     }
-                    
                     acceptargs.Socket = sock.Accept();
                     ThreadPool.QueueUserWorkItem(this.AcceptSocket, acceptargs);
                 }
@@ -469,10 +468,10 @@ namespace SimpleMesh.Service
 
         private void AcceptSocket(Object acceptargs)
         {
-            MessageBrokerArgs container = (MessageBrokerArgs) acceptargs;
+            Connection container = (Connection) acceptargs;
             string host = container.Socket.RemoteEndPoint.ToString();
             Runner.DebugMessage("Debug.Net.Listener", "Connection recieved from " + host);
-            container.Connector.Authtypes(container);
+            container.Auth();
 
         }
         public void Start()

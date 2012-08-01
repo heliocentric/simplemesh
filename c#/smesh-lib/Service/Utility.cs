@@ -73,7 +73,7 @@ namespace SimpleMesh.Service
                 return Properties.Resources.ServiceVersion;
             }
         }
-        public static byte[] MessagePack(Message message, MessageBrokerArgs args)
+        public static byte[] MessagePack(Message message, Connection args)
         {
             byte[] rv = new byte[1];
             rv[0] = 0xFF;
@@ -88,7 +88,7 @@ namespace SimpleMesh.Service
                     bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.Conversation);
                     header[2] = bytescratch[0];
                     header[3] = bytescratch[1];
-                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(args.Types.ByName(message.Type).TypeID);
+                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(args.TypeList.ByName(message.Type).TypeID);
                     header[4] = bytescratch[0];
                     header[5] = bytescratch[1];
                     bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.Sequence);
@@ -101,7 +101,7 @@ namespace SimpleMesh.Service
             }
             return rv;
         }
-        public static int SendMessage(MessageBrokerArgs args, Message msg)
+        public static int SendMessage(Connection args, Message msg)
         {
             int retval = 1;
             byte[] packed;
@@ -114,7 +114,7 @@ namespace SimpleMesh.Service
             }
             return retval;
         }
-        public static Message ReceiveMessage(MessageBrokerArgs args)
+        public static Message ReceiveMessage(Connection args)
         {
             Message retval = new Message();
             byte [] header = new byte[8];
@@ -169,7 +169,7 @@ namespace SimpleMesh.Service
                 {
                     retval.Sequence = psequence;
                     retval.Conversation = pconversation;
-                    retval.Type = args.Types.ByID(ptypeid).Name;
+                    retval.Type = args.TypeList.ByID(ptypeid).Name;
                     retval.Payload = payload;
                 }
                 else

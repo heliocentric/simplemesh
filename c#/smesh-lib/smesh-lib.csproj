@@ -77,7 +77,6 @@
     <Compile Include="Service\Connector.cs" />
     <Compile Include="Service\HostInfo.cs" />
     <Compile Include="Service\Key.cs" />
-    <Compile Include="Service\MessageBrokerArgs.cs" />
     <Compile Include="Service\Net\TCP.cs" />
     <Compile Include="Service\Node.cs" />
     <Compile Include="Service\Type.cs" />

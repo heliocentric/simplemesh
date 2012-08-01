@@ -12,7 +12,7 @@ namespace SimpleMesh.Service
         public string Name;
         public string Description;
         public Dictionary<string, Auth> AuthKeyList;
-        public List<MessageBrokerArgs> LiveConnectionList;
+        public List<Connection> Connections;
         public Node()
         {
             this.UUID = "";
@@ -53,11 +53,7 @@ namespace SimpleMesh.Service
         }
         public int Connect(Connector conn)
         {
-            MessageBrokerArgs msg = new MessageBrokerArgs();
-            msg.Types = new TypeList();
-            msg.Connector = conn;
-            conn.Typelist = msg.Types;
-            conn.Connect(msg);
+            conn.Connect(this);
             return 1;
         }
     }
