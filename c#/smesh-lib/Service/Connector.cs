@@ -35,6 +35,29 @@ namespace SimpleMesh.Service
 {
     public interface IConnection
     {
+        Socket Socket
+        {
+            get;
+            set;
+        }
+        Connector Connector
+        {
+            get;
+            set;
+        }
+        TypeList TypeList
+        {
+            get;
+            set;
+        }
+        Node Node
+        {
+            get;
+            set;
+        }
+        int Send(Message message);
+        Message Recieve();
+
     }
     public class Connector
     {
