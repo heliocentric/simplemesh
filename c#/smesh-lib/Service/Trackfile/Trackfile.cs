@@ -415,7 +415,10 @@ namespace SimpleMesh.Service
             Connection container = (Connection) acceptargs;
             string host = container.Socket.RemoteEndPoint.ToString();
             Runner.DebugMessage("Debug.Net.Listener", "Connection recieved from " + host);
-            container.Auth();
+            int retval = container.Auth();
+            if (retval == 0) {
+                container.Node.Connections.Add(container);
+            }
 
         }
         public void Start()

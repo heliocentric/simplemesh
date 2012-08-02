@@ -164,6 +164,25 @@ namespace MeshBroker
                                         }
                                     }
                                     break;
+                                case "conn":
+                                    foreach (KeyValuePair<string,Node> node in Runner.Network.NodeList)
+                                    {
+                                        lock (node.Value)
+                                        {
+                                            Console.WriteLine(node.Value.ToString());
+                                            foreach (Connection conn in node.Value.Connections)
+                                            {
+                                                Console.WriteLine("\t" + conn.ToString());
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case "help":
+                                case "?":
+                                default:
+                                    Console.WriteLine("conn\t\t\tShow Connection Information");
+                                    Console.WriteLine("node\t\t\tShow Node Information");
+                                    break;
                             }
                         }
                         break;

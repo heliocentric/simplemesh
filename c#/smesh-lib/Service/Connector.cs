@@ -38,6 +38,7 @@ namespace SimpleMesh.Service
         public Connection()
         {
             this.TypeList = new TypeList();
+            this.Connect = false;
         }
         private Socket _socket;
         public Socket Socket
@@ -95,7 +96,7 @@ namespace SimpleMesh.Service
         {
             return new Message();
         }
-
+        public Boolean Connect;
         public int Auth()
         {
             Connection container = this;
@@ -221,6 +222,20 @@ namespace SimpleMesh.Service
             }
             return retval;
         }
+        public override string ToString()
+        {
+            string direction = "";
+            if (Connect == true)
+            {
+                direction = " -> ";
+            }
+            else
+            {
+                direction = " <- ";
+            }
+            
+            return Connector.Protocol.ToString() + ": " + Socket.LocalEndPoint.ToString() + direction + Socket.RemoteEndPoint.ToString();
+        }
     }
     public class Connector
     {
@@ -313,6 +328,7 @@ namespace SimpleMesh.Service
                 int authval = conn.Auth();
                 if (authval == 0)
                 {
+                    conn.Connect = true;
                     node.Connections.Add(conn);
                     retval = 0;
                     return retval;
