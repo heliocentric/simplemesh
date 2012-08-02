@@ -428,6 +428,17 @@ namespace SimpleMesh.Service
             this.Ping();
             this.Listen();
             this.Maint();
+            ThreadPool.QueueUserWorkItem(ConnectAll, new object());
+        }
+        public void ConnectAll(object blah)
+        {
+            foreach (KeyValuePair<string, Node> node in this.NodeList)
+            {
+                lock (node.Value)
+                {
+                    node.Value.Connect();
+                }
+            }
         }
         public void Stop()
         {

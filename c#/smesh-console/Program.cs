@@ -165,7 +165,7 @@ namespace MeshBroker
                                     }
                                     break;
                                 case "conn":
-                                    foreach (KeyValuePair<string,Node> node in Runner.Network.NodeList)
+                                    foreach (KeyValuePair<string, Node> node in Runner.Network.NodeList)
                                     {
                                         lock (node.Value)
                                         {
@@ -184,6 +184,12 @@ namespace MeshBroker
                                     Console.WriteLine("node\t\t\tShow Node Information");
                                     break;
                             }
+                        }
+                        else
+                        {
+
+                            Console.WriteLine("conn\t\t\tShow Connection Information");
+                            Console.WriteLine("node\t\t\tShow Node Information");
                         }
                         break;
                     case "?":
