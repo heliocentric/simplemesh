@@ -127,7 +127,7 @@ namespace SimpleMesh.Service
             bool end;
             end = false;
             bool error = false;
-            Message Recieved;
+            IMessage Recieved;
             bool uuid = false;
             bool authreceived = false;
             UUID remoteuuid = new UUID();

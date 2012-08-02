@@ -73,7 +73,7 @@ namespace SimpleMesh.Service
                 return Properties.Resources.ServiceVersion;
             }
         }
-        public static byte[] MessagePack(Message message, Connection args)
+        public static byte[] MessagePack(IMessage message, Connection args)
         {
             byte[] rv = new byte[1];
             rv[0] = 0xFF;
@@ -101,7 +101,7 @@ namespace SimpleMesh.Service
             }
             return rv;
         }
-        public static int SendMessage(Connection args, Message msg)
+        public static int SendMessage(Connection args, IMessage msg)
         {
             int retval = 1;
             byte[] packed;
@@ -114,9 +114,9 @@ namespace SimpleMesh.Service
             }
             return retval;
         }
-        public static Message ReceiveMessage(Connection args)
+        public static IMessage ReceiveMessage(Connection args)
         {
-            Message retval = new Message();
+            IMessage retval = new Message();
             byte [] header = new byte[8];
             int count;
             try

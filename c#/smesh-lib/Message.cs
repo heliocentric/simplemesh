@@ -58,6 +58,10 @@ namespace SimpleMesh
             get;
             set;
         }
+        UInt16 DataLength
+        {
+            get;
+        }
     }
     public class Message : IMessage
     {
@@ -124,13 +128,13 @@ namespace SimpleMesh
         }
     }
 
-    public class TextMessage : Message
+    public class TextMessage : IMessage
     {
         public TextMessage(string type)
-            : base(type)
         {
+            this.Type = type;
         }
-        public TextMessage(Message message)
+        public TextMessage(IMessage message)
         {
             this.Type = message.Type;
             this.Conversation = message.Conversation;
@@ -138,32 +142,58 @@ namespace SimpleMesh
             this.Sequence = message.Sequence;
             this.Payload = message.Payload;
         }
-        public string Data {
-        get {
-            return Encoding.UTF8.GetString(this.Payload);
+        private UUID _remote;
+
+        public UUID Remote
+        {
+            get { return _remote; }
+            set { _remote = value; }
         }
-            set {
-                this.Payload = Encoding.UTF8.GetBytes(value);
-            }
+        private string _type;
+
+        public string Type
+        {
+            get { return _type; }
+            set { _type = value; }
         }
-        public override byte[] Payload
+        private UInt16 _conversation;
+
+        public UInt16 Conversation
+        {
+            get { return _conversation; }
+            set { _conversation = value; }
+        }
+        private UInt16 _sequence;
+
+        public UInt16 Sequence
+        {
+            get { return _sequence; }
+            set { _sequence = value; }
+        }
+        private string _data;
+
+        public string Data
+        {
+            get { return _data; }
+            set { _data = value; }
+        }
+        public byte[] Payload
         {
             get
             {
-                return base.Payload;
+                return Encoding.UTF8.GetBytes(this._data);
             }
             set
             {
-                base.Payload = value;
+                this._data = Encoding.UTF8.GetString(value);
             }
         }
-        public override void Pack()
+        public UInt16 DataLength
         {
-            this.Payload = Encoding.UTF8.GetBytes(this.Data);
-        }
-        public override void Unpack()
-        {
-            this.Data = Encoding.UTF8.GetString(this.Payload);
+            get
+            {
+                return (UInt16) Encoding.UTF8.GetBytes(this._data).Length;
+            }
         }
     }
 }
