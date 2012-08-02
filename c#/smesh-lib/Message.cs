@@ -63,6 +63,7 @@ namespace SimpleMesh
             get;
         }
     }
+
     public class Message : IMessage
     {
         private UUID _Remote;
@@ -126,6 +127,10 @@ namespace SimpleMesh
         {
             return "Length=" + this.Payload.Length + " Type=" + this.Type + " Payload=" + Encoding.UTF8.GetString(this.Payload);
         }
+    }
+
+    public class BinaryMessage : Message, IMessage
+    {
     }
 
     public class TextMessage : IMessage
@@ -195,5 +200,11 @@ namespace SimpleMesh
                 return (UInt16) Encoding.UTF8.GetBytes(this._data).Length;
             }
         }
+        public override string ToString()
+        {
+            return "Length=" + this.Payload.Length + " Type=" + this.Type + " Payload=" + Encoding.UTF8.GetString(this.Payload);
+        }
     }
+
+
 }

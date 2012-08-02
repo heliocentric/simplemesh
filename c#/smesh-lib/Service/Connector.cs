@@ -219,7 +219,6 @@ namespace SimpleMesh.Service
                     }
                     break;
             }
-
             return retval;
         }
     }
@@ -307,16 +306,17 @@ namespace SimpleMesh.Service
             ep = new IPEndPoint(ip, this.Port);
             this.ConnectSocket = this.createsock();
             conn.Socket = this.ConnectSocket;
+            int retval;
             try
             {
                 this.ConnectSocket.Connect(ep);
-                conn.Auth();
+                retval = conn.Auth();
             }
             catch
             {
-                return 2;
+                retval = 2;
             }
-            return 1;
+            return retval;
         }
         private Socket createsock()
         {
