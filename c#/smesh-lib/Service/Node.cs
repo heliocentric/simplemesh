@@ -7,7 +7,7 @@ namespace SimpleMesh.Service
 {
     public class Node
     {
-        public Dictionary<string, Connector> ConnectionList;
+        public Dictionary<string, Connector> ConnectorList;
         public string UUID;
         public string Name;
         public string Description;
@@ -18,8 +18,9 @@ namespace SimpleMesh.Service
             this.UUID = "";
             this.Name = "";
             this.Description = "";
-            this.ConnectionList = new Dictionary<string, Connector>();
+            this.ConnectorList = new Dictionary<string, Connector>();
             this.AuthKeyList = new Dictionary<string, Auth>();
+            this.Connections = new List<Connection>();
         }
         public override string ToString()
         {
@@ -37,7 +38,7 @@ namespace SimpleMesh.Service
         {
             int retval;
             retval = 1;
-            foreach (KeyValuePair<string, Connector> conn in this.ConnectionList) {
+            foreach (KeyValuePair<string, Connector> conn in this.ConnectorList) {
                 Runner.DebugMessage("Debug.Info.Connect", "Attempting to connect to " + conn.Value.ToString());
                 retval = this.Connect(conn.Value);
                 if (retval == 0)
@@ -53,8 +54,9 @@ namespace SimpleMesh.Service
         }
         public int Connect(Connector conn)
         {
-            conn.Connect(this);
-            return 1;
+            int retval;
+            retval = conn.Connect(this);
+            return retval;
         }
     }
 }

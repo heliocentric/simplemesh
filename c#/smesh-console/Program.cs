@@ -240,9 +240,9 @@ namespace MeshBroker
                     }
                 }
                 Console.WriteLine("Connectors:");
-                lock (node.ConnectionList)
+                lock (node.ConnectorList)
                 {
-                    foreach (KeyValuePair<string, Connector> conn in node.ConnectionList)
+                    foreach (KeyValuePair<string, Connector> conn in node.ConnectorList)
                     {
                         lock (conn.Value)
                         {

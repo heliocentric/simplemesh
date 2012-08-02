@@ -310,7 +310,18 @@ namespace SimpleMesh.Service
             try
             {
                 this.ConnectSocket.Connect(ep);
-                retval = conn.Auth();
+                int authval = conn.Auth();
+                if (authval == 0)
+                {
+                    node.Connections.Add(conn);
+                    retval = 0;
+                    return retval;
+                }
+                else
+                {
+                    return authval;
+                }
+
             }
             catch
             {
