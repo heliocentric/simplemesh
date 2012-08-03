@@ -89,6 +89,7 @@
     <Compile Include="Service\Net\UDP.cs" />
     <Compile Include="Service\Runner.cs" />
     <Compile Include="Service\Trackfile\Trackfile.cs" />
+    <Compile Include="Time.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="UUID.cs" />
   </ItemGroup>

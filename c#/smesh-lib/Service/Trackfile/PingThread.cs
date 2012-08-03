@@ -25,6 +25,24 @@ namespace SimpleMesh.Service
 
         public void PingWorker()
         {
+            bool end = false;
+            while (end == false)
+            {
+                foreach (KeyValuePair<string, Node> node in this.NodeList)
+                {
+                    lock (node.Value)
+                    {
+                        foreach (Connection conn in node.Value.Connections)
+                        {
+                            lock (conn)
+                            {
+                                TextMessage msg = new TextMessage("Control.Ping");
+                                Utility.SendMessage(conn, msg);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

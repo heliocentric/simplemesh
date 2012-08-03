@@ -39,7 +39,9 @@ namespace SimpleMesh.Service
         {
             this.TypeList = new TypeList();
             this.Connect = false;
+            this.OutstandingPings = new Dictionary<ushort, Time>();
         }
+        public Dictionary<UInt16, Time> OutstandingPings;
         private Socket _socket;
         public Socket Socket
         {
