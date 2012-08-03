@@ -132,7 +132,9 @@ namespace SimpleMesh.Service
             this._lastmodifieddate = Utility.ToUnixTimestamp(System.DateTime.Now).ToString();
             this._versiontype = "1.0";
             this._new = true;
+            this.Random = new Random();
         }
+        public Random Random;
         private Node NodeInit(string UUID)
         {
             Node scratch;

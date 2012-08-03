@@ -40,7 +40,11 @@ namespace SimpleMesh.Service
             this.TypeList = new TypeList();
             this.Connect = false;
             this.OutstandingPings = new Dictionary<ushort, Time>();
+            this.PingCount = (ushort) Runner.Network.Random.Next(0,65000);
+            this.Zombie = false;
         }
+        public Boolean Zombie;
+        public UInt16 PingCount;
         public Dictionary<UInt16, Time> OutstandingPings;
         private Socket _socket;
         public Socket Socket

@@ -28,15 +28,13 @@ namespace SimpleMesh.Service
             while (end == false)
             {
                 ReadList = new List<Socket>();
-                lock (this.NodeList)
+                foreach (KeyValuePair<string, Node> node in this.NodeList)
                 {
-                    foreach (KeyValuePair<string, Node> node in this.NodeList) {
-                        lock (node.Value)
+                    lock (node.Value)
+                    {
+                        foreach (Connection conn in node.Value.Connections)
                         {
-                            foreach (Connection conn in node.Value.Connections)
-                            {
-                                ReadList.Add(conn.Socket);
-                            }
+                            ReadList.Add(conn.Socket);
                         }
                     }
                 }
@@ -48,6 +46,35 @@ namespace SimpleMesh.Service
                 Socket.Select(ReadList, null, null, 1000);
                 foreach (Socket sock in ReadList)
                 {
+                    foreach (KeyValuePair<string, Node> node in this.NodeList)
+                    {
+                        lock (node.Value)
+                        {
+                            foreach (Connection conn in node.Value.Connections)
+                            {
+                                if (conn.Socket == sock)
+                                {
+                                    ThreadPool.QueueUserWorkItem(Receiver, (object) conn);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        public void Receiver(object obj)
+        {
+            Connection conn = (Connection)obj;
+            lock (conn)
+            {
+                IMessage message = Utility.ReceiveMessage(conn);
+                switch (message.Type)
+                {
+                    case "Control.Ping":
+                        message.Type = "Control.Pong";
+                        Utility.SendMessage(conn, message);
+                        break;
                 }
             }
         }

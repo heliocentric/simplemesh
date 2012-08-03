@@ -101,16 +101,26 @@ namespace SimpleMesh.Service
             }
             return rv;
         }
-        public static int SendMessage(Connection args, IMessage msg)
+        public static IMessage SendMessage(Connection args, IMessage msg)
         {
-            int retval = 1;
+            IMessage retval = new Message();
             byte[] packed;
             packed = Utility.MessagePack(msg, args);
-            switch(args.Connector.Protocol) {
-                case "tcp":
-                    Runner.DebugMessage("Debug.Info.Message", "T: " + msg.ToString());
-                    args.Socket.Send(packed);
-                    break;
+            try
+            {
+                switch (args.Connector.Protocol)
+                {
+                    case "tcp":
+                        Runner.DebugMessage("Debug.Info.Message", "T: " + msg.ToString());
+                        args.Socket.Send(packed);
+                        break;
+                }
+                retval.Type = "Control.OK";
+            }
+            catch
+            {
+                retval.Type = "Error.Socket.Send";
+                args.Zombie = true;
             }
             return retval;
         }

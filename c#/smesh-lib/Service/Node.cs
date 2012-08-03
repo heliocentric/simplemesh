@@ -52,6 +52,9 @@ namespace SimpleMesh.Service
             }
             return retval;
         }
+        public void Cleanup(Connection conn)
+        {
+        }
         public int Connect(Connector conn)
         {
             int retval;

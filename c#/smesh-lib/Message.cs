@@ -125,7 +125,7 @@ namespace SimpleMesh
         }
         public override string ToString()
         {
-            return "Length=" + this.Payload.Length + " Type=" + this.Type + " Payload=" + Encoding.UTF8.GetString(this.Payload);
+            return "Len=" + this.Payload.Length + " Con=" + this.Conversation + " Seq=" + this.Sequence + " Type=" + this.Type + " Payload=" + Encoding.UTF8.GetString(this.Payload);
         }
     }
 
@@ -202,7 +202,8 @@ namespace SimpleMesh
         }
         public override string ToString()
         {
-            return "Length=" + this.Payload.Length + " Type=" + this.Type + " Payload=" + Encoding.UTF8.GetString(this.Payload);
+            return "Len=" + this.Payload.Length + " Con=" + this.Conversation + " Seq=" + this.Sequence + " Type=" + this.Type + " Payload=" + this.Data;
+
         }
     }
 

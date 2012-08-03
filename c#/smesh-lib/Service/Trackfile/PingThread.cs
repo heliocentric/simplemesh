@@ -28,6 +28,7 @@ namespace SimpleMesh.Service
             bool end = false;
             while (end == false)
             {
+                Thread.Sleep(12000 + Runner.Network.Random.Next(0,6000));
                 foreach (KeyValuePair<string, Node> node in this.NodeList)
                 {
                     lock (node.Value)
@@ -37,7 +38,30 @@ namespace SimpleMesh.Service
                             lock (conn)
                             {
                                 TextMessage msg = new TextMessage("Control.Ping");
-                                Utility.SendMessage(conn, msg);
+                                if (conn.OutstandingPings.Count < 10)
+                                {
+                                    UInt16 newpingcount;
+                                    if (conn.PingCount == 65535)
+                                    {
+                                        newpingcount = 0;
+                                    }
+                                    else
+                                    {
+                                        newpingcount = conn.PingCount++;
+                                    }
+                                    msg.Sequence = newpingcount;
+                                    Time timestamp = new Time();
+                                    msg.Data = timestamp.ToString();
+                                    conn.OutstandingPings.Add(msg.Sequence, timestamp);
+                                    IMessage retval = Utility.SendMessage(conn, msg);
+                                    if (retval.Type.Substring(0, 6) == "Error.")
+                                    {
+                                        node.Value.Cleanup(conn);
+                                    }
+                                }
+                                else
+                                {
+                                }
                             }
                         }
                     }
