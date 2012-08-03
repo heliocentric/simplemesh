@@ -34,7 +34,7 @@ namespace SimpleMesh.Service
             while (end != true)
             {
                 listenlist = new List<Socket>();
-                lock (this.Node)
+                lock (this.Node.Connectors)
                 {
                     foreach (KeyValuePair<string, Connector> keypair in this.Node.Connectors)
                     {

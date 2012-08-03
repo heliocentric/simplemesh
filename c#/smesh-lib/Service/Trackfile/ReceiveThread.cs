@@ -54,8 +54,14 @@ namespace SimpleMesh.Service
                             {
                                 if (conn.Socket == sock)
                                 {
-                                    ThreadPool.QueueUserWorkItem(Receiver, (object) conn);
-                                    break;
+                                    try
+                                    {
+                                        Runner.DebugMessage("Debug.Info.Receive", "Receive Socket: " + sock.LocalEndPoint.ToString() + " " + sock.RemoteEndPoint.ToString());
+                                        ThreadPool.QueueUserWorkItem(Receiver, (object)conn);
+                                    }
+                                    catch
+                                    {
+                                    }
                                 }
                             }
                         }

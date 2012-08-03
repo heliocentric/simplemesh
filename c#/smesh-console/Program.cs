@@ -165,6 +165,7 @@ namespace MeshBroker
                                     }
                                     break;
                                 case "conn":
+                                    Runner.DebugMessage("Debug.Info.Show", "Listing connections");
                                     foreach (KeyValuePair<string, Node> node in Runner.Network.NodeList)
                                     {
                                         lock (node.Value)

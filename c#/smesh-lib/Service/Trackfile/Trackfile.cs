@@ -405,11 +405,8 @@ namespace SimpleMesh.Service
         }
         public void Connect(Node node)
         {
-            lock (node)
-            {
                 Runner.DebugMessage("Debug.Info.Connect", "Trying to connect to: " + node.ToString());
                 node.Connect();
-            }
         }
 
         private void AcceptSocket(Object acceptargs)
@@ -436,10 +433,7 @@ namespace SimpleMesh.Service
         {
             foreach (KeyValuePair<string, Node> node in this.NodeList)
             {
-                lock (node.Value)
-                {
                     node.Value.Connect();
-                }
             }
         }
         public void Stop()
