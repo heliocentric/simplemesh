@@ -138,6 +138,17 @@ namespace MeshBroker
                         {
                             switch (words[1])
                             {
+                                case "listen":
+                                    lock (Runner.Network.Node) {
+                                        foreach (KeyValuePair<string,Connector> conn in Runner.Network.Node.Connectors)
+                                        {
+                                            if (conn.Value.Zombie == false)
+                                            {
+                                                Console.WriteLine(conn.Value.ToString());
+                                            }
+                                        }
+                                    }
+                                    break;
                                 case "node":
                                     if (words.Length > 2)
                                     {

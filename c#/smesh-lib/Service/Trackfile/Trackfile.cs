@@ -364,14 +364,18 @@ namespace SimpleMesh.Service
                     foreach (KeyValuePair<string, Connector> connector in Node.Connectors)
                     {
 
-                        switch (connector.Value.Host) {
-                            case "127.0.0.1":
-                                break;
-                            case "::1":
-                                break;
-                            default:
-                                FileContents.Add("C!" + this.Node.UUID.ToString() + "!" + connector.Value.ToString(this._versiontype));
-                            break;
+                        if (connector.Value.Zombie == false)
+                        {
+                            switch (connector.Value.Host)
+                            {
+                                case "127.0.0.1":
+                                    break;
+                                case "::1":
+                                    break;
+                                default:
+                                    FileContents.Add("C!" + this.Node.UUID.ToString() + "!" + connector.Value.ToString(this._versiontype));
+                                    break;
+                            }
                         }
                     }
                     FileContents.Add("SIG!None!");

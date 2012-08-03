@@ -260,6 +260,7 @@ namespace SimpleMesh.Service
         public string Host;
         public string TransportProtocol;
         public int Port;
+        public bool Zombie;
         public Connector()
         {
             this.Priority = 50;
@@ -268,6 +269,7 @@ namespace SimpleMesh.Service
             this.Host = "";
             this.Port = 17555;
             this.HostType = "";
+            this.Zombie = false;
             this.TransportProtocol = "IP";
             this.Type = ConnectorTypes.Connect;
         }
@@ -383,24 +385,32 @@ namespace SimpleMesh.Service
         }
         public void Listen()
         {
-            IPAddress ip;
-            IPEndPoint ep;
-            switch (this.Protocol) {
-                case "udp":
-                    this.ListenSocket = this.createsock();
-                    IPAddress.TryParse(this.Host, out ip);
-                    ep = new IPEndPoint(ip, this.Port);
-                    Runner.DebugMessage("Debug.Info.Connector", this.Host + ":" + this.Port);
-                    this.ListenSocket.Bind(ep);
-                    break;
-                case "tcp":
-                    this.ListenSocket = this.createsock();
-                    IPAddress.TryParse(this.Host, out ip);
-                    ep = new IPEndPoint(ip, this.Port);
-                    Runner.DebugMessage("Debug.Info.Connector", this.Host + ":" + this.Port);
-                    this.ListenSocket.Bind(ep);
-                    this.ListenSocket.Listen(20);
-                    break;
+            try
+            {
+                IPAddress ip;
+                IPEndPoint ep;
+                switch (this.Protocol)
+                {
+                    case "udp":
+                        this.ListenSocket = this.createsock();
+                        IPAddress.TryParse(this.Host, out ip);
+                        ep = new IPEndPoint(ip, this.Port);
+                        Runner.DebugMessage("Debug.Info.Connector", this.Host + ":" + this.Port);
+                        this.ListenSocket.Bind(ep);
+                        break;
+                    case "tcp":
+                        this.ListenSocket = this.createsock();
+                        IPAddress.TryParse(this.Host, out ip);
+                        ep = new IPEndPoint(ip, this.Port);
+                        Runner.DebugMessage("Debug.Info.Connector", this.Host + ":" + this.Port);
+                        this.ListenSocket.Bind(ep);
+                        this.ListenSocket.Listen(20);
+                        break;
+                }
+            }
+            catch
+            {
+                this.Zombie = true;
             }
         }
 
