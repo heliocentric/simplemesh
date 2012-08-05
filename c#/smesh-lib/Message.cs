@@ -65,35 +65,10 @@ namespace SimpleMesh
         void FromMessage(IMessage msg);
     }
 
-    public class Message : IMessage
+    public class Message : StubMessage, IMessage
     {
-        private UUID _Remote;
-        public UUID Remote
-        {
-            get { return _Remote; }
-            set { _Remote = value; }
-        }
-        private UInt16 _Conversation;
-        public UInt16 Conversation
-        {
-            get { return _Conversation; }
-            set { _Conversation = value; }
-        }
-        private string _Type;
-        public string Type
-        {
-            get { return _Type; }
-            set { _Type = value; }
-        }
-        private UInt16 _Sequence;
-        public UInt16 Sequence
-        {
-            get { return _Sequence; }
-            set { _Sequence = value; }
-        }
-
         private byte[] _payload;
-        public virtual byte[] Payload
+        public override byte[] Payload
         {
             get { return _payload; }
             set { _payload = value; }
@@ -113,36 +88,13 @@ namespace SimpleMesh
             this.Conversation = 0;
             this.Sequence = 0;
         }
-        public virtual UInt16 DataLength {
-            get {
-                return (UInt16) this.Payload.Length;
-            }
-        }
-        public virtual void Pack()
-        {
-        }
-        public virtual void Unpack()
-        {
-        }
-        public override string ToString()
-        {
-            return "Len=" + this.Payload.Length + " Con=" + this.Conversation + " Seq=" + this.Sequence + " Type=" + this.Type + " Payload=" + Encoding.UTF8.GetString(this.Payload);
-        }
-        public void FromMessage(IMessage msg)
-        {
-            this.Type = msg.Type;
-            this.Remote = msg.Remote;
-            this.Payload = msg.Payload;
-            this.Sequence = msg.Sequence;
-            this.Conversation = msg.Conversation;
-        }
     }
 
     public class BinaryMessage : Message, IMessage
     {
     }
 
-    public class TextMessage : IMessage
+    public class TextMessage : StubMessage, IMessage
     {
         public TextMessage(string type)
         {
@@ -152,6 +104,34 @@ namespace SimpleMesh
         {
             this.FromMessage(message);
         }
+        private string _data;
+
+        public string Data
+        {
+            get { return _data; }
+            set { _data = value; }
+        }
+        public override byte[] Payload
+        {
+            get
+            {
+                return Encoding.UTF8.GetBytes(this._data);
+            }
+            set
+            {
+                this._data = Encoding.UTF8.GetString(value);
+            }
+        }
+        public override string ToString()
+        {
+            return "Len=" + this.Payload.Length + " Con=" + this.Conversation + " Seq=" + this.Sequence + " Type=" + this.Type + " Payload=" + this._data;
+
+        }
+
+    }
+    public class StubMessage
+    {
+
         private UUID _remote;
 
         public UUID Remote
@@ -180,34 +160,9 @@ namespace SimpleMesh
             get { return _sequence; }
             set { _sequence = value; }
         }
-        private string _data;
-
-        public string Data
-        {
-            get { return _data; }
-            set { _data = value; }
-        }
-        public byte[] Payload
-        {
-            get
-            {
-                return Encoding.UTF8.GetBytes(this._data);
-            }
-            set
-            {
-                this._data = Encoding.UTF8.GetString(value);
-            }
-        }
-        public UInt16 DataLength
-        {
-            get
-            {
-                return (UInt16) Encoding.UTF8.GetBytes(this._data).Length;
-            }
-        }
         public override string ToString()
         {
-            return "Len=" + this.Payload.Length + " Con=" + this.Conversation + " Seq=" + this.Sequence + " Type=" + this.Type + " Payload=" + this.Data;
+            return "Len=" + this.Payload.Length + " Con=" + this.Conversation + " Seq=" + this.Sequence + " Type=" + this.Type + " Payload=0x" + BitConverter.ToString(this.Payload).Replace("-", string.Empty);
 
         }
         public void FromMessage(IMessage msg)
@@ -218,7 +173,24 @@ namespace SimpleMesh
             this.Sequence = msg.Sequence;
             this.Conversation = msg.Conversation;
         }
+        public virtual byte[] Payload
+        {
+            get;
+            set;
+        }
+        public UInt16 DataLength
+        {
+            get
+            {
+                return (UInt16) this.Payload.Length;
+            }
+        }
     }
-
-
+    public class KeyValueMessage : StubMessage, IMessage
+    {
+        public KeyValueMessage(IMessage msg)
+        {
+            this.FromMessage(msg);
+        }
+    }
 }
