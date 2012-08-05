@@ -42,7 +42,7 @@ namespace SimpleMesh.Service
                                     if (conn.Zombie == false)
                                     {
                                         TextMessage msg = new TextMessage("Control.Ping");
-                                        if (conn.OutstandingPings.Count < 99999)
+                                        if (conn.OutstandingPings.Count < 10)
                                         {
                                             UInt16 newpingcount;
                                             if (conn.PingCount == 65535)
