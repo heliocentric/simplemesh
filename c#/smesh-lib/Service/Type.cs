@@ -79,10 +79,6 @@ namespace SimpleMesh.Service
             scratch.TypeID = 6504;
             this.Add(scratch);
             scratch = new MType();
-            scratch.Name = "Control.Auth.Types";
-            scratch.TypeID = 6505;
-            this.Add(scratch);
-            scratch = new MType();
             scratch.Name = "Control.Ping";
             scratch.TypeID = 1;
             scratch.Static = true;

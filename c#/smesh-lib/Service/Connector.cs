@@ -105,6 +105,14 @@ namespace SimpleMesh.Service
         public Boolean Connect;
         public int Auth()
         {
+            return this.Auth(false);
+        }
+        public int Auth(bool listen)
+        {
+            return this.Auth(listen,false);
+        }
+        public int Auth(bool listen, bool enrollment)
+        {
             Connection container = this;
             int retval = 99;
             KeyValueMessage keyval;
@@ -129,8 +137,10 @@ namespace SimpleMesh.Service
             keyval.Add("node.uuid", Runner.Network.Node.UUID.ToString());
             keyval.Add("auth.types", authstring);
             keyval.Add("version", SimpleMesh.Service.Utility.Version);
-            keyval.Add("enroll", "0");
-            Utility.SendMessage(container, keyval);
+            if (listen == false)
+            {
+                Utility.SendMessage(container, keyval);
+            }
             bool end;
             end = false;
             bool error = false;
@@ -170,14 +180,12 @@ namespace SimpleMesh.Service
                                             }
                                         }
                                         break;
-                                    case "enroll":
-                                        if (keyn.Value == "1")
-                                        {
-                                            enrolling = true;
-                                        }
-                                        break;
                                 }
                                 Parameters.Add(keyn.Key, keyn.Value);
+                            }
+                            if (listen == true)
+                            {
+                                Utility.SendMessage(container, keyval);
                             }
                             break;
                     }

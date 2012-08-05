@@ -122,7 +122,7 @@
     <comment>Library Version.</comment>
   </data>
   <data name="ServiceVersion" xml:space="preserve">
-    <value>0.2.12</value>
+    <value>0.2.13</value>
     <comment>Service Version</comment>
   </data>
 </root>
