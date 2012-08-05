@@ -256,8 +256,8 @@ namespace SimpleMesh
             }
             return retval;
         }
-        private ushort _totalsize;
 
+        private ushort _totalsize;
         public ushort TotalSize
         {
             get { return _totalsize; }
@@ -269,7 +269,18 @@ namespace SimpleMesh
             get
             {
                 byte [] retval;
-                retval = new byte[0];
+                retval = new byte[this.TotalSize];
+                ushort outpointer = 0;
+                foreach (KeyValuePair<string, string> keyn in this.Data)
+                {
+                    ushort keylen = (ushort) keyn.Key.Length;
+                    ushort vallen = (ushort) keyn.Value.Length;
+                    System.Buffer.BlockCopy(Utility.ToNetworkOrder(keylen), 0, retval, outpointer, 2);
+                    System.Buffer.BlockCopy(Utility.ToNetworkOrder(vallen), 0, retval, outpointer + 2, 2);
+                    System.Buffer.BlockCopy(Encoding.UTF8.GetBytes(keyn.Key), 0, retval, outpointer + 4, keylen);
+                    System.Buffer.BlockCopy(Encoding.UTF8.GetBytes(keyn.Value), 0, retval, outpointer + 4 + keylen, vallen);
+                    outpointer = (ushort) (outpointer + 4 + keylen + vallen);
+                }
                 return retval;
             }
             set
