@@ -70,7 +70,7 @@ namespace SimpleMesh.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0.2.11.
+        ///   Looks up a localized string similar to 0.2.12.
         /// </summary>
         internal static string ServiceVersion {
             get {
