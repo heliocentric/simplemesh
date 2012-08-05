@@ -127,72 +127,86 @@ namespace SimpleMesh.Service
         public static IMessage ReceiveMessage(Connection args)
         {
             IMessage retval = new Message();
-            byte [] header = new byte[8];
+            byte[] header = new byte[8];
             int count;
-            try
+            lock (args)
             {
-                count = args.Socket.Receive(header);
-            }
-            catch
-            {
-                retval.Type = "Error.Message.Corrupted";
-                return retval;
-            }
-            if (count == 8)
-            {
-                byte[] _length = new byte[2];
-                byte[] _conversation = new byte[2];
-                byte[] _typeid = new byte[2];
-                byte[] _sequence = new byte[2];
-
-                _length[0] = header[0];
-                _length[1] = header[1];
-                _conversation[0] = header[2];
-                _conversation[1] = header[3];
-                _typeid[0] = header[4];
-                _typeid[1] = header[5];
-                _sequence[0] = header[6];
-                _sequence[1] = header[7];
-
-
-                UInt16 plength;
-                UInt16 pconversation;
-                UInt16 ptypeid;
-                UInt16 psequence;
-
-                plength = SimpleMesh.Utility.ToHostOrder(_length);
-                pconversation = SimpleMesh.Utility.ToHostOrder(_conversation);
-                ptypeid = SimpleMesh.Utility.ToHostOrder(_typeid);
-                psequence = SimpleMesh.Utility.ToHostOrder(_sequence);
-
-                byte[] payload = new byte[plength];
+                count = 0;
                 try
                 {
-                    count = args.Socket.Receive(payload);
+                    count = args.Socket.Receive(header);
                 }
                 catch
                 {
                     retval.Type = "Error.Message.Corrupted";
-                    return retval;
-                }
-                if (count == plength)
-                {
-                    retval.Sequence = psequence;
-                    retval.Conversation = pconversation;
-                    retval.Type = args.TypeList.ByID(ptypeid).Name;
-                    retval.Payload = payload;
-                }
-                else
-                {
-                    retval.Type = "Error.Message.Corrupted";
-                    return retval;
-                }
-            }
-            else
-            {
-                retval.Type = "Error.Message.Corrupted";
-            }
+                    args.Zombie = true;
 
+                }
+                switch (count)
+                {
+                    case 8:
+                        byte[] _length = new byte[2];
+                        byte[] _conversation = new byte[2];
+                        byte[] _typeid = new byte[2];
+                        byte[] _sequence = new byte[2];
+
+                        _length[0] = header[0];
+                        _length[1] = header[1];
+                        _conversation[0] = header[2];
+                        _conversation[1] = header[3];
+                        _typeid[0] = header[4];
+                        _typeid[1] = header[5];
+                        _sequence[0] = header[6];
+                        _sequence[1] = header[7];
+
+
+                        UInt16 plength;
+                        UInt16 pconversation;
+                        UInt16 ptypeid;
+                        UInt16 psequence;
+
+                        plength = SimpleMesh.Utility.ToHostOrder(_length);
+                        pconversation = SimpleMesh.Utility.ToHostOrder(_conversation);
+                        ptypeid = SimpleMesh.Utility.ToHostOrder(_typeid);
+                        psequence = SimpleMesh.Utility.ToHostOrder(_sequence);
+
+                        byte[] payload = new byte[plength];
+                        try
+                        {
+                            count = args.Socket.Receive(payload);
+                        }
+                        catch
+                        {
+                            retval.Type = "Error.Message.Corrupted";
+                            args.Zombie = true;
+                            return retval;
+                        }
+                        if (count == plength)
+                        {
+                            retval.Sequence = psequence;
+                            retval.Conversation = pconversation;
+                            retval.Type = args.TypeList.ByID(ptypeid).Name;
+                            retval.Payload = payload;
+                        }
+                        else
+                        {
+                            retval.Type = "Error.Message.Corrupted";
+                            args.Zombie = true;
+                            return retval;
+                        }
+                        break;
+                    case 0:
+                        retval.Type = "Control.Empty";
+                        break;
+                    default:
+                        retval.Type = "Error.Message.Corrupted";
+                        args.Zombie = true;
+                        break;
+
+                }
+
+
+            }
             Runner.DebugMessage("Debug.Info.Message", "R: " + retval.ToString());
             return retval;
 

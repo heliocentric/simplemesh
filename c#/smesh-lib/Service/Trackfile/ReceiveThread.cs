@@ -34,7 +34,13 @@ namespace SimpleMesh.Service
                     {
                         foreach (Connection conn in node.Value.Connections)
                         {
-                            ReadList.Add(conn.Socket);
+                            lock (conn)
+                            {
+                                if (conn.Zombie == false)
+                                {
+                                    ReadList.Add(conn.Socket);
+                                }
+                            }
                         }
                     }
                 }
@@ -48,21 +54,25 @@ namespace SimpleMesh.Service
                 {
                     foreach (KeyValuePair<string, Node> node in this.NodeList)
                     {
+                        Connection realconn = null;
                         lock (node.Value)
                         {
                             foreach (Connection conn in node.Value.Connections)
                             {
                                 if (conn.Socket == sock)
                                 {
-                                    try
-                                    {
-                                        Runner.DebugMessage("Debug.Info.Receive", "Receive Socket: " + sock.LocalEndPoint.ToString() + " " + sock.RemoteEndPoint.ToString());
-                                        ThreadPool.QueueUserWorkItem(Receiver, (object)conn);
-                                    }
-                                    catch
-                                    {
-                                    }
+                                    realconn = conn;
                                 }
+                            }
+                        }
+                        if (realconn != null)
+                        {
+                            try
+                            {
+                                ThreadPool.QueueUserWorkItem(Receiver, (object)realconn);
+                            }
+                            catch
+                            {
                             }
                         }
                     }
@@ -72,17 +82,18 @@ namespace SimpleMesh.Service
         public void Receiver(object obj)
         {
             Connection conn = (Connection)obj;
-            lock (conn)
+            IMessage message;
+                message = Utility.ReceiveMessage(conn);
+            
+            switch (message.Type)
             {
-                IMessage message = Utility.ReceiveMessage(conn);
-                switch (message.Type)
-                {
-                    case "Control.Ping":
-                        message.Type = "Control.Pong";
-                        Utility.SendMessage(conn, message);
-                        break;
-                }
+                case "Control.Ping":
+                    message.Type = "Control.Pong";
+                    Utility.SendMessage(conn, message);
+                    break;
+
             }
+
         }
     }
 }
