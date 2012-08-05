@@ -137,11 +137,12 @@ namespace SimpleMesh.Service
             IMessage Recieved;
             bool uuid = false;
             bool authreceived = false;
+            bool enrolling = false;
             UUID remoteuuid = new UUID();
             TextMessage text;
             List<string> typelist;
             typelist = new List<string>();
-
+            string conntype;
             while (end == false)
             {
                 Recieved = Utility.ReceiveMessage(container);
@@ -153,6 +154,9 @@ namespace SimpleMesh.Service
                             text = new TextMessage(Recieved);
                             remoteuuid = new UUID(text.Data);
                             uuid = true;
+                            break;
+                        case "Control.Auth.Enroll":
+                            enrolling = true;
                             break;
                         case "Control.Auth.Types":
                             text = new TextMessage(Recieved);
