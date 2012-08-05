@@ -62,6 +62,7 @@ namespace SimpleMesh
         {
             get;
         }
+        void FromMessage(IMessage msg);
     }
 
     public class Message : IMessage
@@ -127,6 +128,14 @@ namespace SimpleMesh
         {
             return "Len=" + this.Payload.Length + " Con=" + this.Conversation + " Seq=" + this.Sequence + " Type=" + this.Type + " Payload=" + Encoding.UTF8.GetString(this.Payload);
         }
+        public void FromMessage(IMessage msg)
+        {
+            this.Type = msg.Type;
+            this.Remote = msg.Remote;
+            this.Payload = msg.Payload;
+            this.Sequence = msg.Sequence;
+            this.Conversation = msg.Conversation;
+        }
     }
 
     public class BinaryMessage : Message, IMessage
@@ -141,11 +150,7 @@ namespace SimpleMesh
         }
         public TextMessage(IMessage message)
         {
-            this.Type = message.Type;
-            this.Conversation = message.Conversation;
-            this.Remote = message.Remote;
-            this.Sequence = message.Sequence;
-            this.Payload = message.Payload;
+            this.FromMessage(message);
         }
         private UUID _remote;
 
@@ -204,6 +209,14 @@ namespace SimpleMesh
         {
             return "Len=" + this.Payload.Length + " Con=" + this.Conversation + " Seq=" + this.Sequence + " Type=" + this.Type + " Payload=" + this.Data;
 
+        }
+        public void FromMessage(IMessage msg)
+        {
+            this.Type = msg.Type;
+            this.Remote = msg.Remote;
+            this.Payload = msg.Payload;
+            this.Sequence = msg.Sequence;
+            this.Conversation = msg.Conversation;
         }
     }
 
