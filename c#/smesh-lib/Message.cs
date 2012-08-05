@@ -188,9 +188,94 @@ namespace SimpleMesh
     }
     public class KeyValueMessage : StubMessage, IMessage
     {
+        public KeyValueMessage()
+        {
+            this.Constructor();
+        }
         public KeyValueMessage(IMessage msg)
         {
+            this.Constructor();
             this.FromMessage(msg);
+        }
+        private void Constructor()
+        {
+            this.TotalSize = 0;
+            this.Data = new Dictionary<string, string>();
+        }
+        public Dictionary<string, string> Data;
+        public int Add(string key, string value)
+        {
+            int retval = 1;
+            string tvalue;
+            if (this.Data.TryGetValue(key, out tvalue))
+            {
+                lock (this.Data)
+                {
+                    int oldvallen;
+                    int newvallen;
+                    oldvallen = Encoding.UTF8.GetBytes(this.Data[key]).Length;
+                    newvallen = Encoding.UTF8.GetBytes(value).Length;
+                    if (((TotalSize - oldvallen) + newvallen) < 65527)
+                    {
+                        this.Data[key] = value;
+                        this.TotalSize = (ushort) ((this.TotalSize - oldvallen) + newvallen);
+                    }
+                    else
+                    {
+                        retval = 3;
+                    }
+                }
+            }
+            else
+            {
+                lock (this.Data)
+                {
+                    int chunklen = Encoding.UTF8.GetBytes(key).Length + Encoding.UTF8.GetBytes(value).Length + 4;
+                    int newsize = this.TotalSize + chunklen;
+                    if (newsize <= 65527)
+                    {
+                        this.Data.Add(key, value);
+                        this.TotalSize = (ushort) newsize;
+                    }
+                    else
+                    {
+                        retval = 3;
+                    }
+                }
+            }
+            return retval;
+        }
+        public bool Remove(string key)
+        {
+            bool retval;
+            lock (this.Data)
+            {
+                retval = this.Data.Remove(key);
+                int tsize = this.TotalSize - Encoding.UTF8.GetBytes(key).Length - Encoding.UTF8.GetBytes(key).Length - 4;
+                this.TotalSize = (ushort)tsize;
+            }
+            return retval;
+        }
+        private ushort _totalsize;
+
+        public ushort TotalSize
+        {
+            get { return _totalsize; }
+            set { _totalsize = value; }
+        }
+
+        public override byte[] Payload
+        {
+            get
+            {
+                byte [] retval;
+                retval = new byte[0];
+                return retval;
+            }
+            set
+            {
+                this.Constructor();
+            }
         }
     }
 }
