@@ -104,6 +104,28 @@ namespace MeshBroker
                             Runner.DebugMode = words[1];
                         }
                         break;
+                    case "set":
+                        switch (words.Length)
+                        {
+                            case 2:
+                                switch (words[1].ToLower())
+                                {
+                                    case "pingtime":
+                                        Console.WriteLine("pingtime" + " = " + Runner.PingTime);
+                                        break;
+                                }
+                                break;
+                            case 3:
+                                switch (words[1].ToLower())
+                                {
+                                    case "pingtime":
+                                        Runner.PingTime = Convert.ToInt32(words[2]);
+                                        Console.WriteLine("pingtime" + " = " + Runner.PingTime);
+                                        break;
+                                }
+                                break;
+                        }
+                        break;
                     case "connect":
                         if (words.Length > 1)
                         {
@@ -179,7 +201,7 @@ namespace MeshBroker
                                     Runner.DebugMessage("Debug.Info.Show", "Listing connections");
                                     foreach (KeyValuePair<string, Node> node in Runner.Network.NodeList)
                                     {
-                                        lock (node.Value)
+                                        lock (node.Value.Connections)
                                         {
                                             Console.WriteLine(node.Value.ToString());
                                             foreach (Connection conn in node.Value.Connections)

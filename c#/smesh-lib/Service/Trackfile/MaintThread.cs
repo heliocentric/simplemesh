@@ -26,6 +26,37 @@ namespace SimpleMesh.Service
 
         public void MaintWorker()
         {
+            bool end;
+            end = false;
+            List<Connection> staleconns;
+            while (end == false)
+            {
+               
+                Thread.Sleep(20000);
+                lock (Runner.Network.NodeList)
+                {
+                    foreach (KeyValuePair<string, Node> node in Runner.Network.NodeList)
+                    {
+                        staleconns = new List<Connection>();
+                        lock (node.Value.Connections)
+                        {
+                            foreach (Connection conn in node.Value.Connections)
+                            {
+                                if (conn.Zombie == true)
+                                {
+                                    staleconns.Add(conn);
+                                }
+                            }
+
+                            foreach (Connection conn in staleconns)
+                            {
+                                node.Value.Connections.Remove(conn);
+                            }
+                        }
+                    }
+                }
+
+            }
         }
     }
 }

@@ -28,45 +28,50 @@ namespace SimpleMesh.Service
             bool end = false;
             while (end == false)
             {
-                Thread.Sleep(12000);
-                foreach (KeyValuePair<string, Node> node in this.NodeList)
+                if (Runner.PingTime > 0)
                 {
-                    foreach (Connection conn in node.Value.Connections)
+                    Thread.Sleep(Runner.PingTime);
+                    foreach (KeyValuePair<string, Node> node in this.NodeList)
                     {
-                        Runner.DebugMessage("Debug.Info.Ping", "Attempting to connect to: " + node.Value.ToString());
-                        lock (conn)
+                        lock (node.Value.Connections)
                         {
-                            if (conn.Zombie == false)
+                            foreach (Connection conn in node.Value.Connections)
                             {
-                                TextMessage msg = new TextMessage("Control.Ping");
-                                if (conn.OutstandingPings.Count < 10)
+                                lock (conn)
                                 {
-                                    UInt16 newpingcount;
-                                    if (conn.PingCount == 65535)
+                                    if (conn.Zombie == false)
                                     {
-                                        newpingcount = 0;
+                                        TextMessage msg = new TextMessage("Control.Ping");
+                                        if (conn.OutstandingPings.Count < 99999)
+                                        {
+                                            UInt16 newpingcount;
+                                            if (conn.PingCount == 65535)
+                                            {
+                                                newpingcount = 0;
+                                            }
+                                            else
+                                            {
+                                                newpingcount = conn.PingCount++;
+                                            }
+                                            msg.Sequence = newpingcount;
+                                            Time timestamp = new Time();
+                                            msg.Data = timestamp.ToString();
+                                            conn.OutstandingPings.Add(msg.Sequence, timestamp);
+                                            IMessage retval = Utility.SendMessage(conn, msg);
+                                        }
+                                        else
+                                        {
+                                        }
                                     }
-                                    else
-                                    {
-                                        newpingcount = conn.PingCount++;
-                                    }
-                                    msg.Sequence = newpingcount;
-                                    Time timestamp = new Time();
-                                    msg.Data = timestamp.ToString();
-                                    conn.OutstandingPings.Add(msg.Sequence, timestamp);
-                                    IMessage retval = Utility.SendMessage(conn, msg);
-                                    if (retval.Type.Substring(0, 6) == "Error.")
-                                    {
-                                        node.Value.Cleanup(conn);
-                                    }
-                                }
-                                else
-                                {
+
                                 }
                             }
-
                         }
                     }
+                }
+                else
+                {
+                    Thread.Sleep(20000);
                 }
             }
         }

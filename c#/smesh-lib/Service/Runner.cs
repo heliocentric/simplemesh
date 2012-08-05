@@ -96,7 +96,7 @@ namespace SimpleMesh.Service
                     break;
             }
         }
-
+        public static Int32 PingTime;
         public delegate HostInfo HostInfoType();
         public static HostInfoType HostInfoCallback;
 
@@ -213,6 +213,7 @@ namespace SimpleMesh.Service
         public static bool Mono;
         public static void Start(string path, string configfile)
         {
+            Runner.PingTime = 12000;
             Type t = Type.GetType("Mono.Runtime");
             if (t != null)
             {

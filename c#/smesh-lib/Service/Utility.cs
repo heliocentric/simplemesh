@@ -207,7 +207,10 @@ namespace SimpleMesh.Service
 
 
             }
-            Runner.DebugMessage("Debug.Info.Message", "R: " + retval.ToString());
+            if (retval.Type != "Control.Empty")
+            {
+                Runner.DebugMessage("Debug.Info.Message", "R: " + retval.ToString());
+            }
             return retval;
 
         }

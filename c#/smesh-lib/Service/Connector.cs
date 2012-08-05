@@ -239,8 +239,12 @@ namespace SimpleMesh.Service
             {
                 direction = " <- ";
             }
-            
-            return Connector.Protocol.ToString() + ": " + Socket.LocalEndPoint.ToString() + direction + Socket.RemoteEndPoint.ToString();
+            string zombie = "";
+            if (this.Zombie == true)
+            {
+                zombie = " - ZOMBIE";
+            }
+            return Connector.Protocol.ToString() + ": " + Socket.LocalEndPoint.ToString() + direction + Socket.RemoteEndPoint.ToString() + zombie;
         }
     }
     public class Connector
@@ -337,7 +341,10 @@ namespace SimpleMesh.Service
                 if (authval == 0)
                 {
                     conn.Connect = true;
-                    node.Connections.Add(conn);
+                    lock (node.Connections)
+                    {
+                        node.Connections.Add(conn);
+                    }
                     retval = 0;
                     return retval;
                 }

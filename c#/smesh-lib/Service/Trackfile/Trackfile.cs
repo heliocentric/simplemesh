@@ -420,14 +420,17 @@ namespace SimpleMesh.Service
             Runner.DebugMessage("Debug.Net.Listener", "Connection recieved from " + host);
             int retval = container.Auth();
             if (retval == 0) {
-                container.Node.Connections.Add(container);
+                lock (container.Node.Connections)
+                {
+                    container.Node.Connections.Add(container);
+                }
             }
 
         }
         public void Start()
         {
             this.Send();
-            this.Receive();
+            // this.Receive();
             this.Ping();
             this.Listen();
             this.Maint();

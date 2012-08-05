@@ -83,7 +83,7 @@ namespace SimpleMesh.Service
         {
             Connection conn = (Connection)obj;
             IMessage message;
-                message = Utility.ReceiveMessage(conn);
+             message = Utility.ReceiveMessage(conn);
             
             switch (message.Type)
             {
