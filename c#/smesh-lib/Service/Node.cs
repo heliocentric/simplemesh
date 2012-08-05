@@ -11,6 +11,7 @@ namespace SimpleMesh.Service
         public string UUID;
         public string Name;
         public string Description;
+        public string Version;
         public Dictionary<string, Auth> AuthKeyList;
         public List<Connection> Connections;
         public Node()

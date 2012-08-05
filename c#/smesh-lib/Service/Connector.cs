@@ -107,16 +107,11 @@ namespace SimpleMesh.Service
         {
             Connection container = this;
             int retval = 99;
-            TextMessage scratch;
-            scratch = new TextMessage("Control.Auth.UUID");
-            scratch.Data = Runner.Network.Node.UUID.ToString();
-            Utility.SendMessage(container, scratch);
-
+            KeyValueMessage keyval;
             List<string> authtypes = new List<string>();
             authtypes.Add("NONE");
             authtypes.Add("RSA");
 
-            scratch = new TextMessage("Control.Auth.Types");
             string authstring = "";
             foreach (string entry in authtypes)
             {
@@ -129,8 +124,13 @@ namespace SimpleMesh.Service
                     authstring = authstring + " " + entry;
                 }
             }
-            scratch.Data = authstring;
-            Utility.SendMessage(container, scratch);
+
+            keyval = new KeyValueMessage("Control.PreAuth");
+            keyval.Add("node.uuid", Runner.Network.Node.UUID.ToString());
+            keyval.Add("auth.types", authstring);
+            keyval.Add("version", SimpleMesh.Service.Utility.Version);
+            keyval.Add("enroll", "0");
+            Utility.SendMessage(container, keyval);
             bool end;
             end = false;
             bool error = false;
@@ -138,11 +138,11 @@ namespace SimpleMesh.Service
             bool uuid = false;
             bool authreceived = false;
             bool enrolling = false;
-            UUID remoteuuid = new UUID();
-            TextMessage text;
+            KeyValueMessage messages;
             List<string> typelist;
             typelist = new List<string>();
             string conntype;
+            Dictionary<string, string> Parameters = new Dictionary<string, string>();
             while (end == false)
             {
                 Recieved = Utility.ReceiveMessage(container);
@@ -150,26 +150,35 @@ namespace SimpleMesh.Service
                 {
                     switch (Recieved.Type)
                     {
-                        case "Control.Auth.UUID":
-                            text = new TextMessage(Recieved);
-                            remoteuuid = new UUID(text.Data);
-                            uuid = true;
-                            break;
-                        case "Control.Auth.Enroll":
-                            enrolling = true;
-                            break;
-                        case "Control.Auth.Types":
-                            text = new TextMessage(Recieved);
-
-                            string[] types = text.Data.Split(' ');
-                            foreach (string type in types)
+                        case "Control.PreAuth":
+                            messages = new KeyValueMessage(Recieved);
+                            foreach (KeyValuePair<string, string> keyn in messages.Data)
                             {
-                                if (authtypes.Contains(type))
+                                switch (keyn.Key)
                                 {
-                                    typelist.Add(type);
+                                    case "node.uuid":
+                                        uuid = true;
+                                        break;
+                                    case "auth.types":
+                                        authreceived = true;
+                                        string[] types = keyn.Value.Split(' ');
+                                        foreach (string type in types)
+                                        {
+                                            if (authtypes.Contains(type))
+                                            {
+                                                typelist.Add(type);
+                                            }
+                                        }
+                                        break;
+                                    case "enroll":
+                                        if (keyn.Value == "1")
+                                        {
+                                            enrolling = true;
+                                        }
+                                        break;
                                 }
+                                Parameters.Add(keyn.Key, keyn.Value);
                             }
-                            authreceived = true;
                             break;
                     }
                 }
@@ -218,9 +227,10 @@ namespace SimpleMesh.Service
             {
                 case "NONE":
                     Node node;
-                    if (Runner.Network.NodeList.TryGetValue(remoteuuid.ToString(), out node) == true)
+                    if (Runner.Network.NodeList.TryGetValue(Parameters["node.uuid"], out node) == true)
                     {
                         container.Node = node;
+                        node.Version = Parameters["version"];
                         Runner.DebugMessage("Debug.Info.Auth", "Remote Node is: " + node.ToString());
                         retval = 0;
                     }

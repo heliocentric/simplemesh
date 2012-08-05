@@ -59,7 +59,7 @@ namespace SimpleMesh.Service
             scratch.Static = true;
             this.Add(scratch);
             scratch = new MType();
-            scratch.Name = "Control.Auth.UUID";
+            scratch.Name = "Control.PreAuth";
             scratch.TypeID = 6500;
             this.Add(scratch);
             scratch = new MType();
