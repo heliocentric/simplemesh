@@ -213,7 +213,7 @@ namespace SimpleMesh.Service
         public static bool Mono;
         public static void Start(string path, string configfile)
         {
-            Runner.PingTime = 12000;
+            Runner.PingTime = 4373;
             Type t = Type.GetType("Mono.Runtime");
             if (t != null)
             {

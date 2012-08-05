@@ -69,7 +69,7 @@ namespace SimpleMesh.Service
                         {
                             try
                             {
-                                ThreadPool.QueueUserWorkItem(Receiver, (object)realconn);
+                                Receiver((object) realconn);
                             }
                             catch
                             {
@@ -90,6 +90,16 @@ namespace SimpleMesh.Service
                 case "Control.Ping":
                     message.Type = "Control.Pong";
                     Utility.SendMessage(conn, message);
+                    break;
+                case "Control.Pong":
+                    lock (conn)
+                    {
+                        Time time;
+                        if (conn.OutstandingPings.TryGetValue(message.Sequence, out time))
+                        {
+                            conn.OutstandingPings.Remove(message.Sequence);
+                        }
+                    }
                     break;
 
             }

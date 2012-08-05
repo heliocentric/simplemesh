@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using Org.BouncyCastle.Crypto.Digests;
 using System.Security.Cryptography;
+using SimpleMesh;
 
 namespace SimpleMesh.Service
 {
@@ -111,7 +112,8 @@ namespace SimpleMesh.Service
                 switch (args.Connector.Protocol)
                 {
                     case "tcp":
-                        Runner.DebugMessage("Debug.Info.Message", "T: " + msg.ToString());
+
+                        MsgOut("T", msg);
                         args.Socket.Send(packed);
                         break;
                 }
@@ -207,12 +209,23 @@ namespace SimpleMesh.Service
 
 
             }
-            if (retval.Type != "Control.Empty")
-            {
-                Runner.DebugMessage("Debug.Info.Message", "R: " + retval.ToString());
-            }
+            MsgOut("R", retval);
             return retval;
 
+        }
+        public static void MsgOut(string s, IMessage msg)
+        {
+            switch (msg.Type)
+            {
+                case "Control.Ping":
+                case "Control.Pong":
+                case "Control.Empty":
+                    break;
+                default:
+                    Runner.DebugMessage("Debug.Info.Message", s + ": " + msg.ToString());
+                    break;
+
+            }
         }
     }
 }

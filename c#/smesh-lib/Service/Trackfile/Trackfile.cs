@@ -430,7 +430,7 @@ namespace SimpleMesh.Service
         public void Start()
         {
             this.Send();
-            // this.Receive();
+            this.Receive();
             this.Ping();
             this.Listen();
             this.Maint();

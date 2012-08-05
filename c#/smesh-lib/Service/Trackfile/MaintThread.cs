@@ -31,8 +31,8 @@ namespace SimpleMesh.Service
             List<Connection> staleconns;
             while (end == false)
             {
-               
-                Thread.Sleep(20000);
+
+                Thread.Sleep(19531);
                 lock (Runner.Network.NodeList)
                 {
                     foreach (KeyValuePair<string, Node> node in Runner.Network.NodeList)
@@ -52,6 +52,10 @@ namespace SimpleMesh.Service
                             {
                                 node.Value.Connections.Remove(conn);
                             }
+                        }
+                        if (node.Value.Connections.Count < 2)
+                        {
+                            node.Value.Connect();
                         }
                     }
                 }
