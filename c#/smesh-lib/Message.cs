@@ -294,21 +294,27 @@ namespace SimpleMesh
                 ushort outpointer = 0;
                 while (outpointer < value.Length)
                 {
-                    Console.WriteLine("size: " + value.Length + " offset: " + outpointer);
-                    byte[] bkeylen = new byte[2];
-                    byte[] bvallen = new byte[2];
-                    bkeylen[0] = value[outpointer];
-                    bkeylen[1] = value[outpointer + 1];
-                    bvallen[0] = value[outpointer + 2];
-                    bvallen[1] = value[outpointer + 3];
-                    ushort keylen = Utility.ToHostOrder(bkeylen);
-                    ushort vallen = Utility.ToHostOrder(bvallen);
-                    byte[] key = new byte[keylen];
-                    byte[] val = new byte[vallen];
-                    System.Buffer.BlockCopy(value, outpointer + 4,key,0,keylen);
-                    System.Buffer.BlockCopy(value, outpointer + 4 + keylen, val, 0, vallen);
-                    this.Data.Add(Encoding.UTF8.GetString(key), Encoding.UTF8.GetString(val));
-                    outpointer = (ushort) (outpointer + 4 + keylen + vallen);
+                    try
+                    {
+                        byte[] bkeylen = new byte[2];
+                        byte[] bvallen = new byte[2];
+                        bkeylen[0] = value[outpointer];
+                        bkeylen[1] = value[outpointer + 1];
+                        bvallen[0] = value[outpointer + 2];
+                        bvallen[1] = value[outpointer + 3];
+                        ushort keylen = Utility.ToHostOrder(bkeylen);
+                        ushort vallen = Utility.ToHostOrder(bvallen);
+                        byte[] key = new byte[keylen];
+                        byte[] val = new byte[vallen];
+                        System.Buffer.BlockCopy(value, outpointer + 4, key, 0, keylen);
+                        System.Buffer.BlockCopy(value, outpointer + 4 + keylen, val, 0, vallen);
+                        this.Data.Add(Encoding.UTF8.GetString(key), Encoding.UTF8.GetString(val));
+                        outpointer = (ushort)(outpointer + 4 + keylen + vallen);
+                    }
+                    catch
+                    {
+                        break;
+                    }
                 }
             }
         }

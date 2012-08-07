@@ -101,6 +101,15 @@ namespace SimpleMesh.Service
                         }
                     }
                     break;
+                default:
+                    if ((message.Type.Length == 6) && (message.Type.Substring(0, 6) == "Error."))
+                    {
+
+                    }
+                    else
+                    {
+                    }
+                    break;
 
             }
 
