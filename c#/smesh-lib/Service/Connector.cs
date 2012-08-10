@@ -30,12 +30,13 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using System.Net;
+using SimpleMesh.Service.AppProtocol;
 
 namespace SimpleMesh.Service
 {
-    public class Connection
+    public class Native1 : StubConnection, IConnection
     {
-        public Connection()
+        public Native1()
         {
             this.TypeList = new TypeList();
             this.Connect = false;
@@ -43,9 +44,27 @@ namespace SimpleMesh.Service
             this.PingCount = (ushort) Runner.Network.Random.Next(0,65000);
             this.Zombie = false;
         }
-        public Boolean Zombie;
-        public UInt16 PingCount;
-        public Dictionary<UInt16, Time> OutstandingPings;
+        private Boolean _zombie;
+
+        public Boolean Zombie
+        {
+            get { return _zombie; }
+            set { _zombie = value; }
+        }
+        private UInt16 _pingcount;
+
+        public UInt16 PingCount
+        {
+            get { return _pingcount; }
+            set { _pingcount = value; }
+        }
+        private Dictionary<UInt16, Time> _OutstandingPings;
+
+        public Dictionary<UInt16, Time> OutstandingPings
+        {
+            get { return _OutstandingPings; }
+            set { _OutstandingPings = value; }
+        }
         private Socket _socket;
         public Socket Socket
         {
@@ -94,7 +113,7 @@ namespace SimpleMesh.Service
                 _node = value;
             }
         }
-        int Send(Message message)
+        int Send(IMessage message)
         {
             return 1;
         }
@@ -113,7 +132,7 @@ namespace SimpleMesh.Service
         }
         public int Auth(bool listen, bool enrollment)
         {
-            Connection container = this;
+            IConnection container = this;
             int retval = 99;
             KeyValueMessage keyval;
             List<string> authtypes = new List<string>();
@@ -346,7 +365,7 @@ namespace SimpleMesh.Service
         public Socket ConnectSocket;
         public int Connect(Node node)
         {
-            Connection conn = new Connection();
+            IConnection conn = new Native1();
             conn.Connector = this;
             IPAddress ip;
             IPEndPoint ep;

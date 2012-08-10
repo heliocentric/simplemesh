@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using System.Threading;
+using SimpleMesh.Service.AppProtocol;
 
 namespace SimpleMesh.Service
 {
@@ -35,7 +36,7 @@ namespace SimpleMesh.Service
                     {
                         lock (node.Value.Connections)
                         {
-                            foreach (Connection conn in node.Value.Connections)
+                            foreach (IConnection conn in node.Value.Connections)
                             {
                                 lock (conn)
                                 {

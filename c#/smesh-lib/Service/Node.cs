@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SimpleMesh.Service.AppProtocol;
 
 namespace SimpleMesh.Service
 {
@@ -13,7 +14,7 @@ namespace SimpleMesh.Service
         public string Description;
         public string Version;
         public Dictionary<string, Auth> AuthKeyList;
-        public List<Connection> Connections;
+        public List<IConnection> Connections;
         public Node()
         {
             this.UUID = "";
@@ -21,7 +22,7 @@ namespace SimpleMesh.Service
             this.Description = "";
             this.ConnectorList = new Dictionary<string, Connector>();
             this.AuthKeyList = new Dictionary<string, Auth>();
-            this.Connections = new List<Connection>();
+            this.Connections = new List<IConnection>();
         }
         public override string ToString()
         {
@@ -53,7 +54,7 @@ namespace SimpleMesh.Service
             }
             return retval;
         }
-        public void Cleanup(Connection conn)
+        public void Cleanup(IConnection conn)
         {
         }
         public int Connect(Connector conn)

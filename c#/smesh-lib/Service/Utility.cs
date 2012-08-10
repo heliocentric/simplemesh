@@ -31,6 +31,7 @@ using System.Text;
 using Org.BouncyCastle.Crypto.Digests;
 using System.Security.Cryptography;
 using SimpleMesh;
+using SimpleMesh.Service.AppProtocol;
 
 namespace SimpleMesh.Service
 {
@@ -74,7 +75,7 @@ namespace SimpleMesh.Service
                 return Properties.Resources.ServiceVersion;
             }
         }
-        public static byte[] MessagePack(IMessage message, Connection args)
+        public static byte[] MessagePack(IMessage message, IConnection args)
         {
             byte[] rv = new byte[1];
             rv[0] = 0xFF;
@@ -102,7 +103,7 @@ namespace SimpleMesh.Service
             }
             return rv;
         }
-        public static IMessage SendMessage(Connection args, IMessage msg)
+        public static IMessage SendMessage(IConnection args, IMessage msg)
         {
             IMessage retval = new Message();
             byte[] packed;
@@ -126,7 +127,7 @@ namespace SimpleMesh.Service
             }
             return retval;
         }
-        public static IMessage ReceiveMessage(Connection args)
+        public static IMessage ReceiveMessage(IConnection args)
         {
             IMessage retval = new Message();
             byte[] header = new byte[8];

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Net.Sockets;
+using SimpleMesh.Service.AppProtocol;
 
 namespace SimpleMesh.Service
 {
@@ -49,7 +50,7 @@ namespace SimpleMesh.Service
                 Socket.Select(listenlist, null, null, 1000);
                 foreach (Socket sock in listenlist)
                 {
-                    Connection acceptargs = new Connection();
+                    IConnection acceptargs = new Native1();
                     lock (this.Node.Connectors)
                     {
                         foreach (KeyValuePair<string, Connector> keypair in this.Node.Connectors)
@@ -68,7 +69,7 @@ namespace SimpleMesh.Service
 
         private void AcceptSocket(Object acceptargs)
         {
-            Connection container = (Connection)acceptargs;
+            IConnection container = (IConnection)acceptargs;
             string host = container.Socket.RemoteEndPoint.ToString();
             Runner.DebugMessage("Debug.Net.Listener", "Connection recieved from " + host);
             int retval = container.Auth(true);

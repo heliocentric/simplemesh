@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Net.Sockets;
+using SimpleMesh.Service.AppProtocol;
 
 namespace SimpleMesh.Service
 {
@@ -32,7 +33,7 @@ namespace SimpleMesh.Service
                 {
                     lock (node.Value)
                     {
-                        foreach (Connection conn in node.Value.Connections)
+                        foreach (IConnection conn in node.Value.Connections)
                         {
                             lock (conn)
                             {
@@ -54,10 +55,10 @@ namespace SimpleMesh.Service
                 {
                     foreach (KeyValuePair<string, Node> node in this.NodeList)
                     {
-                        Connection realconn = null;
+                        IConnection realconn = null;
                         lock (node.Value)
                         {
-                            foreach (Connection conn in node.Value.Connections)
+                            foreach (IConnection conn in node.Value.Connections)
                             {
                                 if (conn.Socket == sock)
                                 {
@@ -81,7 +82,7 @@ namespace SimpleMesh.Service
         }
         public void Receiver(object obj)
         {
-            Connection conn = (Connection)obj;
+            IConnection conn = (IConnection)obj;
             IMessage message;
              message = Utility.ReceiveMessage(conn);
             

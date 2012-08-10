@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Net.Sockets;
-
+using SimpleMesh.Service.AppProtocol;
 
 namespace SimpleMesh.Service
 {
@@ -28,7 +28,7 @@ namespace SimpleMesh.Service
         {
             bool end;
             end = false;
-            List<Connection> staleconns;
+            List<IConnection> staleconns;
             while (end == false)
             {
 
@@ -37,10 +37,10 @@ namespace SimpleMesh.Service
                 {
                     foreach (KeyValuePair<string, Node> node in Runner.Network.NodeList)
                     {
-                        staleconns = new List<Connection>();
+                        staleconns = new List<IConnection>();
                         lock (node.Value.Connections)
                         {
-                            foreach (Connection conn in node.Value.Connections)
+                            foreach (IConnection conn in node.Value.Connections)
                             {
                                 if (conn.Zombie == true)
                                 {
@@ -48,7 +48,7 @@ namespace SimpleMesh.Service
                                 }
                             }
 
-                            foreach (Connection conn in staleconns)
+                            foreach (IConnection conn in staleconns)
                             {
                                 node.Value.Connections.Remove(conn);
                             }
