@@ -84,13 +84,13 @@ namespace SimpleMesh.Service
         {
             IConnection conn = (IConnection)obj;
             IMessage message;
-             message = Utility.ReceiveMessage(conn);
+             message = conn.Receive();
             
             switch (message.Type)
             {
                 case "Control.Ping":
                     message.Type = "Control.Pong";
-                    Utility.SendMessage(conn, message);
+                    conn.Send(message) ;
                     break;
                 case "Control.Pong":
                     lock (conn)

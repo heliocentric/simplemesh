@@ -60,7 +60,7 @@ namespace SimpleMesh.Service.AppProtocol
             keyval.Add("version", SimpleMesh.Service.Utility.Version);
             if (listen == false)
             {
-                Utility.SendMessage(container, keyval);
+                container.Send(keyval);
             }
             bool end;
             end = false;
@@ -76,7 +76,7 @@ namespace SimpleMesh.Service.AppProtocol
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
             while (end == false)
             {
-                Recieved = Utility.ReceiveMessage(container);
+                Recieved = container.Receive();
                 if (Recieved.Type.Substring(0, 6) != "Error.")
                 {
                     switch (Recieved.Type)
@@ -106,7 +106,7 @@ namespace SimpleMesh.Service.AppProtocol
                             }
                             if (listen == true)
                             {
-                                Utility.SendMessage(container, keyval);
+                                container.Send(keyval);
                             }
                             break;
                     }
@@ -188,6 +188,136 @@ namespace SimpleMesh.Service.AppProtocol
                 zombie = " - ZOMBIE";
             }
             return Connector.Protocol.ToString() + ": " + Socket.LocalEndPoint.ToString() + direction + Socket.RemoteEndPoint.ToString() + zombie;
+        }
+
+        public IMessage Send(IMessage msg)
+        {
+            IConnection args = this;
+            IMessage retval = new Message();
+            byte[] packed;
+            packed = Utility.MessagePack(msg, args);
+            try
+            {
+                switch (args.Connector.Protocol)
+                {
+                    case "tcp":
+
+                        MsgOut("T", msg);
+                        args.Socket.Send(packed);
+                        break;
+                }
+                retval.Type = "Control.OK";
+            }
+            catch
+            {
+                retval.Type = "Error.Socket.Send";
+                args.Zombie = true;
+            }
+            return retval;
+        }
+        
+        public IMessage Receive()
+        {
+            IConnection args = this;
+            IMessage retval = new Message();
+            byte[] header = new byte[8];
+            int count;
+            lock (args)
+            {
+                count = 0;
+                try
+                {
+                    count = args.Socket.Receive(header);
+                }
+                catch
+                {
+                    retval.Type = "Error.Message.Corrupted";
+                    args.Zombie = true;
+
+                }
+                switch (count)
+                {
+                    case 8:
+                        byte[] _length = new byte[2];
+                        byte[] _conversation = new byte[2];
+                        byte[] _typeid = new byte[2];
+                        byte[] _sequence = new byte[2];
+
+                        _length[0] = header[0];
+                        _length[1] = header[1];
+                        _conversation[0] = header[2];
+                        _conversation[1] = header[3];
+                        _typeid[0] = header[4];
+                        _typeid[1] = header[5];
+                        _sequence[0] = header[6];
+                        _sequence[1] = header[7];
+
+
+                        UInt16 plength;
+                        UInt16 pconversation;
+                        UInt16 ptypeid;
+                        UInt16 psequence;
+
+                        plength = SimpleMesh.Utility.ToHostOrder(_length);
+                        pconversation = SimpleMesh.Utility.ToHostOrder(_conversation);
+                        ptypeid = SimpleMesh.Utility.ToHostOrder(_typeid);
+                        psequence = SimpleMesh.Utility.ToHostOrder(_sequence);
+
+                        byte[] payload = new byte[plength];
+                        try
+                        {
+                            count = args.Socket.Receive(payload);
+                        }
+                        catch
+                        {
+                            retval.Type = "Error.Message.Corrupted";
+                            args.Zombie = true;
+                            return retval;
+                        }
+                        if (count == plength)
+                        {
+                            retval.Sequence = psequence;
+                            retval.Conversation = pconversation;
+                            retval.Type = args.TypeList.ByID(ptypeid).Name;
+                            retval.Payload = payload;
+                        }
+                        else
+                        {
+                            retval.Type = "Error.Message.Corrupted";
+                            args.Zombie = true;
+                            return retval;
+                        }
+                        break;
+                    case 0:
+                        retval.Type = "Control.Empty";
+                        break;
+                    default:
+                        retval.Type = "Error.Message.Corrupted";
+                        args.Zombie = true;
+                        break;
+
+                }
+
+
+            }
+            MsgOut("R", retval);
+            return retval;
+
+        }
+        
+        public static void MsgOut(string s, IMessage msg)
+        {
+            switch (msg.Type)
+            {
+                case "Control.Ping":
+                case "Control.Pong":
+                case "Control.Empty":
+                    break;
+                default:
+                    Runner.DebugMessage("Debug.Info.Message", s + ": " + msg.ToString());
+                    break;
+
+            }
         }
     }
 }

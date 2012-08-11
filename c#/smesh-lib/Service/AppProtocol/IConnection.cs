@@ -51,8 +51,8 @@ namespace SimpleMesh.Service.AppProtocol
         int Auth();
         int Auth(bool listen);
         int Auth(bool listen, bool enrollment);
-        int Send(IMessage message);
-        IMessage Recieve();
+        IMessage Send(IMessage message);
+        IMessage Receive();
     }
     public class StubConnection
     {

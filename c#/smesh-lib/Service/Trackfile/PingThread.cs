@@ -58,7 +58,7 @@ namespace SimpleMesh.Service
                                             Time timestamp = new Time();
                                             msg.Data = timestamp.ToString();
                                             conn.OutstandingPings.Add(msg.Sequence, timestamp);
-                                            IMessage retval = Utility.SendMessage(conn, msg);
+                                            IMessage retval = conn.Send(msg);
                                         }
                                         else
                                         {
