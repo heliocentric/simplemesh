@@ -75,34 +75,5 @@ namespace SimpleMesh.Service
                 return Properties.Resources.ServiceVersion;
             }
         }
-        public static byte[] MessagePack(IMessage message, IConnection args)
-        {
-            byte[] rv = new byte[1];
-            rv[0] = 0xFF;
-            switch (args.Connector.AppProtocol)
-            {
-                case "native1":
-                    byte[] header = new byte[8];
-                    byte[] bytescratch;
-                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.DataLength);
-                    header[0] = bytescratch[0];
-                    header[1] = bytescratch[1];
-                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.Conversation);
-                    header[2] = bytescratch[0];
-                    header[3] = bytescratch[1];
-                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(args.TypeList.ByName(message.Type).TypeID);
-                    header[4] = bytescratch[0];
-                    header[5] = bytescratch[1];
-                    bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.Sequence);
-                    header[6] = bytescratch[0];
-                    header[7] = bytescratch[1];
-                    rv = new byte[header.Length + message.Payload.Length];
-                    System.Buffer.BlockCopy(header, 0, rv, 0, header.Length);
-                    System.Buffer.BlockCopy(message.Payload, 0, rv, header.Length, message.Payload.Length);
-                    break;
-            }
-            return rv;
-        }
-
     }
 }
