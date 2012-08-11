@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using SimpleMesh;
 using SimpleMesh.Service;
+using SimpleMesh.Service.AppProtocol;
 
 namespace MeshBroker
 {
@@ -204,7 +205,7 @@ namespace MeshBroker
                                         lock (node.Value.Connections)
                                         {
                                             Console.WriteLine(node.Value.ToString());
-                                            foreach (Connection conn in node.Value.Connections)
+                                            foreach (IConnection conn in node.Value.Connections)
                                             {
                                                 Console.WriteLine("\t" + conn.ToString());
                                             }

@@ -73,6 +73,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Service\AppProtocol\IConnection.cs" />
+    <Compile Include="Service\AppProtocol\Native1.cs" />
     <Compile Include="Service\Auth.cs" />
     <Compile Include="Service\Broker.cs" />
     <Compile Include="Service\Connector.cs" />
