@@ -78,6 +78,7 @@ namespace SimpleMesh.Service.AppProtocol
         int Auth(bool listen, bool enrollment);
         IMessage Send(IMessage message);
         IMessage Receive();
+        IMessage Maintenence();
     }
     public class StubConnection
     {

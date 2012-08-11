@@ -57,7 +57,7 @@ namespace SimpleMesh.Service
             while (end == false)
             {
 
-                Thread.Sleep(19531);
+                Thread.Sleep(5000);
                 lock (Runner.Network.NodeList)
                 {
                     foreach (KeyValuePair<string, Node> node in Runner.Network.NodeList)
@@ -70,6 +70,10 @@ namespace SimpleMesh.Service
                                 if (conn.Zombie == true)
                                 {
                                     staleconns.Add(conn);
+                                }
+                                else
+                                {
+                                    conn.Maintenence();
                                 }
                             }
 

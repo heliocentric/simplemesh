@@ -80,7 +80,6 @@
     <Compile Include="Service\HostInfo.cs" />
     <Compile Include="Service\Key.cs" />
     <Compile Include="Service\Trackfile\MaintThread.cs" />
-    <Compile Include="Service\Trackfile\PingThread.cs" />
     <Compile Include="Service\Trackfile\ReceiveThread.cs" />
     <Compile Include="Service\Trackfile\SendThread.cs" />
     <Compile Include="Service\Trackfile\ListenThread.cs" />

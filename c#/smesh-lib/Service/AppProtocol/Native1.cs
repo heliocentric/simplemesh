@@ -330,7 +330,33 @@ namespace SimpleMesh.Service.AppProtocol
             return retval;
 
         }
-
+        public IMessage Maintenence()
+        {
+            IMessage retval = new Message();
+            TextMessage msg = new TextMessage("Control.Ping");
+            if (this.OutstandingPings.Count < 10)
+            {
+                UInt16 newpingcount;
+                if (this.PingCount == 65535)
+                {
+                    newpingcount = 0;
+                }
+                else
+                {
+                    newpingcount = this.PingCount++;
+                }
+                msg.Sequence = newpingcount;
+                Time timestamp = new Time();
+                msg.Data = timestamp.ToString();
+                this.OutstandingPings.Add(msg.Sequence, timestamp);
+                retval = this.Send(msg);
+            }
+            else
+            {
+                this.Zombie = true;
+            }
+            return retval;
+        }
         public byte[] MessagePack(IMessage message)
         {
             IConnection args = this;
@@ -359,8 +385,10 @@ namespace SimpleMesh.Service.AppProtocol
         {
             switch (msg.Type)
             {
+                    /*
                 case "Control.Ping":
                 case "Control.Pong":
+                     */
                 case "Control.Empty":
                     break;
                 default:

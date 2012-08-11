@@ -417,7 +417,6 @@ namespace SimpleMesh.Service
         {
             this.Send();
             this.Receive();
-            this.Ping();
             this.Listen();
             this.Maint();
             ThreadPool.QueueUserWorkItem(ConnectAll, new object());
