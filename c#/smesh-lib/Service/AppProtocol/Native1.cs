@@ -199,21 +199,29 @@ namespace SimpleMesh.Service.AppProtocol
         }
         public override string ToString()
         {
-            string direction = "";
-            if (Connect == true)
+            try
             {
-                direction = " -> ";
+                string direction = "";
+                if (Connect == true)
+                {
+                    direction = " -> ";
+                }
+                else
+                {
+                    direction = " <- ";
+                }
+                string zombie = "";
+                if (this.Zombie == true)
+                {
+                    zombie = " - ZOMBIE";
+                }
+                return Connector.Protocol.ToString() + ": " + Socket.LocalEndPoint.ToString() + direction + Socket.RemoteEndPoint.ToString() + zombie;
             }
-            else
+            catch
             {
-                direction = " <- ";
+                this.Zombie = true;
+                return "ZOMBIE";
             }
-            string zombie = "";
-            if (this.Zombie == true)
-            {
-                zombie = " - ZOMBIE";
-            }
-            return Connector.Protocol.ToString() + ": " + Socket.LocalEndPoint.ToString() + direction + Socket.RemoteEndPoint.ToString() + zombie;
         }
 
         public IMessage Send(IMessage msg)
