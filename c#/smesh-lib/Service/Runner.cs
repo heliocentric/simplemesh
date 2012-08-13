@@ -55,8 +55,20 @@ namespace SimpleMesh.Service
     {
         static string  _DatabasePath;
         static string _StorePath;
+        private static Boolean _native;
+        public static Boolean Native
+        {
+            get
+            {
+                    return _native;
+               
+            }
+            set
+            {
+                _native = value;
+            }
+        }
         private static Trackfile _Network;
-
         public static Trackfile Network
         {
             get { return Runner._Network; }

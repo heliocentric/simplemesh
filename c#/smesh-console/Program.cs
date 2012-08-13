@@ -227,6 +227,12 @@ namespace MeshBroker
                             Console.WriteLine("node\t\t\tShow Node Information");
                         }
                         break;
+                    case "receive":
+                        if (words.Length > 1)
+                        {
+                            
+                        }
+                        break;
                     case "?":
                     case "help":
                         if (words.Length > 1)
@@ -243,6 +249,8 @@ namespace MeshBroker
                             Console.WriteLine("debug\t\t\tChange the amount of debug info to show.");
                             Console.WriteLine("version\t\t\tSimpleMesh library and service version.");
                             Console.WriteLine("quit\t\t\tGracefully shut down SimpleMesh.");
+                            Console.WriteLine("send\t\t\tSend a message.");
+                            Console.WriteLine("receive\t\t\tRegister to receive messages.");
                         }
                         break;
                 }
