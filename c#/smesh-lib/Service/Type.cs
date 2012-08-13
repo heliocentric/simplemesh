@@ -38,6 +38,7 @@ namespace SimpleMesh.Service
         public bool Static;
         public MType()
         {
+            this.TypeID = 0;
             this.Static = false;
         }
     }
@@ -97,12 +98,46 @@ namespace SimpleMesh.Service
         }
         private Dictionary<UInt16, MType> _ByID;
         private Dictionary<String, MType> _ByName;
-        public Message Add(MType name) {
-            _ByID.Add(name.TypeID, name);
-            _ByName.Add(name.Name, name);
+        public IMessage Add(MType name)
+        {
+            ushort val;
+            return this.Add(name, out val);
+        }
+        public IMessage Add(MType name, out ushort value) {
+            MType value2;
+            value = name.TypeID;
+            if (name.TypeID == 0)
+            {
+                ushort val = 0;
+                for (int i = 1; i <= 99; i++)
+                {
+                    val = (ushort) Runner.Network.Random.Next(0, 65535);
+                    if (this._ByID.TryGetValue(val, out value2) == false)
+                    {
+                        break;
+                    }
+                }
+                name.TypeID = val;
+                value = val;
+            }
+            else
+            {
+
+            }
+            if (this._ByName.TryGetValue(name.Name, out value2) == false)
+            {
+                lock (this._ByID)
+                {
+                    lock (this._ByName)
+                    {
+                        _ByID.Add(name.TypeID, name);
+                        _ByName.Add(name.Name, name);
+                    }
+                }
+            }
             return new Message();
         }
-        public Message Remove(MType name)
+        public IMessage Remove(MType name)
         {
             return new Message();
         }
@@ -113,6 +148,30 @@ namespace SimpleMesh.Service
         public MType ByID(UInt16 id)
         {
             return _ByID[id];
+        }
+        public bool Contains(MType type)
+        {
+            MType type2;
+            if (this._ByName.TryGetValue(type.Name,out type2) == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public bool ContainsID(MType type)
+        {
+            MType type2;
+            if (this._ByID.TryGetValue(type.TypeID, out type2) == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

@@ -39,7 +39,7 @@ namespace SimpleMesh.Service.AppProtocol
             this.Connect = false;
             this.OutstandingPings = new Dictionary<ushort, Time>();
             this.PingCount = (ushort)Runner.Network.Random.Next(0, 65000);
-            this.Zombie = false;
+            this.Vampire = false;
         }
 
 
@@ -102,7 +102,7 @@ namespace SimpleMesh.Service.AppProtocol
             Dictionary<string, string> Parameters = new Dictionary<string, string>();
             while (end == false)
             {
-                Recieved = container.Receive();
+                Recieved = container.Receive(true);
                 if (Recieved.Type.Substring(0, 6) != "Error.")
                 {
                     switch (Recieved.Type)
@@ -211,16 +211,16 @@ namespace SimpleMesh.Service.AppProtocol
                     direction = " <- ";
                 }
                 string zombie = "";
-                if (this.Zombie == true)
+                if (this.Vampire == true)
                 {
-                    zombie = " - ZOMBIE";
+                    zombie = " - VAMPIRE";
                 }
                 return Connector.Protocol.ToString() + ": " + Socket.LocalEndPoint.ToString() + direction + Socket.RemoteEndPoint.ToString() + zombie;
             }
             catch
             {
-                this.Zombie = true;
-                return "ZOMBIE";
+                this.Vampire = true;
+                return "VAMPIRE";
             }
         }
 
@@ -245,12 +245,12 @@ namespace SimpleMesh.Service.AppProtocol
             catch
             {
                 retval.Type = "Error.Socket.Send";
-                args.Zombie = true;
+                args.Vampire = true;
             }
             return retval;
         }
         
-        public IMessage Receive()
+        public IMessage Receive(Boolean ignore)
         {
             IConnection args = this;
             IMessage retval = new Message();
@@ -266,7 +266,7 @@ namespace SimpleMesh.Service.AppProtocol
                 catch
                 {
                     retval.Type = "Error.Message.Corrupted";
-                    args.Zombie = true;
+                    args.Vampire = true;
 
                 }
                 switch (count)
@@ -305,7 +305,7 @@ namespace SimpleMesh.Service.AppProtocol
                         catch
                         {
                             retval.Type = "Error.Message.Corrupted";
-                            args.Zombie = true;
+                            args.Vampire = true;
                             return retval;
                         }
                         if (count == plength)
@@ -318,7 +318,7 @@ namespace SimpleMesh.Service.AppProtocol
                         else
                         {
                             retval.Type = "Error.Message.Corrupted";
-                            args.Zombie = true;
+                            args.Vampire = true;
                             return retval;
                         }
                         break;
@@ -327,7 +327,7 @@ namespace SimpleMesh.Service.AppProtocol
                         break;
                     default:
                         retval.Type = "Error.Message.Corrupted";
-                        args.Zombie = true;
+                        args.Vampire = true;
                         break;
 
                 }
@@ -335,9 +335,72 @@ namespace SimpleMesh.Service.AppProtocol
 
             }
             MsgOut("R", retval);
+
+            if (ignore == true)
+            {
+                switch (retval.Type)
+                {
+                    case "Control.GetTypeID":
+                        if (retval.Conversation == 0)
+                        {
+                            MType type = new MType();
+                            TextMessage msg = new TextMessage(retval);
+                            type.Name = msg.Data;
+                            type.TypeID = msg.Sequence;
+                            msg.Type = "Control.TypeID";
+                            if (this.TypeList.Contains(type) == false)
+                            {
+                                if (this.TypeList.ContainsID(type) == true)
+                                {
+                                    type.TypeID = 0;
+                                    ushort value;
+                                    this.TypeList.Add(type, out value);
+                                    msg.Sequence = value;
+                                    this.Send(msg);
+                                }
+                                else
+                                {
+                                    this.TypeList.Add(type);
+                                    this.Send(msg);
+                                }
+                            }
+                            
+                        }
+                        retval = new Message("Control.Empty");
+                        break;
+                    case "Control.Ping":
+                        retval.Type = "Control.Pong";
+                        this.Send(retval);
+                        retval = new Message("Control.Empty");
+                        break;
+                    case "Control.Pong":
+                        lock (this)
+                        {
+                            Time time;
+                            if (this.OutstandingPings.TryGetValue(retval.Sequence, out time))
+                            {
+                                this.OutstandingPings.Remove(retval.Sequence);
+                            }
+                        }
+                        retval = new Message("Control.Empty");
+                        break;
+                    default:
+                        if ((retval.Type.Length == 6) && (retval.Type.Substring(0, 6) == "Error."))
+                        {
+
+                        }
+                        else
+                        {
+                        }
+                        break;
+
+                }
+            }
+
             return retval;
 
         }
+
         public IMessage Maintenence()
         {
             IMessage retval = new Message();
@@ -361,10 +424,11 @@ namespace SimpleMesh.Service.AppProtocol
             }
             else
             {
-                this.Zombie = true;
+                this.Vampire = true;
             }
             return retval;
         }
+
         public byte[] MessagePack(IMessage message)
         {
             IConnection args = this;
@@ -389,6 +453,27 @@ namespace SimpleMesh.Service.AppProtocol
             System.Buffer.BlockCopy(message.Payload, 0, rv, header.Length, message.Payload.Length);
             return rv;
         }
+
+        public int Register(MType type)
+        {
+            int retval = 99;
+            if (this.TypeList.Contains(type) == false)
+            {
+                TextMessage message = new TextMessage("Control.GetTypeID");
+                message.Sequence = type.TypeID;
+                message.Data = type.Name;
+                this.Send(message);
+                retval = 0;
+            }
+
+            return retval;
+        }
+        public int Deregister(MType type)
+        {
+            int retval = 99;
+            return retval;
+        }
+
         public static void MsgOut(string s, IMessage msg)
         {
             switch (msg.Type)

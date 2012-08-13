@@ -56,20 +56,18 @@ namespace SimpleMesh.Service
             List<IConnection> staleconns;
             while (end == false)
             {
-
-                Thread.Sleep(5000);
+                Runner.DebugMessage("Debug.Info.Maintenence", "Running Maintenence Thread");
+                Thread.Sleep(4679);
                 lock (Runner.Network.NodeList)
                 {
                     foreach (KeyValuePair<string, Node> node in Runner.Network.NodeList)
                     {
-
-                        Runner.DebugMessage("Debug.Info.Maintenence", node.Value.ToString());
                         staleconns = new List<IConnection>();
                         lock (node.Value.Connections)
                         {
                             foreach (IConnection conn in node.Value.Connections)
                             {
-                                if (conn.Zombie == true)
+                                if (conn.Vampire == true)
                                 {
                                     staleconns.Add(conn);
                                 }

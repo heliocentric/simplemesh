@@ -33,7 +33,7 @@ namespace SimpleMesh.Service.AppProtocol
 {
     public interface IConnection
     {
-        Boolean Zombie
+        Boolean Vampire
         {
             get;
             set;
@@ -77,16 +77,18 @@ namespace SimpleMesh.Service.AppProtocol
         int Auth(bool listen);
         int Auth(bool listen, bool enrollment);
         IMessage Send(IMessage message);
-        IMessage Receive();
+        IMessage Receive(Boolean ignore);
         IMessage Maintenence();
+        int Register(MType type);
+        int Deregister(MType type);
     }
     public class StubConnection
     {
-        private Boolean _zombie;
-        public Boolean Zombie
+        private Boolean _vampire;
+        public Boolean Vampire
         {
-            get { return _zombie; }
-            set { _zombie = value; }
+            get { return _vampire; }
+            set { _vampire = value; }
         }
         
         private UInt16 _pingcount;

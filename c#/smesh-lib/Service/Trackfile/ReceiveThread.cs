@@ -60,11 +60,14 @@ namespace SimpleMesh.Service
                     {
                         foreach (IConnection conn in node.Value.Connections)
                         {
-                            lock (conn)
+                            if (conn != null)
                             {
-                                if (conn.Zombie == false)
+                                lock (conn)
                                 {
-                                    ReadList.Add(conn.Socket);
+                                    if (conn.Vampire == false)
+                                    {
+                                        ReadList.Add(conn.Socket);
+                                    }
                                 }
                             }
                         }
@@ -80,6 +83,7 @@ namespace SimpleMesh.Service
                 {
                     foreach (KeyValuePair<string, Node> node in this.NodeList)
                     {
+                        
                         IConnection realconn = null;
                         lock (node.Value)
                         {
@@ -109,36 +113,8 @@ namespace SimpleMesh.Service
         {
             IConnection conn = (IConnection)obj;
             IMessage message;
-             message = conn.Receive();
-            
-            switch (message.Type)
-            {
-                case "Control.Ping":
-                    message.Type = "Control.Pong";
-                    conn.Send(message) ;
-                    break;
-                case "Control.Pong":
-                    lock (conn)
-                    {
-                        Time time;
-                        if (conn.OutstandingPings.TryGetValue(message.Sequence, out time))
-                        {
-                            conn.OutstandingPings.Remove(message.Sequence);
-                        }
-                    }
-                    break;
-                default:
-                    if ((message.Type.Length == 6) && (message.Type.Substring(0, 6) == "Error."))
-                    {
-
-                    }
-                    else
-                    {
-                    }
-                    break;
-
-            }
-
+             message = conn.Receive(false);
+           
         }
     }
 }
