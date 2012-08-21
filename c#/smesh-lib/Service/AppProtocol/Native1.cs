@@ -64,7 +64,7 @@ namespace SimpleMesh.Service.AppProtocol
             int retval = 99;
             KeyValueMessage keyval;
             List<string> authtypes = new List<string>();
-            authtypes.Add("NONE");
+           // authtypes.Add("NONE");
             authtypes.Add("RSA");
 
             string authstring = "";
@@ -178,10 +178,39 @@ namespace SimpleMesh.Service.AppProtocol
                 retval = 1;
                 return retval;
             }
+            Node node;
             switch (authtotry)
             {
+                case "RSA":
+                    if (Runner.Network.NodeList.TryGetValue(Parameters["node.uuid"], out node) == true)
+                    {
+                        container.Node = node;
+                        node.Version = Parameters["version"];
+
+                        if (listen == true)
+                        {
+                            BinaryMessage bmsg = new BinaryMessage();
+                            bmsg.Type = "Control.Auth.Challenge";
+                            byte[] ciphertext;
+                            byte[] cookie = new byte[512];
+                            Runner.Network.Random.NextBytes(cookie);
+                            Runner.Network.Node.Key.Encrypt(false, cookie, out ciphertext);
+                            bmsg.Payload = ciphertext;
+                            this.Send(bmsg);
+                        }
+                        else
+                        {
+
+                        }
+                        Runner.DebugMessage("Debug.Info.Auth", "Remote Node is: " + node.ToString());
+                        retval = 0;
+                    }
+                    else
+                    {
+                        retval = 1;
+                    }
+                    break;
                 case "NONE":
-                    Node node;
                     if (Runner.Network.NodeList.TryGetValue(Parameters["node.uuid"], out node) == true)
                     {
                         container.Node = node;
