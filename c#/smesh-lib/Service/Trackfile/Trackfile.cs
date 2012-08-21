@@ -130,7 +130,7 @@ namespace SimpleMesh.Service
             this.Enrollment = new Dictionary<string, Auth>();
             this._createddate = Utility.ToUnixTimestamp(System.DateTime.Now).ToString();
             this._lastmodifieddate = Utility.ToUnixTimestamp(System.DateTime.Now).ToString();
-            this._versiontype = "1.0";
+            this._versiontype = "1.1";
             this._new = true;
             this.Random = new Random();
         }
@@ -333,8 +333,8 @@ namespace SimpleMesh.Service
                 case "1.1":
                     List<String> FileContents;
                     FileContents = new List<string>();
-                    FileContents.Add("I!1.0!" + this._createddate + "!" + Utility.ToUnixTimestamp(System.DateTime.Now) + "!" + this.Name + "!" + this.Hash);
-                    FileContents.Add("# SimpleMesh Trackfile version 1.0");
+                    FileContents.Add("I!1.1!" + this._createddate + "!" + Utility.ToUnixTimestamp(System.DateTime.Now) + "!" + this.Name + "!" + this.Hash);
+                    FileContents.Add("# SimpleMesh Trackfile version 1.1");
                     foreach (KeyValuePair<string, Auth> item in this.Enrollment)
                     {
                         FileContents.Add("E!" + item.Key + "!" + this.BoolPack(item.Value.Active) + "!" + this.BoolPack(item.Value.Primary) + "!" + item.Value.Key.Encode(EnrollmentKey));
