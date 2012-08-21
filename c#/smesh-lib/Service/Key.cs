@@ -235,65 +235,76 @@ namespace SimpleMesh.Service
 
         public IMessage Encrypt(Boolean normal, byte[] data, out byte[] outdata)
         {
-
+            
             IMessage msg = new TextMessage("Error.Unknown");
-            try
+            outdata = new byte[1];
+            switch (this.Type)
             {
-                IAsymmetricBlockCipher cipher = new RsaEngine();
-                if (normal == true)
-                {
-                    cipher.Init(true, this.PublicKey);
-                }
-                else
-                {
-                    cipher.Init(true, this.PrivateKey);
-                }
-                int blocksize = cipher.GetInputBlockSize();
-                List<byte> output = new List<byte>();
-                for (int chunkPosition = 0; chunkPosition < data.Length; chunkPosition += blocksize)
-                {
-                    int chunkSize = Math.Min(blocksize, data.Length - (chunkPosition * blocksize));
-                    output.AddRange(cipher.ProcessBlock(data, chunkPosition, chunkSize));
-                }
-                outdata = output.ToArray();
+                case "RSA":
+                    try
+                    {
+                        IAsymmetricBlockCipher cipher = new RsaEngine();
+                        if (normal == true)
+                        {
+                            cipher.Init(true, this.PublicKey);
+                        }
+                        else
+                        {
+                            cipher.Init(true, this.PrivateKey);
+                        }
+                        int blocksize = cipher.GetInputBlockSize();
+                        List<byte> output = new List<byte>();
+                        for (int chunkPosition = 0; chunkPosition < data.Length; chunkPosition += blocksize)
+                        {
+                            int chunkSize = Math.Min(blocksize, data.Length - (chunkPosition * blocksize));
+                            output.AddRange(cipher.ProcessBlock(data, chunkPosition, chunkSize));
+                        }
+                        outdata = output.ToArray();
 
-                msg.Type = "Error.OK";
-            }
-            catch
-            {
-                outdata = new byte[1];
+                        msg.Type = "Error.OK";
+                    }
+                    catch
+                    {
+                    }
+                    break;
             }
             return msg;
         }
         public IMessage Decrypt(Boolean normal, byte[] data, out byte[] outdata)
         {
             IMessage msg = new TextMessage("Error.Unknown");
-            try
+            outdata = new byte[1];
+            switch (this.Type)
             {
-                IAsymmetricBlockCipher cipher = new RsaEngine();
-                if (normal == true)
-                {
-                    cipher.Init(false, this.PrivateKey);
-                }
-                else
-                {
-                    cipher.Init(false, this.PublicKey);
-                }
-                int blocksize = cipher.GetInputBlockSize();
-                List<byte> output = new List<byte>();
-                for (int chunkposition = 0; chunkposition < data.Length; chunkposition += blocksize)
-                {
-                    int chunksize = Math.Min(blocksize, data.Length - (chunkposition * blocksize));
-                    output.AddRange(cipher.ProcessBlock(data, chunkposition, chunksize));
-                }
-                outdata = output.ToArray();
+                case "RSA":
+                    try
+                    {
+                        IAsymmetricBlockCipher cipher = new RsaEngine();
+                        if (normal == true)
+                        {
+                            cipher.Init(false, this.PrivateKey);
+                        }
+                        else
+                        {
+                            cipher.Init(false, this.PublicKey);
+                        }
+                        int blocksize = cipher.GetInputBlockSize();
+                        List<byte> output = new List<byte>();
+                        for (int chunkposition = 0; chunkposition < data.Length; chunkposition += blocksize)
+                        {
+                            int chunksize = Math.Min(blocksize, data.Length - (chunkposition * blocksize));
+                            output.AddRange(cipher.ProcessBlock(data, chunkposition, chunksize));
+                        }
+                        outdata = output.ToArray();
 
-                msg.Type = "Error.OK";
+                        msg.Type = "Error.OK";
 
-            }
-            catch
-            {
-                outdata = new byte[1];
+                    }
+                    catch
+                    {
+                        outdata = new byte[1];
+                    }
+                    break;
             }
             return msg;
         }
