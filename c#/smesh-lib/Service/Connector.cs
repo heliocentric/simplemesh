@@ -92,13 +92,13 @@ namespace SimpleMesh.Service
         }
         public override string ToString()
         {
-            return this.ToString("1.0");
+            return this.ToString("1.1");
         }
         public string ToString(string version)
         {
             switch (version)
             {
-                case "1.0":
+                case "1.1":
                 default:
                     return this.Priority + "!" + this.Key();
             }

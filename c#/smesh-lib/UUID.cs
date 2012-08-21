@@ -50,5 +50,9 @@ namespace SimpleMesh
         {
             return this._uuid;
         }
+        public override int GetHashCode()
+        {
+            return this._uuid.GetHashCode();
+        }
     }
 }

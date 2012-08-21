@@ -379,7 +379,7 @@ namespace SimpleMesh.Service
                             }
                         }
                     }
-                    FileContents.Add("SIG!None!");
+                    FileContents.Add("SIG!NONE!");
                     System.IO.File.WriteAllLines(filename, FileContents.ToArray());
                     break;
             }

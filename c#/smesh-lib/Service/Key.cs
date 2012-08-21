@@ -100,7 +100,7 @@ namespace SimpleMesh.Service
                 default:
                     retval = this.UUID.ToString() + "!NONE!!!";
                     break;
-        }
+            }
             return retval;
         }
         public void Decode(string key) {
@@ -236,6 +236,19 @@ namespace SimpleMesh.Service
             return retval;
         }
 
+        public IMessage Encrypt(Boolean normal, byte[] data, out string outdata)
+        {
+            byte[] ciphertext;
+            IMessage msg = this.Encrypt(normal, data, out ciphertext);
+            outdata = System.Convert.ToBase64String(ciphertext);
+            return msg;
+        }
+        public IMessage Decrypt(Boolean normal, string data, out byte[] outdata)
+        {
+            byte[] ciphertext = System.Convert.FromBase64String(data);
+            IMessage msg = this.Decrypt(normal, ciphertext, out outdata);
+            return msg;
+        }
         public IMessage Encrypt(Boolean normal, byte[] data, out byte[] outdata)
         {
             

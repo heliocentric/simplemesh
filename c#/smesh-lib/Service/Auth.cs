@@ -20,12 +20,14 @@ namespace SimpleMesh.Service
             this.Key = new Key(keystring);
             this.Active = true;
             this.Primary = false;
+            this.UUID = this.Key.UUID;
         }
         public Auth(string keystring, Boolean active, Boolean primary)
         {
             this.Key = new Key(keystring);
             this.Active = active;
             this.Primary = primary;
+            this.UUID = this.Key.UUID;
         }
         public override string ToString()
         {

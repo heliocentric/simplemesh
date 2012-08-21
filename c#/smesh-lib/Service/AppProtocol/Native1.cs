@@ -195,17 +195,18 @@ namespace SimpleMesh.Service.AppProtocol
                             Runner.Network.Random.NextBytes(cookie);
                             foreach (KeyValuePair<UUID, Auth> auth in node.AuthKeyList)
                             {
-                                    IMessage rmsg = auth.Value.Key.Encrypt(true, cookie, out ciphertext);
-                                    if (rmsg.Type == "Error.OK")
-                                    {
-                                        Runner.DebugMessage("Debug.Info.Auth", ciphertext.Length.ToString());
-                                        bmsg.Data = auth.Key + "!" + System.Convert.ToBase64String(ciphertext);
-                                        this.Send(bmsg);
-                                    }
-                                    else
-                                    {
-                                        Runner.DebugMessage("Debug.Info.Auth", rmsg.Type);
-                                    }
+                                IMessage rmsg = auth.Value.Key.Encrypt(true, cookie, out ciphertext);
+                                Runner.DebugMessage("Debug.Info.Auth", rmsg.Type);
+                                if (rmsg.Type == "Error.OK")
+                                {
+                                    Runner.DebugMessage("Debug.Info.Auth", ciphertext.Length.ToString());
+                                    bmsg.Data = auth.Key + "!" + System.Convert.ToBase64String(ciphertext);
+                                    this.Send(bmsg);
+                                }
+                                else
+                                {
+                                    Runner.DebugMessage("Debug.Info.Auth", rmsg.Type);
+                                }
                             }
                         }
                         else

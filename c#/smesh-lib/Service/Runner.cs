@@ -186,7 +186,7 @@ namespace SimpleMesh.Service
                 SimpleMesh.Service.Runner.Info.Key.PublicKey = test.Public;
 
                 List<string> file = new List<string>();
-                file.Add("I!1.0!!!");
+                file.Add("I!1.1!!!");
                 file.Add("HOSTUUID!" + Info.UUID.ToString() + "!" + SimpleMesh.Service.Runner.Info.Description);
                 file.Add("HOSTKEY!" + Info.Key.Encode(true));
                 foreach(string port in Info.Ports) {
