@@ -233,6 +233,14 @@ namespace MeshBroker
                             
                         }
                         break;
+                    case "register":
+                        if (words.Length > 1)
+                        {
+
+                        }
+                        break;
+                    case "send":
+                        break;
                     case "?":
                     case "help":
                         if (words.Length > 1)

@@ -20,6 +20,8 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
+using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Crypto.Encodings;
 
 namespace SimpleMesh.Service
 {
@@ -27,8 +29,28 @@ namespace SimpleMesh.Service
     {
         public int Length;
         public string Type;
-        public AsymmetricKeyParameter PublicKey;
-        public AsymmetricKeyParameter PrivateKey;
+        private AsymmetricKeyParameter _PublicKey;
+
+        public AsymmetricKeyParameter PublicKey
+        {
+            get { return _PublicKey; }
+            set
+            {
+                this._containspublickey = true;
+                _PublicKey = value;
+            }
+        }
+        private AsymmetricKeyParameter _PrivateKey;
+
+        public AsymmetricKeyParameter PrivateKey
+        {
+            get { return _PrivateKey; }
+            set
+            {
+                this._containsprivatekey = true;
+                _PrivateKey = value;
+            }
+        }
         private bool _containsprivatekey;
         private bool _containspublickey;
         public string Salt;
@@ -210,5 +232,71 @@ namespace SimpleMesh.Service
             }
             return retval;
         }
+
+        public IMessage Encrypt(Boolean normal, byte[] data, out byte[] outdata)
+        {
+
+            IMessage msg = new TextMessage("Error.Unknown");
+            try
+            {
+                IAsymmetricBlockCipher cipher = new RsaEngine();
+                if (normal == true)
+                {
+                    cipher.Init(true, this.PublicKey);
+                }
+                else
+                {
+                    cipher.Init(true, this.PrivateKey);
+                }
+                int blocksize = cipher.GetInputBlockSize();
+                List<byte> output = new List<byte>();
+                for (int chunkPosition = 0; chunkPosition < data.Length; chunkPosition += blocksize)
+                {
+                    int chunkSize = Math.Min(blocksize, data.Length - (chunkPosition * blocksize));
+                    output.AddRange(cipher.ProcessBlock(data, chunkPosition, chunkSize));
+                }
+                outdata = output.ToArray();
+
+                msg.Type = "Error.OK";
+            }
+            catch
+            {
+                outdata = new byte[1];
+            }
+            return msg;
+        }
+        public IMessage Decrypt(Boolean normal, byte[] data, out byte[] outdata)
+        {
+            IMessage msg = new TextMessage("Error.Unknown");
+            try
+            {
+                IAsymmetricBlockCipher cipher = new RsaEngine();
+                if (normal == true)
+                {
+                    cipher.Init(false, this.PrivateKey);
+                }
+                else
+                {
+                    cipher.Init(false, this.PublicKey);
+                }
+                int blocksize = cipher.GetInputBlockSize();
+                List<byte> output = new List<byte>();
+                for (int chunkposition = 0; chunkposition < data.Length; chunkposition += blocksize)
+                {
+                    int chunksize = Math.Min(blocksize, data.Length - (chunkposition * blocksize));
+                    output.AddRange(cipher.ProcessBlock(data, chunkposition, chunksize));
+                }
+                outdata = output.ToArray();
+
+                msg.Type = "Error.OK";
+
+            }
+            catch
+            {
+                outdata = new byte[1];
+            }
+            return msg;
+        }
+
     }
 }

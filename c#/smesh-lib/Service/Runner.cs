@@ -188,7 +188,7 @@ namespace SimpleMesh.Service
                 List<string> file = new List<string>();
                 file.Add("I!1.0!!!");
                 file.Add("HOSTUUID!" + Info.UUID.ToString() + "!" + SimpleMesh.Service.Runner.Info.Description);
-                file.Add("HOSTKEY!" + Info.Key.Encode());
+                file.Add("HOSTKEY!" + Info.Key.Encode(true));
                 foreach(string port in Info.Ports) {
                     file.Add("PORT!" + port);
                 }
@@ -354,6 +354,7 @@ namespace SimpleMesh.Service
 
             }
             SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
+
             Network.Start();
 
         }
