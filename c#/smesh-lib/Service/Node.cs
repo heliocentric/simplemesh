@@ -38,7 +38,7 @@ namespace SimpleMesh.Service
         public string Name;
         public string Description;
         public string Version;
-        public Dictionary<string, Auth> AuthKeyList;
+        public Dictionary<UUID, Auth> AuthKeyList;
         public List<IConnection> Connections;
         public Node()
         {
@@ -46,7 +46,7 @@ namespace SimpleMesh.Service
             this.Name = "";
             this.Description = "";
             this.ConnectorList = new Dictionary<string, Connector>();
-            this.AuthKeyList = new Dictionary<string, Auth>();
+            this.AuthKeyList = new Dictionary<UUID, Auth>();
             this.Connections = new List<IConnection>();
         }
         public override string ToString()

@@ -27,6 +27,7 @@ namespace SimpleMesh.Service
 {
     public class Key
     {
+        public UUID UUID;
         public int Length;
         public string Type;
         private AsymmetricKeyParameter _PublicKey;
@@ -57,6 +58,7 @@ namespace SimpleMesh.Service
         public string Hash;
 
         public Key() {
+            this.UUID = new UUID();
             this._containsprivatekey = false;
             this._containspublickey = false;
         }
@@ -93,27 +95,28 @@ namespace SimpleMesh.Service
                         SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(this.PublicKey);
                         derPublicKey = Convert.ToBase64String(publicKeyInfo.GetEncoded());
                     }
-                    retval = "RSA!" + this.Length.ToString() + "!" + derPublicKey + "!" + derPrivateKey;
+                    retval = this.UUID.ToString() + "!RSA!" + this.Length.ToString() + "!" + derPublicKey + "!" + derPrivateKey;
                     break;
                 default:
-                    retval = "NONE!!!";
+                    retval = this.UUID.ToString() + "!NONE!!!";
                     break;
         }
             return retval;
         }
         public void Decode(string key) {
             string [] chunks = key.Split('!');
-            this.Type = chunks[0];
+            this.UUID = new UUID(chunks[0]);
+            this.Type = chunks[1];
             switch (this.Type)
             {
                 case "RSA":
-                    if (chunks[1] != "")
+                    if (chunks[2] != "")
                     {
-                        this.Length = Convert.ToInt32(chunks[1]);
+                        this.Length = Convert.ToInt32(chunks[2]);
                     }
                     
-                    string derPublicKey = chunks[2];
-                    string derPrivateKey = chunks[3];
+                    string derPublicKey = chunks[3];
+                    string derPrivateKey = chunks[4];
 
 
                     if (derPublicKey != "")
@@ -243,21 +246,40 @@ namespace SimpleMesh.Service
                 case "RSA":
                     try
                     {
-                        IAsymmetricBlockCipher cipher = new RsaEngine();
+                        SecureRandom rand = new SecureRandom();
+                        IBufferedCipher cipher = CipherUtilities.GetCipher("RSA/NONE/OAEPWithSHA1AndMGF1Padding");
                         if (normal == true)
                         {
-                            cipher.Init(true, this.PublicKey);
+                            cipher.Init(true, new ParametersWithRandom(this.PublicKey, rand));
                         }
                         else
                         {
-                            cipher.Init(true, this.PrivateKey);
+                            cipher.Init(true, new ParametersWithRandom(this.PrivateKey, rand));
                         }
-                        int blocksize = cipher.GetInputBlockSize();
+
+                        byte[] cipherTextBlock = null;
+                        int outputsize = cipher.GetOutputSize(data.Length); //Array size of ciphered data (encrypted data)
+                        int blockSize = cipher.GetBlockSize();  //Amount of data we can process at one time (-2 -2*hlen)
                         List<byte> output = new List<byte>();
-                        for (int chunkPosition = 0; chunkPosition < data.Length; chunkPosition += blocksize)
+                        int outputLen = 0;
+                        byte[] dataToProcess = null;
+                        for (int chunkPosition = 0; chunkPosition < data.Length; chunkPosition += blockSize)
                         {
-                            int chunkSize = Math.Min(blocksize, data.Length - (chunkPosition * blocksize));
-                            output.AddRange(cipher.ProcessBlock(data, chunkPosition, chunkSize));
+                            dataToProcess = new byte[blockSize];
+                            int chunkSize = (data.Length - chunkPosition) < blockSize ? (data.Length - chunkPosition) : blockSize; //Math.Min(blockSize, data.Length - (chunkPosition * blockSize));
+                            Buffer.BlockCopy(data, chunkPosition, dataToProcess, 0, chunkSize);
+
+
+
+                            cipherTextBlock = new byte[outputsize];
+
+
+
+                            outputLen = cipher.ProcessBytes(dataToProcess, 0, chunkSize, cipherTextBlock, 0);
+                            cipher.DoFinal(cipherTextBlock, outputLen);
+                            //output.AddRange(e.ProcessBytes(data, chunkPosition,
+                            //  chunkSize));
+                            output.AddRange(cipherTextBlock);
                         }
                         outdata = output.ToArray();
 
@@ -279,21 +301,48 @@ namespace SimpleMesh.Service
                 case "RSA":
                     try
                     {
-                        IAsymmetricBlockCipher cipher = new RsaEngine();
+                        SecureRandom rand = new SecureRandom();
+                        IBufferedCipher cipher = CipherUtilities.GetCipher("RSA/NONE/OAEPWithSHA1AndMGF1Padding");
+
+
                         if (normal == true)
                         {
-                            cipher.Init(false, this.PrivateKey);
+                            cipher.Init(false, new ParametersWithRandom(this.PrivateKey, rand));
                         }
                         else
                         {
-                            cipher.Init(false, this.PublicKey);
+
+                            cipher.Init(false, new ParametersWithRandom(this.PublicKey, rand));
                         }
-                        int blocksize = cipher.GetInputBlockSize();
+
+
+
+                        byte[] cipherTextBlock = null;
+                        int outputsize = cipher.GetOutputSize(data.Length); //Array size of ciphered data (encrypted data)
+                        int blockSize = cipher.GetBlockSize();  //Amount of data we can process at one time (-2 -2*hlen)
                         List<byte> output = new List<byte>();
-                        for (int chunkposition = 0; chunkposition < data.Length; chunkposition += blocksize)
+                        int outputLen = 0;
+                        byte[] dataToProcess = null;
+
+
+
+                        for (int chunkPosition = 0; chunkPosition < data.Length; chunkPosition += blockSize)
                         {
-                            int chunksize = Math.Min(blocksize, data.Length - (chunkposition * blocksize));
-                            output.AddRange(cipher.ProcessBlock(data, chunkposition, chunksize));
+                            dataToProcess = new byte[blockSize];
+                            int chunkSize = (data.Length - chunkPosition) < blockSize ? (data.Length - chunkPosition) : blockSize; //Math.Min(blockSize, data.Length - (chunkPosition * blockSize));
+                            Buffer.BlockCopy(data, chunkPosition, dataToProcess, 0, chunkSize);
+
+
+
+                            cipherTextBlock = new byte[outputsize];
+
+
+
+                            outputLen = cipher.ProcessBytes(dataToProcess, 0, chunkSize, cipherTextBlock, 0);
+                            cipher.DoFinal(cipherTextBlock, outputLen);
+                            //output.AddRange(e.ProcessBytes(data, chunkPosition,
+                            //  chunkSize));
+                            output.AddRange(cipherTextBlock);
                         }
                         outdata = output.ToArray();
 

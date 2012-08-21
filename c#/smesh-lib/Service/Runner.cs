@@ -354,7 +354,15 @@ namespace SimpleMesh.Service
 
             }
             SimpleMesh.Service.Runner.Network.Write(TrackfilePath);
-
+            /*
+            string inputstring = "Test";
+            byte[] ciphertext;
+            byte[] plaintext;
+            Network.Node.Key.Encrypt(true, UTF8Encoding.UTF8.GetBytes(inputstring), out ciphertext);
+            Network.Node.Key.Decrypt(true, ciphertext, out plaintext);
+            Console.WriteLine("output string = " + UTF8Encoding.UTF8.GetString(plaintext));
+            Console.ReadLine();
+            */
             Network.Start();
 
         }

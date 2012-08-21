@@ -310,7 +310,7 @@ namespace MeshBroker
                 Console.WriteLine("Keys:");
                 lock (node.AuthKeyList)
                 {
-                    foreach (KeyValuePair<string, Auth> key in node.AuthKeyList)
+                    foreach (KeyValuePair<UUID, Auth> key in node.AuthKeyList)
                     {
                         Console.WriteLine("\t" + key.Value.ToString());
                     }

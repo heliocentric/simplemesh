@@ -233,7 +233,7 @@ namespace SimpleMesh.Service
                 {
                     switch (this._versiontype)
                     {
-                        case "1.0":
+                        case "1.1":
                             string[] chunks = line.Split('!');
                             string UUID;
                             string keystring;
@@ -269,7 +269,8 @@ namespace SimpleMesh.Service
                                     {
                                         scratch = this.NodeInit(UUID);
                                         keystring = line.Replace("A!" + chunks[1] + "!" + chunks[2] + "!" + chunks[3] + "!", "");
-                                        scratch.AuthKeyList.Add(keystring, new Auth(keystring, BoolUnpack(chunks[3]), BoolUnpack(chunks[4])));
+                                        Auth auth = new Auth(keystring, BoolUnpack(chunks[3]), BoolUnpack(chunks[4]));
+                                        scratch.AuthKeyList.Add(auth.UUID, auth);
                                     }
                                     break;
                                 case "E":
@@ -294,7 +295,7 @@ namespace SimpleMesh.Service
                 message = "Name=\t" + scratch.Name;
                 message += "\nUUID=\t" + scratch.UUID;
                 message += "\nAuthentication:";
-                foreach (KeyValuePair<string, Auth> auth in scratch.AuthKeyList)
+                foreach (KeyValuePair<UUID, Auth> auth in scratch.AuthKeyList)
                 {
                     message += "\n\t" + auth.Value.Key.ToString();
                 }
@@ -329,7 +330,7 @@ namespace SimpleMesh.Service
         {
             switch (this._versiontype)
             {
-                case "1.0":
+                case "1.1":
                     List<String> FileContents;
                     FileContents = new List<string>();
                     FileContents.Add("I!1.0!" + this._createddate + "!" + Utility.ToUnixTimestamp(System.DateTime.Now) + "!" + this.Name + "!" + this.Hash);
@@ -347,7 +348,7 @@ namespace SimpleMesh.Service
                     FileContents.Add(value);
                     foreach (KeyValuePair<string, Node> item in this.NodeList)
                     {
-                        foreach (KeyValuePair<string, Auth> auth in item.Value.AuthKeyList)
+                        foreach (KeyValuePair<UUID, Auth> auth in item.Value.AuthKeyList)
                         {
                             FileContents.Add("A!" + item.Key + "!" + this.BoolPack(auth.Value.Active) + "!" + this.BoolPack(auth.Value.Primary) + "!" + auth.Value.Key.Encode());
                         }

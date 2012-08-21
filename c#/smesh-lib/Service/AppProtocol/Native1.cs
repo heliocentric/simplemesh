@@ -189,14 +189,24 @@ namespace SimpleMesh.Service.AppProtocol
 
                         if (listen == true)
                         {
-                            BinaryMessage bmsg = new BinaryMessage();
-                            bmsg.Type = "Control.Auth.Challenge";
+                            TextMessage bmsg = new TextMessage("Control.Auth.Challenge");
                             byte[] ciphertext;
-                            byte[] cookie = new byte[512];
+                            byte[] cookie = new byte[64];
                             Runner.Network.Random.NextBytes(cookie);
-                            Runner.Network.Node.Key.Encrypt(false, cookie, out ciphertext);
-                            bmsg.Payload = ciphertext;
-                            this.Send(bmsg);
+                            foreach (KeyValuePair<UUID, Auth> auth in node.AuthKeyList)
+                            {
+                                    IMessage rmsg = auth.Value.Key.Encrypt(true, cookie, out ciphertext);
+                                    if (rmsg.Type == "Error.OK")
+                                    {
+                                        Runner.DebugMessage("Debug.Info.Auth", ciphertext.Length.ToString());
+                                        bmsg.Data = auth.Key + "!" + System.Convert.ToBase64String(ciphertext);
+                                        this.Send(bmsg);
+                                    }
+                                    else
+                                    {
+                                        Runner.DebugMessage("Debug.Info.Auth", rmsg.Type);
+                                    }
+                            }
                         }
                         else
                         {
