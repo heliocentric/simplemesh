@@ -190,7 +190,7 @@ namespace SimpleMesh.Service.AppProtocol
                         if (listen == true)
                         {
                             TextMessage bmsg = new TextMessage("Control.Auth.Challenge");
-                            byte[] ciphertext;
+                            string ciphertext;
                             byte[] cookie = new byte[64];
                             Runner.Network.Random.NextBytes(cookie);
                             foreach (KeyValuePair<UUID, Auth> auth in node.AuthKeyList)
@@ -199,8 +199,9 @@ namespace SimpleMesh.Service.AppProtocol
                                 Runner.DebugMessage("Debug.Info.Auth", rmsg.Type);
                                 if (rmsg.Type == "Error.OK")
                                 {
+                                    string payload;
                                     Runner.DebugMessage("Debug.Info.Auth", ciphertext.Length.ToString());
-                                    bmsg.Data = auth.Key + "!" + System.Convert.ToBase64String(ciphertext);
+                                    bmsg.Data = auth.Key + "!" + ciphertext;
                                     this.Send(bmsg);
                                 }
                                 else
