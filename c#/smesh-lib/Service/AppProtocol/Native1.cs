@@ -190,19 +190,20 @@ namespace SimpleMesh.Service.AppProtocol
                         if (listen == true)
                         {
                             TextMessage bmsg = new TextMessage("Control.Auth.Challenge");
-                            string ciphertext;
                             byte[] cookie = new byte[64];
                             Runner.Network.Random.NextBytes(cookie);
+                            Console.WriteLine("Fingerprint: 0x" + BitConverter.ToString(cookie).Replace("-", string.Empty));
                             foreach (KeyValuePair<UUID, Auth> auth in node.AuthKeyList)
                             {
+                                string ciphertext;
                                 IMessage rmsg = auth.Value.Key.Encrypt(true, cookie, out ciphertext);
                                 Runner.DebugMessage("Debug.Info.Auth", rmsg.Type);
                                 if (rmsg.Type == "Error.OK")
                                 {
-                                    string payload;
                                     Runner.DebugMessage("Debug.Info.Auth", ciphertext.Length.ToString());
-                                    bmsg.Data = auth.Key + "!" + ciphertext;
-                                    this.Send(bmsg);
+                                    string firstmessage = auth.Key + "!" + ciphertext;
+                                    rmsg = Runner.Network.Node.Key.Encrypt(false, UTF8Encoding.UTF8.GetBytes(firstmessage), out ciphertext);
+                                    bmsg.Data = Runner.Network.Node.Key.UUID.ToString() + "!" + ciphertext;                                    this.Send(bmsg);
                                 }
                                 else
                                 {
@@ -212,7 +213,55 @@ namespace SimpleMesh.Service.AppProtocol
                         }
                         else
                         {
-
+                            bool ending = false;
+                            while (ending == false)
+                            {
+                                IMessage rmsg;
+                                rmsg = this.Receive(false);
+                                switch (rmsg.Type)
+                                {
+                                    case "Control.Auth.Challenge":
+                                        TextMessage Challenge = new TextMessage(rmsg);
+                                        string[] chunks = Challenge.Data.Split('!');
+                                        UUID uuidauth = new UUID(chunks[0]);
+                                        IMessage response;
+                                        foreach (KeyValuePair<UUID, Auth> auth in node.AuthKeyList)
+                                        {
+                                            if (auth.Key.ToString() == uuidauth.ToString())
+                                            {
+                                                byte[] firststage;
+                                                response = auth.Value.Key.Decrypt(false, chunks[1], out firststage);
+                                                if (response.Type == "Error.OK")
+                                                {
+                                                    byte[] output;
+                                                    chunks = UTF8Encoding.UTF8.GetString(firststage).Split('!');
+                                                    response = Runner.Network.Node.Key.Decrypt(true, chunks[1], out output);
+                                                    byte[] plaintext = new byte[64];
+                                                    for (int i = 0; i < 64; i++)
+                                                    {
+                                                        plaintext[i] = output[i];
+                                                    }
+                                                    Console.WriteLine("Fingerprint: 0x" + BitConverter.ToString(plaintext).Replace("-", string.Empty));
+                                                    Challenge.Type = "Control.Auth.Response";
+                                                    string ciphertext;
+                                                    response = Runner.Network.Node.Key.Encrypt(false, plaintext, out ciphertext);
+                                                    if (response.Type == "Error.OK")
+                                                    {
+                                                        ciphertext = Runner.Network.Node.Key.UUID + "!" + ciphertext;
+                                                        response = auth.Value.Key.Encrypt(true, UTF8Encoding.UTF8.GetBytes(ciphertext), out ciphertext);
+                                                        if (response.Type == "Error.OK")
+                                                        {
+                                                            ciphertext = auth.Key.ToString() + "!" + ciphertext;
+                                                            Challenge.Data = ciphertext;
+                                                            this.Send(Challenge);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        break;
+                                }
+                            }
                         }
                         Runner.DebugMessage("Debug.Info.Auth", "Remote Node is: " + node.ToString());
                         retval = 0;

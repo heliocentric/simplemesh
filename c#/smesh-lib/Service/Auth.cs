@@ -33,5 +33,9 @@ namespace SimpleMesh.Service
         {
             return this.Key.ToString();
         }
+        public override int GetHashCode()
+        {
+            return this.UUID.GetHashCode();
+        }
     }
 }

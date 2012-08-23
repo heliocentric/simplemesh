@@ -245,7 +245,7 @@ namespace SimpleMesh.Service
         }
         public IMessage Decrypt(Boolean normal, string data, out byte[] outdata)
         {
-            byte[] ciphertext = System.Convert.FromBase64String(data);
+            byte[] ciphertext = System.Convert.FromBase64String(data.Replace("\0", string.Empty));
             IMessage msg = this.Decrypt(normal, ciphertext, out outdata);
             return msg;
         }
