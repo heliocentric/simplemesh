@@ -115,7 +115,14 @@ namespace SimpleMesh
         {
             get
             {
-                return Encoding.UTF8.GetBytes(this._data);
+                if (this._data == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return Encoding.UTF8.GetBytes(this._data);
+                }
             }
             set
             {
@@ -182,7 +189,14 @@ namespace SimpleMesh
         {
             get
             {
-                return (UInt16) this.Payload.Length;
+                if (this.Payload == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return (UInt16)this.Payload.Length;
+                }
             }
         }
     }

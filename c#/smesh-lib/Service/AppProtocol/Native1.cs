@@ -203,7 +203,61 @@ namespace SimpleMesh.Service.AppProtocol
                                     Runner.DebugMessage("Debug.Info.Auth", ciphertext.Length.ToString());
                                     string firstmessage = auth.Key + "!" + ciphertext;
                                     rmsg = Runner.Network.Node.Key.Encrypt(false, UTF8Encoding.UTF8.GetBytes(firstmessage), out ciphertext);
-                                    bmsg.Data = Runner.Network.Node.Key.UUID.ToString() + "!" + ciphertext;                                    this.Send(bmsg);
+                                    bmsg.Data = Runner.Network.Node.Key.UUID.ToString() + "!" + ciphertext;
+                                    this.Send(bmsg);
+                                    Boolean ending = false;
+                                    while (ending == false)
+                                    {
+                                        TextMessage tmsg;
+                                        tmsg = new TextMessage(this.Receive(false));
+                                        Boolean denied = false;
+                                        switch (tmsg.Type)
+                                        {
+                                            case "Control.Auth.Response":
+                                                string[] chunks = tmsg.Data.Split('!');
+                                                ciphertext = chunks[1];
+                                                byte[] bytes;
+                                                Runner.Network.Node.Key.Decrypt(true, ciphertext, out bytes);
+                                                chunks = UTF8Encoding.UTF8.GetString(bytes).Split('!');
+                                                foreach (KeyValuePair<UUID, Auth> authtoken in node.AuthKeyList)
+                                                {
+                                                    if (authtoken.Key.ToString() == chunks[0])
+                                                    {
+                                                        authtoken.Value.Key.Decrypt(false, chunks[1], out bytes);
+
+                                                        Console.WriteLine("Fingerprint: 0x" + BitConverter.ToString(bytes).Replace("-", string.Empty));
+                                                        for (int i = 0; i < 64; i++)
+                                                        {
+                                                            if (cookie[i] != bytes[i]) {
+                                                                denied = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                        break;
+                                                    }
+                                                }
+                                                if (denied == false)
+                                                {
+                                                    if (Runner.Network.NodeList.TryGetValue(Parameters["node.uuid"], out node) == true)
+                                                    {
+                                                        container.Node = node;
+                                                        node.Version = Parameters["version"];
+                                                        TextMessage omsg = new TextMessage("Control.Auth.OK");
+                                                        omsg.Data = "test";
+                                                        omsg.Sequence = tmsg.Sequence;
+                                                        this.Send(omsg);
+                                                        retval = 0;
+                                                        ending = true;
+                                                    }
+                                                    else
+                                                    {
+                                                        retval = 1;
+                                                    }
+                                                }
+
+                                                break;
+                                        }
+                                        }
                                 }
                                 else
                                 {
@@ -254,12 +308,43 @@ namespace SimpleMesh.Service.AppProtocol
                                                             ciphertext = auth.Key.ToString() + "!" + ciphertext;
                                                             Challenge.Data = ciphertext;
                                                             this.Send(Challenge);
+                                                            ending = true;
+                                                            break;
                                                         }
+                                                        else
+                                                        {
+                                                            retval = 1;
+                                                            ending = true;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        retval = 1;
+                                                        ending = true;
                                                     }
                                                 }
                                             }
                                         }
                                         break;
+                                }
+                            }
+                            ending = false;
+                            while (ending == false)
+                            {
+                                IMessage rmsg = this.Receive(false);
+                                switch (rmsg.Type)
+                                {
+                                    case "Control.Auth.OK":
+                                        container.Node = node;
+                                        node.Version = Parameters["version"];
+                                        retval = 0;
+                                        ending = true;
+                                        break;
+                                    default:
+                                        retval = 1;
+                                        ending = true;
+                                        break;
+
                                 }
                             }
                         }
@@ -386,30 +471,32 @@ namespace SimpleMesh.Service.AppProtocol
                         pconversation = SimpleMesh.Utility.ToHostOrder(_conversation);
                         ptypeid = SimpleMesh.Utility.ToHostOrder(_typeid);
                         psequence = SimpleMesh.Utility.ToHostOrder(_sequence);
-
-                        byte[] payload = new byte[plength];
-                        try
+                        if (plength > 0)
                         {
-                            count = args.Socket.Receive(payload);
-                        }
-                        catch
-                        {
-                            retval.Type = "Error.Message.Corrupted";
-                            args.Vampire = true;
-                            return retval;
-                        }
-                        if (count == plength)
-                        {
-                            retval.Sequence = psequence;
-                            retval.Conversation = pconversation;
-                            retval.Type = args.TypeList.ByID(ptypeid).Name;
-                            retval.Payload = payload;
-                        }
-                        else
-                        {
-                            retval.Type = "Error.Message.Corrupted";
-                            args.Vampire = true;
-                            return retval;
+                            byte[] payload = new byte[plength];
+                            try
+                            {
+                                count = args.Socket.Receive(payload);
+                            }
+                            catch
+                            {
+                                retval.Type = "Error.Message.Corrupted";
+                                args.Vampire = true;
+                                return retval;
+                            }
+                            if (count == plength)
+                            {
+                                retval.Sequence = psequence;
+                                retval.Conversation = pconversation;
+                                retval.Type = args.TypeList.ByID(ptypeid).Name;
+                                retval.Payload = payload;
+                            }
+                            else
+                            {
+                                retval.Type = "Error.Message.Corrupted";
+                                args.Vampire = true;
+                                return retval;
+                            }
                         }
                         break;
                     case 0:
@@ -538,9 +625,17 @@ namespace SimpleMesh.Service.AppProtocol
             bytescratch = SimpleMesh.Utility.ToNetworkOrder(message.Sequence);
             header[6] = bytescratch[0];
             header[7] = bytescratch[1];
-            rv = new byte[header.Length + message.Payload.Length];
-            System.Buffer.BlockCopy(header, 0, rv, 0, header.Length);
-            System.Buffer.BlockCopy(message.Payload, 0, rv, header.Length, message.Payload.Length);
+            if (message.DataLength > 0)
+            {
+                rv = new byte[header.Length + message.DataLength];
+                System.Buffer.BlockCopy(header, 0, rv, 0, header.Length);
+                System.Buffer.BlockCopy(message.Payload, 0, rv, header.Length, message.DataLength);
+            }
+            else
+            {
+                rv = new byte[header.Length];
+                System.Buffer.BlockCopy(header, 0, rv, 0, header.Length);
+            }
             return rv;
         }
 
@@ -572,6 +667,8 @@ namespace SimpleMesh.Service.AppProtocol
                 case "Control.Ping":
                 case "Control.Pong":
                      */
+                case "Control.Auth.Challenge":
+                case "Control.Auth.Response":
                 case "Control.Empty":
                     break;
                 default:
