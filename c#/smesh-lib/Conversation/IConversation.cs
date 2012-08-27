@@ -5,7 +5,12 @@ using System.Text;
 
 namespace SimpleMesh
 {
-    public class Conversation
+    public interface IConversation
     {
+        MaxList MaxList
+        {
+            get;
+            set;
+        }
     }
 }

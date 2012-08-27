@@ -206,7 +206,7 @@ namespace SimpleMesh.Service.AppProtocol
                                     while (ending == false)
                                     {
                                         TextMessage tmsg;
-                                        tmsg = new TextMessage(this.Receive(false));
+                                        tmsg = new TextMessage(this.Receive(true));
                                         Boolean denied = false;
                                         switch (tmsg.Type)
                                         {
@@ -266,7 +266,7 @@ namespace SimpleMesh.Service.AppProtocol
                             while (ending == false)
                             {
                                 IMessage rmsg;
-                                rmsg = this.Receive(false);
+                                rmsg = this.Receive(true);
                                 switch (rmsg.Type)
                                 {
                                     case "Control.Auth.Challenge":
@@ -324,7 +324,7 @@ namespace SimpleMesh.Service.AppProtocol
                             ending = false;
                             while (ending == false)
                             {
-                                IMessage rmsg = this.Receive(false);
+                                IMessage rmsg = this.Receive(true);
                                 switch (rmsg.Type)
                                 {
                                     case "Control.Auth.OK":
@@ -506,7 +506,7 @@ namespace SimpleMesh.Service.AppProtocol
             }
             MsgOut("R", retval);
 
-            if (ignore == true)
+            if (ignore == false)
             {
                 switch (retval.Type)
                 {
