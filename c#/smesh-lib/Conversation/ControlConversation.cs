@@ -9,6 +9,7 @@ namespace SimpleMesh
     {
         public ControlConversation(string ApplicationSignature)
         {
+            this.MaxList = new MaxList();
         }
         public MaxList _maxlist;
         public MaxList MaxList
@@ -21,6 +22,11 @@ namespace SimpleMesh
             {
                 this._maxlist = value;
             }
+        }
+        public IMessage Send(IMessage Message)
+        {
+            retval = new TextMessage("Error.OK");
+            return retval;
         }
     }
 }

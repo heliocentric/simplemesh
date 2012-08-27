@@ -363,6 +363,7 @@ namespace SimpleMesh.Service
             Console.WriteLine("output string = " + UTF8Encoding.UTF8.GetString(plaintext));
             Console.ReadLine();
             */
+            Runner.Native = true;
             Network.Start();
 
         }
