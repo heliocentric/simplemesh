@@ -192,15 +192,12 @@ namespace SimpleMesh.Service.AppProtocol
                             TextMessage bmsg = new TextMessage("Control.Auth.Challenge");
                             byte[] cookie = new byte[64];
                             Runner.Network.Random.NextBytes(cookie);
-                            Console.WriteLine("Fingerprint: 0x" + BitConverter.ToString(cookie).Replace("-", string.Empty));
                             foreach (KeyValuePair<UUID, Auth> auth in node.AuthKeyList)
                             {
                                 string ciphertext;
                                 IMessage rmsg = auth.Value.Key.Encrypt(true, cookie, out ciphertext);
-                                Runner.DebugMessage("Debug.Info.Auth", rmsg.Type);
                                 if (rmsg.Type == "Error.OK")
                                 {
-                                    Runner.DebugMessage("Debug.Info.Auth", ciphertext.Length.ToString());
                                     string firstmessage = auth.Key + "!" + ciphertext;
                                     rmsg = Runner.Network.Node.Key.Encrypt(false, UTF8Encoding.UTF8.GetBytes(firstmessage), out ciphertext);
                                     bmsg.Data = Runner.Network.Node.Key.UUID.ToString() + "!" + ciphertext;
@@ -224,8 +221,6 @@ namespace SimpleMesh.Service.AppProtocol
                                                     if (authtoken.Key.ToString() == chunks[0])
                                                     {
                                                         authtoken.Value.Key.Decrypt(false, chunks[1], out bytes);
-
-                                                        Console.WriteLine("Fingerprint: 0x" + BitConverter.ToString(bytes).Replace("-", string.Empty));
                                                         for (int i = 0; i < 64; i++)
                                                         {
                                                             if (cookie[i] != bytes[i]) {
@@ -294,9 +289,7 @@ namespace SimpleMesh.Service.AppProtocol
                                                     for (int i = 0; i < 64; i++)
                                                     {
                                                         plaintext[i] = output[i];
-                                                    }
-                                                    Console.WriteLine("Fingerprint: 0x" + BitConverter.ToString(plaintext).Replace("-", string.Empty));
-                                                    Challenge.Type = "Control.Auth.Response";
+                                                    }                                                    Challenge.Type = "Control.Auth.Response";
                                                     string ciphertext;
                                                     response = Runner.Network.Node.Key.Encrypt(false, plaintext, out ciphertext);
                                                     if (response.Type == "Error.OK")
