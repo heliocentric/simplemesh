@@ -81,6 +81,8 @@
     <Compile Include="Service\Connector.cs" />
     <Compile Include="Service\HostInfo.cs" />
     <Compile Include="Service\Key.cs" />
+    <Compile Include="Service\Runner\API.cs" />
+    <Compile Include="Service\Trackfile\API.cs" />
     <Compile Include="Service\Trackfile\MaintThread.cs" />
     <Compile Include="Service\Trackfile\ReceiveThread.cs" />
     <Compile Include="Service\Trackfile\SendThread.cs" />
@@ -90,7 +92,7 @@
     <Compile Include="Service\Type.cs" />
     <Compile Include="Service\Utility.cs" />
     <Compile Include="Service\Net\UDP.cs" />
-    <Compile Include="Service\Runner.cs" />
+    <Compile Include="Service\Runner\Runner.cs" />
     <Compile Include="Service\Trackfile\Trackfile.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="Utility.cs" />

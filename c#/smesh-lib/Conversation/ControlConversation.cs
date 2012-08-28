@@ -40,7 +40,7 @@ namespace SimpleMesh
             var retval = new TextMessage("Error.OK");
             if (SimpleMesh.Service.Runner.Native == true)
             {
-
+                
             }
             else
             {

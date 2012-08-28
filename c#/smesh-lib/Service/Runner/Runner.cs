@@ -51,7 +51,7 @@ using System.Net;
 
 namespace SimpleMesh.Service
 {
-    public static class Runner
+    public static partial class Runner
     {
         static string  _DatabasePath;
         static string _StorePath;
