@@ -56,7 +56,6 @@ namespace SimpleMesh.Service
             List<IConnection> staleconns;
             while (end == false)
             {
-                Runner.DebugMessage("Debug.Info.Maintenence", "Running Maintenence Thread");
                 Thread.Sleep(4679);
                 lock (Runner.Network.NodeList)
                 {

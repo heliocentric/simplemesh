@@ -5,12 +5,8 @@ using System.Text;
 
 namespace SimpleMesh
 {
-    public class ControlConversation : IConversation
+    public class Conversation : IConversation
     {
-        public ControlConversation(string ApplicationSignature)
-        {
-            this.MaxList = new MaxList();
-        }
         private MaxList _maxlist;
         public MaxList MaxList
         {
@@ -38,14 +34,6 @@ namespace SimpleMesh
         public IMessage Send(IMessage Message)
         {
             var retval = new TextMessage("Error.OK");
-            if (SimpleMesh.Service.Runner.Native == true)
-            {
-
-            }
-            else
-            {
-
-            }
             return retval;
         }
         public IConversation NewConversation(string Tag, UUID Node)
